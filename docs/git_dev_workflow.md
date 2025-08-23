@@ -14,17 +14,23 @@ This document outlines the Git development workflow for the Suelen Clean project
 
 ## Branch Strategy
 
-### Main Branch
-- **Purpose**: Production-ready code
+### MVP Development Phase
+- **Main Branch**: Primary development branch for MVP
+- **Purpose**: Active development and iteration
+- **Strategy**: Direct development on main during MVP phase
+- **Rationale**: Architecture is evolving, rapid iteration needed
+
+### Production Phase (Future)
+- **Main Branch**: Production-ready code
 - **Protection**: Should be protected in GitHub settings
 - **Merging**: Only via Pull Requests (PRs)
 
-### Feature Branches
+### Feature Branches (Production Phase)
 - **Naming**: `feature/descriptive-name` (e.g., `feature/contact-form-validation`)
 - **Purpose**: Development of new features
 - **Lifecycle**: Create → Develop → Test → PR → Merge → Delete
 
-### Hotfix Branches
+### Hotfix Branches (Production Phase)
 - **Naming**: `hotfix/issue-description` (e.g., `hotfix/fix-mobile-layout`)
 - **Purpose**: Critical bug fixes for production
 - **Lifecycle**: Create → Fix → Test → PR → Merge → Delete
@@ -35,12 +41,28 @@ This document outlines the Git development workflow for the Suelen Clean project
 **Old mindset**: "I need to save my work"  
 **New mindset**: "I need to track my changes and make them reviewable"
 
+### MVP vs Production Workflow
+
+#### **MVP Development Phase**
+- **Goal**: Rapid iteration and feature development
+- **Strategy**: Direct development on main branch
+- **Focus**: Speed and flexibility over process
+- **Rationale**: Architecture is evolving, need quick feedback loops
+
+#### **Production Phase**
+- **Goal**: Stable, maintainable code with proper review
+- **Strategy**: Feature branches with PR reviews
+- **Focus**: Code quality and collaboration
+- **Rationale**: Multiple developers, stable architecture
+
 ### Before You Start Coding
 Always ask yourself:
-- [ ] What branch am I on?
-- [ ] Should I create a feature branch?
 - [ ] What am I trying to accomplish?
 - [ ] How will I describe this change in a commit message?
+- [ ] Is this a complete unit of work?
+- [ ] Should I commit this now or continue working?
+
+**Note**: During MVP phase, focus on rapid iteration rather than branch management.
 
 ### The "Git-First" Approach
 1. **Check your environment** before making changes
@@ -51,24 +73,19 @@ Always ask yourself:
 
 ## Daily Workflow
 
-### Starting Work
+### Starting Work (MVP Phase)
 ```bash
 # 1. Check current status
 git status
-git branch
 
-# 2. Update main branch
-git checkout main
+# 2. Update main branch (if working with others)
 git pull origin main
 
-# 3. Create feature branch for your work
-git checkout -b feature/your-feature-name
-
-# 4. Verify you're on the correct branch
-git branch
+# 3. Start coding directly on main
+# No need to create feature branches during MVP
 ```
 
-### During Development
+### During Development (MVP Phase)
 ```bash
 # Make changes to your files...
 
@@ -85,11 +102,8 @@ git add .
 # 3. Commit when you've completed a logical unit of work
 git commit -m "feat: add contact form validation" -m "- Add email format validation" -m "- Add required field validation" -m "- Add error message display"
 
-# 4. Push to remote (first time)
-git push -u origin feature/your-feature-name
-
-# 5. Push subsequent changes
-git push
+# 4. Push to remote
+git push origin main
 ```
 
 ### Mental Checklist While Working
@@ -100,18 +114,21 @@ git push
 
 ## Quick Reference: The "Git-First" Workflow
 
-### Complete Workflow
+### Complete Workflow (MVP Phase)
 ```bash
 # 1. Check your environment
 git status
-git branch
 
-# 2. Create feature branch (if on main)
-git checkout -b feature/your-new-feature
+# 2. Make changes directly on main
+# No feature branches needed during MVP
 
-# 3. Make changes, then stage and commit
+# 3. Stage and commit changes
 git add filename.ts
 git commit -m "feat: your feature description"
+
+# 4. Push to remote
+git push origin main
+```
 
 # 4. Push to share your work
 git push -u origin feature/your-new-feature
