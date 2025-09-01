@@ -1,0 +1,189 @@
+Developer: # Workflow: Tasks + Testing (MVP-First)
+
+## Objective
+Transform a Lean PRD into actionable tasks with integrated testing guidance. This process combines task generation and lightweight TDD into a streamlined approach suitable for solo MVP development.
+
+---
+
+## Quickstart
+- Locate the PRD at `/prd/prd-[feature-name].md` (slug: lowercase, kebab-case).
+- Create `/tasks/` if missing.
+- Generate 3–5 parent tasks, each with test-related subtasks and acceptance criteria.
+- Produce smoke test stubs alongside code; list both implementation and test paths.
+- Save as `/tasks/tasks-[feature-name].md`. Keep to one page for MVP.
+
+---
+
+## Workflow Steps
+
+Begin with a concise checklist (3-7 bullets) of intended sub-tasks before proceeding; keep checklist items conceptual.
+
+### 1. Input
+- Begin with a Lean PRD saved at `/prd/prd-[feature-name].md`.
+- If present, read Lean SRS at `/srs/srs-[feature-name].md` and incorporate NFR budgets into acceptance criteria (reference `NFR-*`).
+- Ensure the PRD contains: overview, goals, user stories, and requirements.
+- If any elements are missing, clearly state what is absent at the top of the output, and skip steps that cannot be performed as a result.
+
+### 2. Generate Parent Tasks
+- Identify 3–5 parent tasks derived from the PRD.
+- If fewer than 3 or more than 5 parent tasks are available, proceed with what is supported, and clearly document this under **Notes** in the output.
+- Parent tasks should be clear and high-level, for example: “Implement login API.”
+
+### 3. Expand into Sub-Tasks
+- For each parent task, break it down into smaller sub-tasks (ideally actions that take less than one day) using Markdown checklists (`- [ ]`).
+- Ensure that each parent task includes at least one sub-task related to testing.
+- Add explicit acceptance criteria for each parent task, tied to PRD requirements.
+
+**Example:**
+- Parent: Implement login API
+  - [ ] Define request/response schema
+  - [ ] Write failing smoke test (valid + invalid login)
+  - [ ] Implement minimal code to pass the test
+  - [ ] Add error handling for bad input
+  - [ ] Validate acceptance criteria (Req 2.1, 2.2)
+
+### 4. Relevant Files
+- List the files associated with each parent task in a dedicated **Relevant Files** section as a Markdown list.
+- Always specify both implementation and related test files.
+- Use a standard layout when applicable:
+  - Implementation: `src/[area]/[name].ts`
+  - Tests: `src/[area]/__tests__/[name].test.ts`
+- Generate at least one test stub file per parent task (empty is acceptable) and include it.
+
+### 5. Changelog
+- Maintain a **Changelog** at the very top of the task file in Markdown format.
+- Record each change as a new bullet point, starting with `[YYYY-MM-DD]`.
+ - Reference test validation per `process-tasks.md` and `dev-utils/test/schema.json`.
+
+---
+
+## Testing Guidelines (MVP-First)
+
+### MVP Mode
+- Write only smoke tests for key flows:
+  - App startup
+  - User login
+  - Main feature operation
+- Place test stubs alongside code, even if mostly empty.
+- Execute tests per `process-tasks.md` (centralized commands, JSON schema, and cleanup rules). For Jest, use `--watch=false --watchAll=false`.
+
+### Enhancement Mode (Later)
+- Gradually add more tests:
+  - Expand smoke tests to unit tests, then integration tests.
+  - Update tasks to include design-driven TDD approaches.
+  - Ensure all test results conform to the schema in `test-suite.md`.
+
+---
+
+## AI Agent Instructions
+- Always generate both the task list and test stubs together.
+- For MVP, restrict tests to smoke tests only.
+- Save task files in `/tasks/tasks-[feature-name].md`, using the lowercase, kebab-case slug.
+- Output should fit on a single page for MVP; expand only if Enhancement Mode is explicitly requested.
+- If instructions cannot be followed due to missing PRD data, provide a clear note in the output and indicate incomplete or omitted sections as appropriate.
+
+### Q&A Loop Integration (Centralized)
+- Use `/qa/qa-[feature-name]-[YYYYMMDD]-rN.md` as the single source for questions and answers.
+- Record questions with IDs `Q-tasks-*` only in the QA document. Update Status to "Incorporated" after the tasks document reflects the answer.
+
+Set reasoning_effort = medium due to moderate task complexity; produce tool and code outputs succinctly, but offer fuller detail in the final Markdown document.
+
+After generating the Markdown task file, validate that all required sections (Changelog, Relevant Files, Notes if needed, Tasks) are present and in the correct order, that every parent task contains at least one test-related sub-task, that each parent task has acceptance criteria, and that listed test stub files exist or are scheduled to be created.
+
+After generating the Markdown task file, validate that all required sections (Changelog, Relevant Files, Notes if needed, Tasks) are present and in the correct order, and that every parent task contains at least one test-related sub-task. If any step is incomplete due to missing PRD data, clearly indicate this in both the Notes and Tasks sections.
+
+---
+
+## Output Format
+
+Output should be a single Markdown document saved as `/tasks/tasks-[prd-name].md` and conform to the following structure:
+
+```markdown
+# Tasks for [PRD Name]
+
+## Changelog
+- [YYYY-MM-DD] Initial tasks created.
+- [YYYY-MM-DD] [Description of subsequent changes]
+
+## Relevant Files
+- path/to/file1.ext – description
+- path/to/file2.ext – description
+
+## Notes
+- [Freeform notes, including process deviations: e.g., “Only 2 parent tasks inferred due to limited PRD input.” “User stories section missing from PRD; requirements inferred from goals.”]
+
+## Tasks
+- [ ] 1.0 [Parent Task 1]
+  - [ ] 1.1 [Subtask 1]
+  - [ ] 1.2 [Subtask 2]
+  ...
+- [ ] 2.0 [Parent Task 2]
+  ...
+
+### Acceptance Criteria
+- [Criteria for Parent Task 1] (reference PRD requirement IDs)
+- [Criteria for Parent Task 2]
+```
+
+- All sections must appear in this order: Changelog, Relevant Files, Notes (optional if not needed), Tasks.
+- Every parent task must include at least one test-related sub-task.
+- Tasks and sub-tasks must use `- [ ]` Markdown checklists.
+- The **Relevant Files** section must always list both implementation and test/validation files for each task.
+- If any PRD elements are missing, identify them explicitly in **Notes** and indicate in **Tasks** which steps were omitted as a result.
+- If fewer than 3 or more than 5 parent tasks are applicable, include a mandatory Scope Note in **Notes** explaining why.
+
+---
+
+## Human Review Gate (Required)
+- Confirm: parent tasks (3–5), acceptance criteria per parent, and at least one test sub-task per parent.
+- Confirm: Relevant Files include both implementation and test stubs following conventions.
+- Confirm: traceability—acceptance criteria reference PRD `REQ-*` IDs.
+- Approve proceeding to task processing.
+
+---
+
+## Handoff + Memory Sync
+Update agent memory with the following minimal context:
+
+```json
+{
+  "stage": "tasks",
+  "feature_slug": "[feature-name]",
+  "prd_path": "/prd/prd-[feature-name].md",
+  "tasks_path": "/tasks/tasks-[feature-name].md",
+  "parent_tasks": ["..."],
+  "acceptance_criteria_by_task": {"1.0": ["..."], "2.0": ["..."]},
+  "relevant_files_by_task": {"1.0": ["src/..."], "2.0": ["src/..."]},
+  "test_stub_paths": ["src/.../__tests__/...test.ts"],
+  "traceability_map": {"REQ-1": ["1.0"], "REQ-2": ["2.0"]},
+  "qa_path": "/qa/qa-[feature-name]-[YYYYMMDD]-rN.md"
+}
+```
+
+### Artifact Manifest Update
+- Append or create `/artifacts/manifest.json` with the same keys, plus timestamp.
+
+### Q&A Loop Integration
+- Centralized in `/qa/qa-[feature-name]-[YYYYMMDD]-rN.md`; do not duplicate questions in tasks files.
+- Use `Q-tasks-*` IDs only inside the QA document. Mark as "Incorporated" when tasks reflect decisions.
+
+### Context Seed (for next stage)
+Provide this block to the next stage:
+
+```json
+{
+  "feature_slug": "[feature-name]",
+  "tasks_path": "/tasks/tasks-[feature-name].md",
+  "test_stub_paths": ["src/.../__tests__/...test.ts"]
+}
+```
+
+---
+
+## Human-in-the-Loop Rule
+Pause only for destructive/irreversible actions or scope changes; otherwise proceed autonomously.
+
+---
+
+## Start Here
+For day-one and daily loops, see `dev-utils/dev_workflow/project-entrypoint.md`.
