@@ -196,4 +196,4 @@ Pause only for destructive/irreversible actions or scope changes; otherwise proc
 ---
 
 ## Start Here
-For day-one and daily loops, see `dev-utils/dev_workflow/project-entrypoint.md`.
+For day-one and daily loops, follow `dev-utils/dev_workflow/mvp-core-protocol.md` (single source). See `project-entrypoint.md` for step order.
