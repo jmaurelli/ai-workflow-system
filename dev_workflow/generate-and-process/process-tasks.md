@@ -238,9 +238,7 @@ Update agent memory with the following minimal context:
 ### Artifact Manifest Update
 - Append or create `/artifacts/manifest.json` with the same keys, plus timestamp.
 
-### Q&A Loop Integration
-- Centralize all questions in `/qa/qa-[feature-name]-[YYYYMMDD]-rN.md` as the single source of truth.
-- Use IDs `Q-proc-*` only inside the QA document. Change Status to "Incorporated" after code/tests/commits reflect the decision.
+ 
 
 ### Quick Re-run and Timeouts
 - Prefer targeted re-runs based on changed paths.

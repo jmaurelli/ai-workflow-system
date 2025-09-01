@@ -11,7 +11,7 @@ Concise steps for a lone developer to use the Lean PRD â†’ (optional) Lean SRS â
 - Save to `/prd/prd-[feature_slug].md`. Validate section order.
 - Human review: approve assumptions, non-goals, success criteria, and `REQ-*`.
 - Handoff: capture the Context Seed JSON into your notes/agent and update `/artifacts/manifest.json`.
- - Architecture Seeding Q&A (in QA doc): complete the 12 questions, generate Decision Statements, seed `/docs/architecture.md` and minimal ADRs; link architecture in PRD Linkages.
+ - Architecture Seeding: capture decisions directly in `/docs/architecture.md` and create minimal ADRs; link architecture in PRD Linkages.
 
 ---
 

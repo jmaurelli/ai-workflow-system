@@ -65,9 +65,7 @@ One short paragraph describing scope and boundaries. Reference PRD; do not resta
 - Validate section presence and order before completion.
 Set reasoning_effort = minimal; keep outputs concise and focused.
 
-### Q&A Loop Integration (Centralized)
-- Use `/qa/qa-[feature_slug]-[YYYYMMDD]-rN.md` as the single source of truth for questions.
-- Record clarifications as `Q-srs-*` only in the QA document and update status to "Incorporated" after editing the SRS.
+ 
 
 ---
 
@@ -86,17 +84,14 @@ Update agent memory with the following minimal context:
   "feature_slug": "[feature_slug]",
   "srs_path": "/srs/srs-[feature_slug].md",
   "nfr_ids": ["NFR-1", "NFR-2"],
-  "budgets": {"latency_p50_ms": 300, "latency_p95_ms": 800},
-  "qa_path": "/qa/qa-[feature_slug]-[YYYYMMDD]-rN.md"
+  "budgets": {"latency_p50_ms": 300, "latency_p95_ms": 800}
 }
 ```
 
 ### Artifact Manifest Update
 - Append or create `/artifacts/manifest.json` with `srs_path`, `nfr_ids`, and `budgets`.
 
-### Q&A Loop Integration
-- If clarification is needed, create or update `/qa/qa-[feature_slug]-[YYYYMMDD]-rN.md`.
-- Record questions with IDs `Q-srs-*`. Change Status to "Incorporated" after updating the SRS.
+ 
 
 ### Context Seed (for next stage)
 Provide this block to the next stage:

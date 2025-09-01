@@ -61,7 +61,7 @@ Number requirements for traceability using IDs like `REQ-1`, `REQ-1.1`.
 ## Linkages (optional)
 - Tasks: /tasks/tasks-[feature-name].md
 - Templates: dev-utils/dev_workflow/generate-and-process/project-templates.md
-- QA (single source for Q&A): /qa/qa-[feature-name]-[YYYYMMDD]-rN.md
+- Architecture: /docs/architecture.md
 ```
 
 ---
@@ -86,7 +86,7 @@ If added complexity or NFRs are material to MVP execution, generate a Lean SRS u
 - Limit Lean PRDs to one page and ≤ 400 words.
 - Validate that the file exists, is accessible, and that all template sections appear in the specified order. If validation fails, self-correct before completion.
 - Include the optional Linkages section if the related tasks file exists.
-- Centralize all questions/answers in the QA file under `/qa/`. Do not include an "Open Questions" section in the PRD; instead, link to the current QA document.
+ 
 Set reasoning_effort = minimal; keep outputs concise and focused.
 
 ---
@@ -94,7 +94,7 @@ Set reasoning_effort = minimal; keep outputs concise and focused.
 ## Human Review Gate (Required)
 - Confirm: assumptions, non-goals, requirement IDs (`REQ-*`), and success criteria.
 - Confirm: overview, goals, and user stories are accurate and sufficient.
-- Confirm: Architecture Seeding Q&A in QA doc is complete or each missing item is explicitly N/A with rationale; `/docs/architecture.md` is seeded and linked.
+- Confirm: architecture decisions are captured; `/docs/architecture.md` is seeded and linked.
 - Approve proceeding to task generation.
 
 ---
@@ -110,18 +110,12 @@ Update agent memory with the following minimal context:
   "requirement_ids": ["REQ-1", "REQ-2"],
   "assumptions": ["..."],
   "non_goals": ["..."],
-  "success_criteria": ["..."],
-  "qa_path": "/qa/qa-[feature-name]-[YYYYMMDD]-rN.md"
+  "success_criteria": ["..."]
 }
 ```
 
 ### Artifact Manifest Update
 - Append or create `/artifacts/manifest.json` with the same keys, plus timestamp.
-
-### Q&A Loop Integration
-- Use `/qa/qa-[feature-name]-[YYYYMMDD]-rN.md` as the single source of truth for all questions and answers.
-- Record questions with IDs `Q-prd-*` only in the QA document. Change Status to "Incorporated" after updating the PRD.
-- Do not add or maintain an "Open Questions" section in the PRD.
 
 ### Context Seed (for next stage)
 Provide this block to the next stage:

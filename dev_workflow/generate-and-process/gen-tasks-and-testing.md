@@ -23,7 +23,7 @@ Begin with a concise checklist (3-7 bullets) of intended sub-tasks before procee
 - If present, read Lean SRS at `/srs/srs-[feature-name].md` and incorporate NFR budgets into acceptance criteria (reference `NFR-*`).
 - Ensure the PRD contains: overview, goals, user stories, and requirements.
 - If any elements are missing, clearly state what is absent at the top of the output, and skip steps that cannot be performed as a result.
-- Read `/docs/architecture.md` if present; otherwise, derive decisions from the QA "Architecture Seeding Q&A" section and note any deltas or open items.
+- Read `/docs/architecture.md` if present; otherwise, capture minimal architecture decisions inline and note any deltas or open items.
 
 ### 2. Generate Parent Tasks
 - Identify 3–5 parent tasks derived from the PRD.
@@ -91,9 +91,7 @@ Begin with a concise checklist (3-7 bullets) of intended sub-tasks before procee
 - Output should fit on a single page for MVP; expand only if Enhancement Mode is explicitly requested.
 - If instructions cannot be followed due to missing PRD data, provide a clear note in the output and indicate incomplete or omitted sections as appropriate.
 
-### Q&A Loop Integration (Centralized)
-- Use `/qa/qa-[feature-name]-[YYYYMMDD]-rN.md` as the single source for questions and answers.
-- Record questions with IDs `Q-tasks-*` only in the QA document. Update Status to "Incorporated" after the tasks document reflects the answer.
+ 
 
 Set reasoning_effort = medium due to moderate task complexity; produce tool and code outputs succinctly, but offer fuller detail in the final Markdown document.
 
@@ -165,17 +163,14 @@ Update agent memory with the following minimal context:
   "acceptance_criteria_by_task": {"1.0": ["..."], "2.0": ["..."]},
   "relevant_files_by_task": {"1.0": ["src/..."], "2.0": ["src/..."]},
   "test_stub_paths": ["src/.../__tests__/...test.ts"],
-  "traceability_map": {"REQ-1": ["1.0"], "REQ-2": ["2.0"]},
-  "qa_path": "/qa/qa-[feature-name]-[YYYYMMDD]-rN.md"
+  "traceability_map": {"REQ-1": ["1.0"], "REQ-2": ["2.0"]}
 }
 ```
 
 ### Artifact Manifest Update
 - Append or create `/artifacts/manifest.json` with the same keys, plus timestamp.
 
-### Q&A Loop Integration
-- Centralized in `/qa/qa-[feature-name]-[YYYYMMDD]-rN.md`; do not duplicate questions in tasks files.
-- Use `Q-tasks-*` IDs only inside the QA document. Mark as "Incorporated" when tasks reflect decisions.
+ 
 
 ### Context Seed (for next stage)
 Provide this block to the next stage:
