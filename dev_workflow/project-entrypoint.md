@@ -1,18 +1,16 @@
 Developer: # Start Here — Project Entrypoint (AI‑First, Lone Dev)
 
 ## Day 1: Initialize project context
-1. Choose `feature_slug` (lowercase, kebab-case). Update `/artifacts/manifest.json`.
-2. Create today’s Q&A file from `/qa/qa-loop-template.md` → `/qa/qa-[feature_slug]-[YYYYMMDD]-r1.md`. Record in manifest, including `qa_path`.
-3. Seed high-level docs using templates:
-   - Charter → `/docs/charter.md`
-   - Architecture → `/docs/architecture.md`
-   - Testing (smoke) → `/docs/testing.md`
-   Use `project-templates.md` fenced blocks. Keep each ≤ 1 page.
-4. Next Action (Agent): Generate Lean PRD from Charter/Architecture. Centralize any clarifying questions in the QA file only; PRD must not contain its own Open Questions section.
- 5. Architecture Seeding Q&A (MVP-light):
-    - In the QA doc, complete the "Architecture Seeding Q&A" section.
-    - Seed `/docs/architecture.md` and minimal ADRs under `/docs/adr/` from the Decision Statements.
-    - Link the architecture doc in PRD Linkages.
+1. Initialize with Lean project templates:
+   - Seed `/docs/charter.md`, `/docs/architecture.md`, `/docs/testing.md` using `dev-utils/dev_workflow/generate-and-process/project-templates.md` fenced blocks (≤ 1 page each).
+   - Create `/artifacts/manifest.json` if missing; record the seeded doc paths.
+2. Choose `feature_slug` (lowercase, kebab-case); record it in `/artifacts/manifest.json`.
+3. Create today’s Q&A file from `/qa/qa-loop-template.md` → `/qa/qa-[feature_slug]-[YYYYMMDD]-r1.md`. Record `qa_path` in the manifest.
+4. Architecture Seeding Q&A (MVP-light):
+   - In the QA doc, complete the "Architecture Seeding Q&A" section.
+   - Seed `/docs/architecture.md` and minimal ADRs under `/docs/adr/` from the Decision Statements.
+   - Link the architecture doc in PRD Linkages.
+5. Next Action (Agent): Generate Lean PRD from Charter/Architecture. Centralize any clarifying questions in the QA file only; PRD must not contain its own Open Questions section.
 
 ## Stage order and handoffs
 1. PRD → `/prd/prd-[feature_slug].md` (gen-prd.md)
