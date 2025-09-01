@@ -11,6 +11,7 @@ Concise steps for a lone developer to use the Lean PRD → (optional) Lean SRS �
 - Save to `/prd/prd-[feature_slug].md`. Validate section order.
 - Human review: approve assumptions, non-goals, success criteria, and `REQ-*`.
 - Handoff: capture the Context Seed JSON into your notes/agent and update `/artifacts/manifest.json`.
+ - Architecture Seeding Q&A (in QA doc): complete the 12 questions, generate Decision Statements, seed `/docs/architecture.md` and minimal ADRs; link architecture in PRD Linkages.
 
 ---
 
@@ -33,6 +34,7 @@ Skip this step if NFRs don’t materially impact the MVP phase.
 - Save `/tasks/tasks-[feature_slug].md`. Add a dated Changelog entry.
 - Human review: approve parent tasks, acceptance criteria, traceability, and file list.
 - Handoff: update Context Seed and `/artifacts/manifest.json`.
+ - TDD-Lite (mandatory in MVP): For each parent task, write a failing smoke test first, then minimal implementation, then refactor.
 
 ---
 
@@ -43,6 +45,7 @@ Skip this step if NFRs don’t materially impact the MVP phase.
 - Execute tests (centralized rules in `process-tasks.md`):
   - Jest example: `jest --runInBand --watch=false --watchAll=false --json --outputFile=test/<name>.json <files>`
   - Validate results against `dev-utils/test/schema.json` (e.g., `npx ajv validate -s dev-utils/test/schema.json -d "test/*.json" --strict=false`).
+ - Enforce TDD-Lite: author failing smoke test before implementation, keep code minimal to pass, then refactor.
 - Human review (gated actions):
   - Approve destructive/irreversible actions, merges, and scope changes.
 - Commit & trace:

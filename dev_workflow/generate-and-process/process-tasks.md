@@ -67,6 +67,13 @@ This document integrates **Task List Management**, **Test-Driven Development (TD
 5. **Integration & Validation**
    - Execute full workflows across environments to verify performance, accessibility, and stability.
 
+### MVP TDD-Lite Enforcement
+- For each change set/parent task, you MUST:
+  - Author a failing smoke test first (targeting acceptance criteria or key flow).
+  - Implement the minimal code to pass (keep scope tight to the test).
+  - Refactor immediately after passing (naming, duplication, simplicity).
+- Scope remains MVP-level: smoke tests only, not full unit/integration breadth.
+
 ### Success Metrics
 
 - All tests passing
@@ -201,6 +208,7 @@ for f in glob.glob("test/*.json"):\
 - Tasks present at `/tasks/tasks-[feature-name].md` with acceptance criteria and test subtasks.
 - Tests executed non-interactively; JSON results in `test/` conform to schema.
 - On full green, JSON artifacts removed; otherwise retained until fixed.
+ - TDD-Lite satisfied for each parent task/change: failing smoke test preceded implementation; minimal code then refactor were performed.
 
 ---
 

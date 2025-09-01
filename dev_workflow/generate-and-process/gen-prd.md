@@ -92,6 +92,7 @@ Set reasoning_effort = minimal; keep outputs concise and focused.
 ## Human Review Gate (Required)
 - Confirm: assumptions, non-goals, requirement IDs (`REQ-*`), and success criteria.
 - Confirm: overview, goals, and user stories are accurate and sufficient.
+- Confirm: Architecture Seeding Q&A in QA doc is complete or each missing item is explicitly N/A with rationale; `/docs/architecture.md` is seeded and linked.
 - Approve proceeding to task generation.
 
 ---

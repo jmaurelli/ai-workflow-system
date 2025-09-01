@@ -9,6 +9,10 @@ Developer: # Start Here — Project Entrypoint (AI‑First, Lone Dev)
    - Testing (smoke) → `/docs/testing.md`
    Use `project-templates.md` fenced blocks. Keep each ≤ 1 page.
 4. Next Action (Agent): Generate Lean PRD from Charter/Architecture. Centralize any clarifying questions in the QA file only; PRD must not contain its own Open Questions section.
+ 5. Architecture Seeding Q&A (MVP-light):
+    - In the QA doc, complete the "Architecture Seeding Q&A" section.
+    - Seed `/docs/architecture.md` and minimal ADRs under `/docs/adr/` from the Decision Statements.
+    - Link the architecture doc in PRD Linkages.
 
 ## Stage order and handoffs
 1. PRD → `/prd/prd-[feature_slug].md` (gen-prd.md)
@@ -29,7 +33,7 @@ Developer: # Start Here — Project Entrypoint (AI‑First, Lone Dev)
 
 ## Daily loop
 1. Open latest Q&A; answer remaining “Unanswered”.
-2. Pick the next parent task; implement, run targeted tests, validate JSON.
+2. Pick the next parent task; follow TDD-Lite (write failing smoke test → minimal implementation → refactor); run targeted tests; validate JSON.
 3. Commit; update Tasks changelog; mark Qs as “Incorporated”.
 4. Update manifest (ensure `qa_path` remains accurate) and append Status Context Seed to Q&A.
 

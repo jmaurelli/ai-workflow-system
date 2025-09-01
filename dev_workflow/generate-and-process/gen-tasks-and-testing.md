@@ -23,6 +23,7 @@ Begin with a concise checklist (3-7 bullets) of intended sub-tasks before procee
 - If present, read Lean SRS at `/srs/srs-[feature-name].md` and incorporate NFR budgets into acceptance criteria (reference `NFR-*`).
 - Ensure the PRD contains: overview, goals, user stories, and requirements.
 - If any elements are missing, clearly state what is absent at the top of the output, and skip steps that cannot be performed as a result.
+- Read `/docs/architecture.md` if present; otherwise, derive decisions from the QA "Architecture Seeding Q&A" section and note any deltas or open items.
 
 ### 2. Generate Parent Tasks
 - Identify 3–5 parent tasks derived from the PRD.
@@ -32,6 +33,7 @@ Begin with a concise checklist (3-7 bullets) of intended sub-tasks before procee
 ### 3. Expand into Sub-Tasks
 - For each parent task, break it down into smaller sub-tasks (ideally actions that take less than one day) using Markdown checklists (`- [ ]`).
 - Ensure that each parent task includes at least one sub-task related to testing.
+- The first sub-task under each parent MUST be: "Write failing smoke test (targeting acceptance criteria)".
 - Add explicit acceptance criteria for each parent task, tied to PRD requirements.
 
 **Example:**
@@ -66,6 +68,13 @@ Begin with a concise checklist (3-7 bullets) of intended sub-tasks before procee
   - Main feature operation
 - Place test stubs alongside code, even if mostly empty.
 - Execute tests per `process-tasks.md` (centralized commands, JSON schema, and cleanup rules). For Jest, use `--watch=false --watchAll=false`.
+
+### TDD-Lite Mandate (MVP)
+- Follow a lightweight RED → GREEN → REFACTOR cycle for every parent task:
+  - RED: Write a failing smoke test for the acceptance criteria first.
+  - GREEN: Implement the minimal code needed to pass the test.
+  - REFACTOR: Clean up names, remove duplication, and simplify logic.
+- Do not add implementation code before authoring the failing smoke test.
 
 ### Enhancement Mode (Later)
 - Gradually add more tests:
@@ -138,6 +147,7 @@ Output should be a single Markdown document saved as `/tasks/tasks-[prd-name].md
 - Confirm: parent tasks (3–5), acceptance criteria per parent, and at least one test sub-task per parent.
 - Confirm: Relevant Files include both implementation and test stubs following conventions.
 - Confirm: traceability—acceptance criteria reference PRD `REQ-*` IDs.
+- Confirm: TDD-Lite sequence per parent task (failing smoke test → minimal implementation → refactor) was followed.
 - Approve proceeding to task processing.
 
 ---
