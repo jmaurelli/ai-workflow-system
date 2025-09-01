@@ -79,6 +79,8 @@ If added complexity or NFRs are material to MVP execution, generate a Lean SRS u
 ## AI Agent Directives
 - Default to creating a **Lean PRD** unless otherwise instructed.
 - Use a lowercase, kebab-case slug for `[feature-name]` consistently across PRD, tasks, and tests.
+- Prompt the human explicitly for `[feature-name]` as `feature_slug` and BLOCK until provided. Do NOT auto-generate, infer, or randomize the slug.
+- Validate `feature_slug` format (lowercase kebab-case). If invalid, show the format and re-prompt.
 - Ensure the `/prd/` directory exists; create it if missing.
 - Save files as `/prd/prd-[feature-name].md`.
 - Limit Lean PRDs to one page and ≤ 400 words.

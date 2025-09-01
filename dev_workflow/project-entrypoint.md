@@ -4,7 +4,7 @@ Developer: # Start Here — Project Entrypoint (AI‑First, Lone Dev)
 1. Initialize with Lean project templates:
    - Seed `/docs/charter.md`, `/docs/architecture.md`, `/docs/testing.md` using `dev-utils/dev_workflow/generate-and-process/project-templates.md` fenced blocks (≤ 1 page each).
    - Create `/artifacts/manifest.json` if missing; record the seeded doc paths.
-2. Choose `feature_slug` (lowercase, kebab-case); record it in `/artifacts/manifest.json`.
+2. PROMPT for `feature_slug` (lowercase, kebab-case) and BLOCK until provided; record it in `/artifacts/manifest.json`. Do not infer or auto-generate.
 3. Create today’s Q&A file from `/qa/qa-loop-template.md` → `/qa/qa-[feature_slug]-[YYYYMMDD]-r1.md`. Record `qa_path` in the manifest.
 4. Architecture Seeding Q&A (MVP-light):
    - In the QA doc, complete the "Architecture Seeding Q&A" section.

@@ -1,4 +1,4 @@
-Developer: # MVP Workflow Quickstart (Human)
+dev-utilsDeveloper: # MVP Workflow Quickstart (Human)
 
 ## What this is
 Concise steps for a lone developer to use the Lean PRD → (optional) Lean SRS → Tasks → Process workflow with a human-in-the-loop.
@@ -6,7 +6,7 @@ Concise steps for a lone developer to use the Lean PRD → (optional) Lean SRS �
 ---
 
 ## 1) PRD (Lean) — define the MVP
-- Create `/prd/` if missing; choose `feature_slug` (lowercase, kebab-case).
+- Create `/prd/` if missing; PROMPT for `feature_slug` (lowercase, kebab-case) and BLOCK until provided. Do not infer or auto-generate.
 - Fill `gen-prd.md` template (≤ 400 words): Overview, Goals, User Stories, numbered `REQ-*`, Assumptions, Non-Goals, Success Criteria, Risks.
 - Save to `/prd/prd-[feature_slug].md`. Validate section order.
 - Human review: approve assumptions, non-goals, success criteria, and `REQ-*`.
