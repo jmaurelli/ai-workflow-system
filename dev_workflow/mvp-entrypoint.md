@@ -158,28 +158,13 @@ Enable secure user authentication for web applications
 ### Testing Strategy
 - **title**: Testing Strategy
 - **description**: TDD-Lite approach with smoke tests and validation requirements
-- **inputs**: `feature_slug`, `tech_stack`, `success_criteria`
-- **example_content**: 
-```markdown
-# Testing Strategy
-
-## TDD-Lite Approach
-1. Write failing smoke test
-2. Minimal implementation to pass
-3. Refactor and expand
-
-## Core Test Areas
-- [ ] User registration flow
-- [ ] User login flow
-- [ ] Password reset functionality
-- [ ] Profile management
-- [ ] Concurrent user handling
-
-## Test Outputs
-- JSON results to `test/` directory
-- Validation against `dev-utils/test/schema.json`
-- Test stubs created for each parent task
-```
+- **inputs**: `mvp_scope`, `tech_stack`, `success_criteria`
+- **methodology**: Follows `gen-tasks-and-testing.md` Testing Guidelines (MVP-First) section
+- **key_principles**: 
+  - Write failing smoke tests first
+  - Minimal implementation to pass
+  - Refactor after tests pass
+  - MVP mode: smoke tests only for key flows
 
 ### Project Manifest
 - **title**: Project Manifest
@@ -205,8 +190,8 @@ Enable secure user authentication for web applications
 ## Workflow Integration
 
 ### Next Steps After Initialization
-1. **Generate PRD**: Use collected data to create `/prd/prd-[feature_slug].md`
-2. **Create Tasks**: Generate `/tasks/tasks-[feature_slug].md` with TDD-Lite approach
+1. **Generate PRD**: Use collected data to create `/prd/prd-[project-name].md` (converted to kebab-case)
+2. **Create Tasks**: Generate `/tasks/tasks-[project-name].md` using `gen-tasks-and-testing.md` with TDD-Lite approach
 3. **Begin Development**: Follow TDD-Lite workflow (failing test → implementation → refactor)
 4. **Update Manifest**: Keep `/artifacts/manifest.json` current with progress
 
