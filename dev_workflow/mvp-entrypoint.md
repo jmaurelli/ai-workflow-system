@@ -6,75 +6,75 @@ This document serves as the unified initialization point for MVP projects, autom
 ## Project Initialization Questions
 
 ### Project Foundation
-- **question**: What is the project name?
-- **field**: `project_name`
-- **type**: `string`
-- **example**: "User Authentication Service"
-- **required**: true
-- **description**: The official name for the project, used in documentation and artifacts
+1. **question**: What is the project name?
+   - **field**: `project_name`
+   - **type**: `string`
+   - **example**: "User Authentication Service"
+   - **required**: true
+   - **description**: The official name for the project, used in documentation and artifacts
 
-- **question**: What is the one-liner goal of this project?
-- **field**: `project_goal`
-- **type**: `string`
-- **example**: "Enable secure user authentication for web applications"
-- **required**: true
-- **description**: Concise statement of why this project exists and what problem it solves
+2. **question**: What is the one-liner goal of this project?
+   - **field**: `project_goal`
+   - **type**: `string`
+   - **example**: "Enable secure user authentication for web applications"
+   - **required**: true
+   - **description**: Concise statement of why this project exists and what problem it solves
 
 ### Scope and Constraints
-- **question**: What is the MVP scope in 2-3 sentences?
-- **field**: `mvp_scope`
-- **type**: `string`
-- **example**: "User registration, login, password reset, and basic profile management. No social login or advanced security features in MVP."
-- **required**: true
-- **description**: Clear definition of what is and isn't included in the MVP phase
+3. **question**: What is the MVP scope in 2-3 sentences?
+   - **field**: `mvp_scope`
+   - **type**: `string`
+   - **example**: "User registration, login, password reset, and basic profile management. No social login or advanced security features in MVP."
+   - **required**: true
+   - **description**: Clear definition of what is and isn't included in the MVP phase
 
-- **question**: What are the primary constraints for this MVP?
-- **field**: `mvp_constraints`
-- **type**: `string`
-- **example**: "Must be deployable to standard cloud hosting, complete within 2 weeks, use existing tech stack"
-- **required**: false
-- **description**: Time, budget, technical, or business constraints that limit MVP scope
+4. **question**: What are the primary constraints for this MVP?
+   - **field**: `mvp_constraints`
+   - **type**: `string`
+   - **example**: "Must be deployable to standard cloud hosting, complete within 2 weeks, use existing tech stack"
+   - **required**: false
+   - **description**: Time, budget, technical, or business constraints that limit MVP scope
 
 ### Technical Foundation
-- **question**: What is your preferred technology stack?
-- **field**: `tech_stack`
-- **type**: `string`
-- **example**: "Node.js + Express + PostgreSQL + React"
-- **required**: false
-- **default**: "Node.js + Express + SQLite + HTML/CSS/JS"
-- **description**: Technology choices for backend, frontend, and data storage
+5. **question**: What is your preferred technology stack?
+   - **field**: `tech_stack`
+   - **type**: `string`
+   - **example**: "Node.js + Express + PostgreSQL + React"
+   - **required**: false
+   - **default**: "Node.js + Express + SQLite + HTML/CSS/JS"
+   - **description**: Technology choices for backend, frontend, and data storage
 
-- **question**: Do you need external services or integrations?
-- **field**: `external_services`
-- **type**: `boolean`
-- **example**: false
-- **required**: false
-- **default**: false
-- **description**: Whether the MVP requires third-party APIs, authentication providers, or external services
+6. **question**: Do you need external services or integrations?
+   - **field**: `external_services`
+   - **type**: `boolean`
+   - **example**: false
+   - **required**: false
+   - **default**: false
+   - **description**: Whether the MVP requires third-party APIs, authentication providers, or external services
 
-- **question**: What is your deployment target?
-- **field**: `deployment_target`
-- **type**: `enum`
-- **example**: "local"
-- **required**: false
-- **default**: "local"
-- **description**: Where the MVP will be deployed (local, cloud, container, etc.)
+7. **question**: What is your deployment target?
+   - **field**: `deployment_target`
+   - **type**: `enum`
+   - **example**: "local"
+   - **required**: false
+   - **default**: "local"
+   - **description**: Where the MVP will be deployed (local, cloud, container, etc.)
 
 ### Success Criteria
-- **question**: What defines MVP success? (list 2-3 key criteria)
-- **field**: `success_criteria`
-- **type**: `string`
-- **example**: "Users can register and login successfully, basic profile management works, system handles 100 concurrent users"
-- **required**: true
-- **description**: Measurable outcomes that indicate the MVP is complete and functional
+8. **question**: What defines MVP success? (list 2-3 key criteria)
+   - **field**: `success_criteria`
+   - **type**: `string`
+   - **example**: "Users can register and login successfully, basic profile management works, system handles 100 concurrent users"
+   - **required**: true
+   - **description**: Measurable outcomes that indicate the MVP is complete and functional
 
-- **question**: What is your timeline for MVP completion?
-- **field**: `mvp_timeline`
-- **type**: `string`
-- **example**: "2 weeks"
-- **required**: false
-- **default**: "4 weeks"
-- **description**: Expected timeframe to complete the MVP phase
+9. **question**: What is your timeline for MVP completion?
+   - **field**: `mvp_timeline`
+   - **type**: `string`
+   - **example**: "2 weeks"
+   - **required**: false
+   - **default**: "4 weeks"
+   - **description**: Expected timeframe to complete the MVP phase
 
 ## Auto-Generated Documentation Sections
 
@@ -191,25 +191,4 @@ Enable secure user authentication for web applications
 
 ### Next Steps After Initialization
 1. **Generate PRD**: Use collected data to create `/prd/prd-[project-name].md` (converted to kebab-case)
-2. **Create Tasks**: Generate `/tasks/tasks-[project-name].md` using `gen-tasks-and-testing.md` with TDD-Lite approach
-3. **Begin Development**: Follow TDD-Lite workflow (failing test → implementation → refactor)
-4. **Update Manifest**: Keep `/artifacts/manifest.json` current with progress
-
-### TDD-Lite Enforcement
-- Write failing smoke tests before implementation
-- Keep code minimal to pass tests
-- Refactor after tests pass
-- Validate test outputs against `dev-utils/test/schema.json`
-
-### Human-in-the-Loop Gates
-- Review and approve PRD assumptions and success criteria
-- Approve task breakdown and acceptance criteria
-- Review destructive or irreversible actions
-- Approve scope changes
-
-## Notes
-- This template consolidates MVP core protocol requirements
-- All documentation is kept lean (≤ 1 page each) for MVP phase
-- External services and containers are opt-in only
-- TDD-Lite methodology is mandatory for MVP development
-- Conventional commits should reference generated PRD and task documents
+2. **Create Tasks**: Generate `/tasks/tasks-[project-name].md`
