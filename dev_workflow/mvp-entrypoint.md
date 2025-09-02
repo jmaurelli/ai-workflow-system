@@ -190,5 +190,32 @@ Enable secure user authentication for web applications
 ## Workflow Integration
 
 ### Next Steps After Initialization
-1. **Generate PRD**: Use collected data to create `/prd/prd-[project-name].md` (converted to kebab-case)
-2. **Create Tasks**: Generate `/tasks/tasks-[project-name].md`
+Developer: ### Next Steps After Initialization
+
+Begin with a concise checklist (3-7 bullets) of what you will do; keep items conceptual, not implementation-level.
+
+1. **Generate PRD:**
+   - Use the collected data to create `/prd/prd-[project-name].md` (convert `[project-name]` to kebab-case).
+   - **Human Gate:** Review and approve the project scope, constraints, and success criteria.
+
+2. **Create Tasks:**
+   - Use the generated PRD as input to create `/tasks/tasks-[project-name].md`, referencing `gen-tasks-and-testing.md` and following the TDD-Lite approach.
+   - **Human Gate:** Review and approve the task assumptions and success criteria.
+
+3. **Update Manifest:**
+   - Keep `/artifacts/manifest.json` up to date with ongoing progress.
+
+After each substantive action or file update, briefly validate that the intended results were achieved and determine the next step or self-correct if necessary. At major milestones (after PRD and after tasks creation), provide a one to three sentence update summarizing progress, next steps, and any blockers. Attempt a first pass autonomously, but stop and ask for clarification if critical information is missing or approval is explicitly required.
+
+### Human-in-the-Loop Gates
+- **Before PRD Generation**: Review and approve project scope, constraints, and success criteria
+- **Before Task Creation**: Review and approve PRD assumptions and success criteria
+- **Before Development**: Approve task breakdown and acceptance criteria
+- **Scope Changes**: Approve any modifications to project scope or requirements
+
+## Notes
+- This template consolidates MVP core protocol requirements
+- All documentation is kept lean (≤ 1 page each) for MVP phase
+- External services and containers are opt-in only
+- TDD-Lite methodology is mandatory for MVP development
+- Conventional commits should reference generated PRD and task documents
