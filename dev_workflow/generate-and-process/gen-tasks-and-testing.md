@@ -3,16 +3,6 @@ Developer: # Workflow: Tasks + Testing (MVP-First)
 ## Objective
 Transform a Lean PRD into actionable tasks with integrated testing guidance. This process combines task generation and lightweight TDD into a streamlined approach suitable for solo MVP development.
 
----
-
-## Quickstart
-- Locate the PRD at `/prd/prd-[feature-name].md` (slug: lowercase, kebab-case).
-- Create `/tasks/` if missing.
-- Generate 3–5 parent tasks, each with test-related subtasks and acceptance criteria.
-- Produce smoke test stubs alongside code; list both implementation and test paths.
-- Save as `/tasks/tasks-[feature-name].md`. Keep to one page for MVP.
-
----
 
 ## Workflow Steps
 
