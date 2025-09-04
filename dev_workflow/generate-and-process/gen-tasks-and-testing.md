@@ -11,6 +11,8 @@ Begin with a concise checklist (3-7 bullets) of intended sub-tasks before procee
 ### 1. Input
 - Begin with a Lean PRD saved at `/prd/prd-[feature-name].md`.
 - If present, read Lean SRS at `/srs/srs-[feature-name].md` and incorporate NFR budgets into acceptance criteria (reference `NFR-*`).
+- **NFR Integration**: Use NFR budgets to define performance, reliability, and security acceptance criteria for tasks.
+- **Constraint Awareness**: Incorporate SRS constraints into task dependencies and risk mitigation.
 - Ensure the PRD contains: overview, goals, user stories, and requirements.
 - If any elements are missing, clearly state what is absent at the top of the output, and skip steps that cannot be performed as a result.
 - Read `/docs/architecture.md` if present; otherwise, capture minimal architecture decisions inline and note any deltas or open items.
@@ -184,12 +186,14 @@ Update agent memory with the following minimal context:
   "stage": "tasks",
   "feature_slug": "[feature-name]",
   "prd_path": "/prd/prd-[feature-name].md",
-  "tasks_path": "/tasks/tasks-[feature-name].md",
+  "srs_path": "/srs/srs-[feature-name].md",
   "parent_tasks": ["..."],
   "acceptance_criteria_by_task": {"1.0": ["..."], "2.0": ["..."]},
   "relevant_files_by_task": {"1.0": ["src/..."], "2.0": ["src/..."]},
   "test_stub_paths": ["src/.../__tests__/...test.ts"],
-  "traceability_map": {"REQ-1": ["1.0"], "REQ-2": ["2.0"]}
+  "traceability_map": {"REQ-1": ["1.0"], "REQ-2": ["2.0"]},
+  "nfr_traceability": {"NFR-1": ["1.0", "3.4"], "NFR-2": ["2.0"]},
+  "nfr_budgets": {"latency_p50_ms": 300, "latency_p95_ms": 800, "error_rate": 0.01}
 }
 ```
 
