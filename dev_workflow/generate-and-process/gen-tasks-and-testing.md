@@ -107,7 +107,7 @@ Output should be a single Markdown document saved as `/tasks/tasks-[prd-name].md
 - path/to/file2.ext – description
 
 ## Notes
-- [Freeform notes, including process deviations: e.g., “Only 2 parent tasks inferred due to limited PRD input.” “User stories section missing from PRD; requirements inferred from goals.”]
+- [Freeform notes, including process deviations: e.g., "Only 2 parent tasks inferred due to limited PRD input." "User stories section missing from PRD; requirements inferred from goals."]
 
 ## Tasks
 - [ ] 1.0 [Parent Task 1]
@@ -120,9 +120,42 @@ Output should be a single Markdown document saved as `/tasks/tasks-[prd-name].md
 ### Acceptance Criteria
 - [Criteria for Parent Task 1] (reference PRD requirement IDs)
 - [Criteria for Parent Task 2]
+
+## Task Dependencies
+
+### Critical Path
+1. **Task X.Y** → **Task X.Z** → **Task A.B** (describe dependency chain)
+2. **Task X.Y** → **Task A.B** (cross-task dependencies)
+
+### Parallel Tasks
+- **Week X**: Tasks that can run simultaneously
+- **Week Y**: Additional parallel execution opportunities
+
+## Risk Mitigation
+
+### High-Risk Tasks
+- **Task X.Y** (Description): Risk factors and mitigation approach
+- **Task A.B** (Description): Risk factors and mitigation approach
+
+### Contingency Plans
+- **Risk scenario**: Specific fallback approach
+- **Risk scenario**: Alternative implementation strategy
+
+## Success Criteria
+
+### MVP Completion
+- [ ] [Specific measurable outcome]
+- [ ] [Performance requirement]
+- [ ] [User experience requirement]
+- [ ] [Technical requirement]
+
+### Quality Gates
+- **Week X**: ✅ [Milestone description]
+- **Week Y**: ✅ [Milestone description]
+- **Week Z**: ✅ [Milestone description]
 ```
 
-- All sections must appear in this order: Changelog, Relevant Files, Notes (optional if not needed), Tasks.
+- All sections must appear in this order: Changelog, Relevant Files, Notes (optional if not needed), Tasks, Task Dependencies, Risk Mitigation, Success Criteria.
 - Every parent task must include at least one test-related sub-task.
 - Tasks and sub-tasks must use `- [ ]` Markdown checklists.
 - The **Relevant Files** section must always list both implementation and test/validation files for each task.
@@ -136,6 +169,9 @@ Output should be a single Markdown document saved as `/tasks/tasks-[prd-name].md
 - Confirm: Relevant Files include both implementation and test stubs following conventions.
 - Confirm: traceability—acceptance criteria reference PRD `REQ-*` IDs.
 - Confirm: TDD-Lite sequence per parent task (failing smoke test → minimal implementation → refactor) was followed.
+- Confirm: Task Dependencies identify critical path and parallel execution opportunities.
+- Confirm: Risk Mitigation addresses high-risk tasks with contingency plans.
+- Confirm: Success Criteria include measurable outcomes and quality gates.
 - Approve proceeding to task processing.
 
 ---

@@ -26,6 +26,11 @@ This document integrates **Task List Management**, **Test-Driven Development (TD
 ### Rules
 
 - Only work on one sub-task at any given time.
+- **Dependency-Aware Execution:**
+  - Before starting a sub-task, validate all prerequisite tasks are complete.
+  - Reference the **Task Dependencies** section from the tasks file.
+  - If dependencies are incomplete, skip to the next available sub-task.
+  - Log dependency blocks in the changelog for visibility.
 - **Completion Protocol:**
   1. Mark a completed sub-task as `[x]`.
   2. Identify changed files using `git diff --name-only` (base: default branch).
@@ -35,7 +40,37 @@ This document integrates **Task List Management**, **Test-Driven Development (TD
      - Example: `feat(auth): add login API (refs prd-user-signup)`
   6. Mark a parent task as `[x]` only after all its child sub-tasks are complete.
   7. Update `/tasks/tasks-[prd-file-name].md` changelog with date and summary.
+  8. **Check for newly unblocked tasks** based on completed dependencies.
 - Ensure the list of **Relevant Files** is continuously up to date.
+
+### Risk-Aware Execution
+- **High-Risk Task Handling:**
+  - Before executing high-risk tasks (identified in **Risk Mitigation**), implement additional validation steps.
+  - Run extended test suites for high-risk areas.
+  - Create backup/rollback points before proceeding.
+- **Contingency Plan Activation:**
+  - If a task fails and contingency plans exist, automatically switch to the fallback approach.
+  - Log contingency plan activation in the changelog.
+  - Update task status to reflect contingency execution.
+
+### Success Criteria Validation
+- **Quality Gate Checks:**
+  - After completing each week's milestone, validate against the **Quality Gates** section.
+  - Ensure all criteria for the completed week are met before proceeding.
+  - If quality gates are not met, implement corrective actions before continuing.
+- **MVP Completion Validation:**
+  - Before marking the project complete, validate all **MVP Completion** criteria.
+  - Run comprehensive test suites to ensure all measurable outcomes are achieved.
+  - Document any deviations from success criteria in the changelog.
+
+### Enhanced Changelog Updates
+- **Dependency Tracking:**
+  - Log when tasks are blocked by incomplete dependencies.
+  - Record when previously blocked tasks become unblocked.
+- **Risk Management:**
+  - Document high-risk task execution attempts.
+  - Log contingency plan activations.
+  - Record quality gate validations and outcomes.
 
 ### Default Branch Detection
 - Determine the repository's default branch dynamically:
@@ -206,9 +241,12 @@ for f in glob.glob("test/*.json"):\
 ## Definition of Done (Shared)
 - PRD present at `/prd/prd-[feature-name].md` and validated (sections/order/size).
 - Tasks present at `/tasks/tasks-[feature-name].md` with acceptance criteria and test subtasks.
+- **Task Dependencies** validated and critical path completed.
+- **Risk Mitigation** plans executed or contingency plans activated as needed.
+- **Success Criteria** validated against quality gates and MVP completion checklist.
 - Tests executed non-interactively; JSON results in `test/` conform to schema.
 - On full green, JSON artifacts removed; otherwise retained until fixed.
- - TDD-Lite satisfied for each parent task/change: failing smoke test preceded implementation; minimal code then refactor were performed.
+- TDD-Lite satisfied for each parent task/change: failing smoke test preceded implementation; minimal code then refactor were performed.
 
 ---
 
@@ -231,7 +269,10 @@ Update agent memory with the following minimal context:
   "changed_files": ["src/..."],
   "targeted_tests": ["src/.../__tests__/...test.ts"],
   "json_result_paths": ["test/<test_name>.json"],
-  "status_summary": "passed|failed|partial"
+  "status_summary": "passed|failed|partial",
+  "dependency_status": "blocked|unblocked|complete",
+  "risk_status": "normal|high_risk|contingency_active",
+  "quality_gate_status": "week1_complete|week2_complete|week3_complete|week4_complete"
 }
 ```
 
@@ -257,5 +298,3 @@ Provide this block to the next session:
 
 ---
 
-## Start Here
-For day-one and daily loops, see `dev-utils/dev_workflow/project-entrypoint.md`.
