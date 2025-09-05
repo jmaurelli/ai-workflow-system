@@ -6,19 +6,19 @@ Capture only the minimum non-functional requirements (NFRs), constraints, and bu
 ---
 
 ## Quickstart (Lean SRS)
-- Ensure the `/srs/` directory exists; create it if missing.
-- Use the same `feature_slug` (lowercase, kebab-case) as the PRD.
-- Capture at most 8–10 NFRs with measurable budgets; avoid duplication of PRD content.
-- Save as `/srs/srs-[feature_slug].md`.
+- Read existing PRD at `/prd/prd-[feature_slug].md`
+- Capture 8–10 critical NFRs with measurable budgets
+- Focus on performance, reliability, security, and constraints
+- Save as `/srs/srs-[feature_slug].md`
 
 ---
 
 ## Workflow (Lean-First)
-1. Read the PRD at `/prd/prd-[feature_slug].md`.
-2. List critical constraints and NFRs that affect design/implementation and testing.
-3. Define measurable budgets (e.g., p50/p95 latency, error rates, uptime).
-4. Keep to ≤ 1 page; prioritize only what must be enforced during MVP.
-5. Save to `/srs/srs-[feature_slug].md` and validate section order.
+1. **Read PRD**: Review `/prd/prd-[feature_slug].md` to understand functional requirements.
+2. **Identify NFRs**: List critical constraints and NFRs that affect design/implementation and testing.
+3. **Define Budgets**: Set measurable budgets (e.g., p50/p95 latency, error rates, uptime).
+4. **Prioritize**: Keep to ≤ 1 page; prioritize only what must be enforced during MVP.
+5. **Save & Validate**: Save to `/srs/srs-[feature_slug].md` and validate section order.
 
 ---
 
@@ -111,6 +111,4 @@ Pause only for destructive/irreversible actions or scope changes; otherwise proc
 
 ---
 
-## Start Here
-For day-one and daily loops, follow `dev-utils/dev_workflow/mvp-core-protocol.md` (single source). See `project-entrypoint.md` for step order.
 

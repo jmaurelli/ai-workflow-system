@@ -11,8 +11,9 @@ Begin with a concise checklist (3-7 bullets) of intended sub-tasks before procee
 ### 1. Input
 - Begin with a Lean PRD saved at `/prd/prd-[feature-name].md`.
 - If present, read Lean SRS at `/srs/srs-[feature-name].md` and incorporate NFR budgets into acceptance criteria (reference `NFR-*`).
-- **NFR Integration**: Use NFR budgets to define performance, reliability, and security acceptance criteria for tasks.
-- **Constraint Awareness**: Incorporate SRS constraints into task dependencies and risk mitigation.
+- **Design Analysis**: If design analysis exists at `/design/design-[feature-name].md`, incorporate component reuse and integration guidance.
+- **Integration Planning**: Use design analysis integration approach to plan task dependencies.
+- **Component Reuse**: Reference design analysis for existing components to reuse vs. creating new ones.
 - Ensure the PRD contains: overview, goals, user stories, and requirements.
 - If any elements are missing, clearly state what is absent at the top of the output, and skip steps that cannot be performed as a result.
 - Read `/docs/architecture.md` if present; otherwise, capture minimal architecture decisions inline and note any deltas or open items.

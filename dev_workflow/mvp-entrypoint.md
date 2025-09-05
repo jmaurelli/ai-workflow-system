@@ -198,8 +198,13 @@ Begin with a concise checklist (3-7 bullets) of what you will do; keep items con
    - Use the collected data to create `/prd/prd-[project-name].md` (convert `[project-name]` to kebab-case).
    - **Human Gate:** Review and approve the project scope, constraints, and success criteria.
 
-2. **Create Tasks:**
-   - Use the generated PRD as input to create `/tasks/tasks-[project-name].md`, referencing `gen-tasks-and-testing.md` and following the TDD-Lite approach.
+2. **Design Analysis:**
+   - Run `gen-design.md` to analyze existing codebase for component reuse and integration opportunities.
+   - Generate `/design/design-[project-name].md` with implementation guidance.
+   - **Optional:** Run `gen-design-recovery.md` if inconsistencies are detected.
+
+3. **Create Tasks:**
+   - Use the generated PRD and design analysis as input to create `/tasks/tasks-[project-name].md`, referencing `gen-tasks-and-testing.md` and following the TDD-Lite approach.
    - **Human Gate:** Review and approve the task assumptions and success criteria.
 
 3. **Update Manifest:**
