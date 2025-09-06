@@ -311,11 +311,32 @@ execute_step() {
         return 1
     fi
     
-    # For now, just log the execution
-    # TODO: Implement actual document execution logic
-    log_success "Step $step completed: $doc_name"
+    # Execute workflow document using workflow executor
+    log_info "🤖 Executing workflow document: $doc_name"
     
-    return 0
+    # Prepare feature directory
+    local feature_slug=$(echo "$FEATURE_NAME" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | tr '_' '-')
+    local date_prefix=$(date +"%Y-%m-%d")
+    local feature_dir="${PWD}/features/${date_prefix}-${feature_slug}"
+    
+    # Create feature directory if it doesn't exist
+    mkdir -p "$feature_dir"
+    
+    # Execute using workflow executor
+    if python3 "${SCRIPT_DIR}/workflow-executor.py" "$doc_path" \
+        --feature="$FEATURE_NAME" \
+        --feature-dir="$feature_dir" \
+        --mode="$MODE" \
+        --step="$step" \
+        --phase="$phase"; then
+        
+        log_success "✅ Step $step completed: $doc_name"
+        log_success "📁 Output saved to: $feature_dir"
+        return 0
+    else
+        log_error "❌ Step $step failed: $doc_name"
+        return 1
+    fi
 }
 
 # Show execution plan

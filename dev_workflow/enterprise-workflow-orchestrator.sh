@@ -356,11 +356,61 @@ execute_enterprise_step() {
         return 1
     fi
     
-    # For now, just log the execution
-    # TODO: Implement actual enterprise document execution logic
-    log_success "Enterprise Step $step completed: $doc_name"
+    # Execute enterprise workflow document using workflow executor
+    log_info "🏢 Executing enterprise workflow document: $doc_name"
     
-    return 0
+    # Prepare enterprise feature directory
+    local feature_slug=$(echo "$FEATURE_NAME" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | tr '_' '-')
+    local date_prefix=$(date +"%Y-%m-%d")
+    local enterprise_feature_dir="${PWD}/enterprise-features/${date_prefix}-${feature_slug}"
+    
+    # Create enterprise feature directory if it doesn't exist
+    mkdir -p "$enterprise_feature_dir"
+    mkdir -p "$enterprise_feature_dir/artifacts/architecture-diagrams"
+    mkdir -p "$enterprise_feature_dir/artifacts/api-contracts"
+    mkdir -p "$enterprise_feature_dir/artifacts/design-system"
+    mkdir -p "$enterprise_feature_dir/artifacts/performance-reports"
+    mkdir -p "$enterprise_feature_dir/artifacts/security-audits"
+    mkdir -p "$enterprise_feature_dir/artifacts/integration-tests"
+    mkdir -p "$enterprise_feature_dir/artifacts/deployment-configs"
+    mkdir -p "$enterprise_feature_dir/artifacts/monitoring-dashboards"
+    
+    # Execute using workflow executor with enterprise context
+    local executor_args=(
+        "${SCRIPT_DIR}/workflow-executor.py" "$doc_path"
+        --feature="$FEATURE_NAME"
+        --feature-dir="$enterprise_feature_dir"
+        --mode="$MODE"
+        --step="$step"
+        --phase="$phase"
+    )
+    
+    # Add compliance framework if specified
+    if [[ -n "$COMPLIANCE_FRAMEWORK" ]]; then
+        # Create compliance context file
+        local compliance_data="${enterprise_feature_dir}/compliance-context.json"
+        cat > "$compliance_data" << EOF
+{
+  "compliance_framework": "$COMPLIANCE_FRAMEWORK",
+  "enterprise_mode": true,
+  "multi_team_coordination": true,
+  "governance_level": "enterprise"
+}
+EOF
+        executor_args+=(--project-data="$compliance_data")
+    fi
+    
+    if python3 "${executor_args[@]}"; then
+        log_success "✅ Enterprise Step $step completed: $doc_name"
+        log_success "📁 Enterprise output saved to: $enterprise_feature_dir"
+        if [[ -n "$COMPLIANCE_FRAMEWORK" ]]; then
+            log_compliance "📋 Compliance framework applied: $COMPLIANCE_FRAMEWORK"
+        fi
+        return 0
+    else
+        log_error "❌ Enterprise Step $step failed: $doc_name"
+        return 1
+    fi
 }
 
 # Show enterprise execution plan

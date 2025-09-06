@@ -313,17 +313,55 @@ class WorkflowOrchestrator:
     
     def _execute_document_workflow(self, step: WorkflowStep, context: ExecutionContext) -> bool:
         """Execute the actual document workflow step"""
-        # TODO: Implement actual document execution
-        # For now, just simulate successful execution
-        
         print(f"  📄 Executing: {step.doc_name}")
         
-        # Simulate processing time
-        import time
-        time.sleep(1)
+        # Prepare feature directory
+        feature_slug = context.feature_name.lower().replace(' ', '-').replace('_', '-')
+        date_prefix = datetime.now().strftime('%Y-%m-%d')
+        feature_dir = context.project_root / "features" / f"{date_prefix}-{feature_slug}"
+        feature_dir.mkdir(parents=True, exist_ok=True)
         
-        print(f"  ✅ Completed: {step.doc_name}")
-        return True
+        # Prepare document path
+        workflow_dir = Path(__file__).parent / "lean-workflow"
+        doc_path = workflow_dir / step.doc_name
+        
+        if not doc_path.exists():
+            self.logger.error(f"Workflow document not found: {doc_path}")
+            return False
+        
+        # Execute using workflow executor
+        try:
+            import subprocess
+            
+            cmd = [
+                "python3", 
+                str(Path(__file__).parent / "workflow-executor.py"),
+                str(doc_path),
+                "--feature", context.feature_name,
+                "--feature-dir", str(feature_dir),
+                "--mode", context.mode.value,
+                "--step", step.number,
+                "--phase", step.phase
+            ]
+            
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+            
+            if result.returncode == 0:
+                print(f"  ✅ Completed: {step.doc_name}")
+                print(f"  📁 Output saved to: {feature_dir}")
+                self.logger.info(f"Workflow step {step.number} completed successfully")
+                return True
+            else:
+                print(f"  ❌ Failed: {step.doc_name}")
+                self.logger.error(f"Workflow step {step.number} failed: {result.stderr}")
+                return False
+                
+        except subprocess.TimeoutExpired:
+            self.logger.error(f"Workflow step {step.number} timed out")
+            return False
+        except Exception as e:
+            self.logger.error(f"Error executing workflow step {step.number}: {e}")
+            return False
 
 def main():
     """Main entry point"""
