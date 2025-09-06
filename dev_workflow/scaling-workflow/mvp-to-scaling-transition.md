@@ -30,30 +30,40 @@ Provide clear guidance for transitioning from MVP workflow to scaling workflow w
    - Identify design debt and inconsistencies
    - Create component inventory
 
-2. **Artifact Upgrade Planning**
-   - Map MVP artifacts to scaling equivalents
+2. **Enterprise Design Decisions (Learning-Guided)**
+   - Run `gen-design-decisions-scaling.md` to make informed enterprise-level decisions
+   - **System Architecture**: Choose microservices strategy, database scaling, distributed system patterns
+   - **Design System Strategy**: Plan enterprise component library, design token architecture, governance model
+   - **Technology Evolution**: Plan migration paths from MVP stack to enterprise technologies
+   - **UX Architecture**: Design complex user experiences, personalization, and accessibility strategies
+   - **API Strategy**: Plan enterprise API architecture, integration patterns, security approach
+   - Generate `/decisions/design-decisions-scaling-[project-name].md` with comprehensive rationale
+   - **Human Gate**: Review and approve enterprise architecture and design system strategy
+
+3. **Artifact Upgrade Planning**
+   - Map MVP artifacts to scaling equivalents based on design decisions
    - Plan document enhancement timeline
    - Identify missing documentation gaps
    - Assess testing coverage and quality
 
-3. **Risk Assessment**
-   - Evaluate breaking changes needed
-   - Plan migration strategies for existing code
+4. **Risk Assessment**
+   - Evaluate breaking changes needed for chosen architecture
+   - Plan migration strategies for existing code to new tech stack
    - Identify user impact and mitigation
    - Create rollback procedures
 
-### Phase 2: Foundation Enhancement
+### Phase 2: Foundation Enhancement (Design-Decision Driven)
 1. **Design System Creation**
-   - Run `gen-design-system-scaling.md`
-   - Establish component library
-   - Create design tokens and standards
-   - Document pattern guidelines
+   - Run `gen-design-system-scaling.md` using chosen design system strategy
+   - Establish component library based on design decisions
+   - Create design tokens and standards matching chosen architecture
+   - Document pattern guidelines following enterprise design decisions
 
 2. **Architecture Documentation**
-   - Upgrade lean architecture to full architecture docs
-   - Document scaling considerations
-   - Plan performance and monitoring
-   - Create deployment strategies
+   - Upgrade lean architecture to full architecture docs using chosen system architecture
+   - Document scaling considerations based on enterprise decisions
+   - Plan performance and monitoring for chosen technology stack
+   - Create deployment strategies matching chosen API and integration patterns
 
 3. **Testing Enhancement**
    - Upgrade smoke tests to full test suites
@@ -152,9 +162,13 @@ Set reasoning_effort = high; comprehensive analysis for scaling decisions
 ## Human Review Gate (Required)
 - Confirm: transition criteria met and documented
 - Confirm: component inventory complete and design debt assessed
+- Confirm: enterprise design decisions comprehensive and well-reasoned
+- Confirm: system architecture choices align with business goals and team capabilities
+- Confirm: design system strategy supports organizational scale and team structure
+- Confirm: technology evolution path realistic given current capabilities and timeline
 - Confirm: artifact upgrade plan reviewed and timeline approved
-- Confirm: team capacity and training plan for scaling workflow
-- Confirm: risk mitigation strategies and rollback procedures
+- Confirm: team capacity and training plan for scaling workflow and chosen technologies
+- Confirm: risk mitigation strategies and rollback procedures for architectural changes
 - Approve proceeding with scaling workflow implementation
 
 ---

@@ -7,11 +7,17 @@ Prioritize traceability and maintainability.
 ---
 
 ## Workflow
-1. Read Full PRD.  
-2. Generate **comprehensive parent tasks**.  
-3. Break into detailed sub-tasks (<½ day each).  
-4. Attach TDD steps to each coding task.  
-5. Save to `/tasks/`.  
+1. **Read Enterprise Design Decisions**: Reference `/decisions/design-decisions-scaling-[project-name].md` for:
+   - **System Architecture**: Apply microservices, distributed system, and scaling patterns
+   - **Technology Stack**: Use enterprise technology choices for task generation
+   - **Design System**: Follow component library and design token strategies
+   - **UX Architecture**: Implement complex user experience patterns
+   - **API Strategy**: Apply enterprise integration and security patterns
+2. Read Full PRD.  
+3. Generate **comprehensive parent tasks** aligned with enterprise architecture.  
+4. Break into detailed sub-tasks (<½ day each) using chosen technologies.  
+5. Attach TDD steps to each coding task with enterprise testing standards.  
+6. Save to `/tasks/`.  
 
 ---
 

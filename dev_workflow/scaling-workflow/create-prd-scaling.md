@@ -7,10 +7,16 @@ Even for solo dev, this ensures documentation survives time gaps and supports fu
 ---
 
 ## Workflow
-1. Capture idea with business and technical context.  
-2. Ask thorough clarifying questions (who, what, why, how).  
-3. Fill out the **Full PRD template**.  
-4. Save to `/prd/` with versioning.  
+1. **Read Enterprise Design Decisions**: Reference `/decisions/design-decisions-scaling-[project-name].md` for:
+   - **System Architecture Choices**: Apply enterprise architecture decisions to feature design
+   - **Design System Strategy**: Use established component library and design patterns
+   - **Technology Stack**: Ensure feature aligns with chosen enterprise technologies
+   - **UX Architecture**: Follow established complex user experience patterns
+   - **API Strategy**: Design feature APIs consistent with enterprise integration approach
+2. Capture idea with business and technical context.  
+3. Ask thorough clarifying questions (who, what, why, how).  
+4. Fill out the **Full PRD template** incorporating design decisions.  
+5. Save to `/prd/` with versioning.  
 
 ---
 
