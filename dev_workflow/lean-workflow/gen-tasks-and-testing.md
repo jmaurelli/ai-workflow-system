@@ -10,6 +10,11 @@ Begin with a concise checklist (3-7 bullets) of intended sub-tasks before procee
 
 ### 1. Input
 - Begin with a Lean PRD saved at `/prd/prd-[feature-name].md`.
+- **Design Decisions (Required)**: Read design decisions from `/decisions/design-decisions-[feature-name].md` to understand:
+  - **Tech Stack Choices**: Backend/frontend technologies, database, API style
+  - **UX Approach**: Component library strategy, design patterns, user flow decisions
+  - **Learning Context**: Knowledge confidence levels and learning goals
+  - **Decision Rationale**: Why specific technologies and approaches were chosen
 - If present, read Lean SRS at `/srs/srs-[feature-name].md` and incorporate NFR budgets into acceptance criteria (reference `NFR-*`).
 - **Design Analysis**: If design analysis exists at `/design/design-[feature-name].md`, incorporate component reuse and integration guidance.
 - **Integration Planning**: Use design analysis integration approach to plan task dependencies.
@@ -23,8 +28,11 @@ Begin with a concise checklist (3-7 bullets) of intended sub-tasks before procee
 - If fewer than 3 or more than 5 parent tasks are available, proceed with what is supported, and clearly document this under **Notes** in the output.
 - Parent tasks should be clear and high-level, for example: “Implement login API.”
 
-### 3. Expand into Sub-Tasks
+### 3. Expand into Sub-Tasks (Design-Decision Aware)
 - For each parent task, break it down into smaller sub-tasks (ideally actions that take less than one day) using Markdown checklists (`- [ ]`).
+- **Apply Design Decisions**: Tailor sub-tasks to chosen tech stack (e.g., React components vs Vue components, Python FastAPI vs Node.js Express).
+- **Incorporate Learning Goals**: Include sub-tasks that support skill development identified in design decisions.
+- **Honor UX Decisions**: Structure frontend tasks according to chosen component library strategy and design patterns.
 - Ensure that each parent task includes at least one sub-task related to testing.
 - The first sub-task under each parent MUST be: "Write failing smoke test (targeting acceptance criteria)".
 - Add explicit acceptance criteria for each parent task, tied to PRD requirements.
@@ -37,12 +45,16 @@ Begin with a concise checklist (3-7 bullets) of intended sub-tasks before procee
   - [ ] Add error handling for bad input
   - [ ] Validate acceptance criteria (Req 2.1, 2.2)
 
-### 4. Relevant Files
+### 4. Relevant Files (Tech-Stack Aware)
 - List the files associated with each parent task in a dedicated **Relevant Files** section as a Markdown list.
+- **Apply Tech Stack Decisions**: Use file extensions and paths matching chosen technologies:
+  - **Backend**: `.py` for Python, `.js/.ts` for Node.js, `.go` for Go
+  - **Frontend**: `.jsx/.tsx` for React, `.vue` for Vue.js, `.js/.ts` for vanilla
+  - **Database**: `.sql` for relational, `.json` for document stores
 - Always specify both implementation and related test files.
 - Use a standard layout when applicable:
-  - Implementation: `src/[area]/[name].ts`
-  - Tests: `src/[area]/__tests__/[name].test.ts`
+  - Implementation: `src/[area]/[name].[extension]`
+  - Tests: `src/[area]/__tests__/[name].test.[extension]`
 - Generate at least one test stub file per parent task (empty is acceptable) and include it.
 
 ### 5. Changelog
@@ -78,6 +90,11 @@ Begin with a concise checklist (3-7 bullets) of intended sub-tasks before procee
 ---
 
 ## AI Agent Instructions
+- **Always read design decisions first** from `/decisions/design-decisions-[feature-name].md`
+- **Apply tech stack choices** to all task generation (file extensions, frameworks, patterns)
+- **Honor UX decisions** when structuring frontend tasks and component organization
+- **Consider learning context** - include tasks that support identified learning goals
+- **Reference decision rationale** when explaining why specific approaches are chosen
 - Always generate both the task list and test stubs together.
 - For MVP, restrict tests to smoke tests only.
 - Save task files in `/tasks/tasks-[feature-name].md`, using the lowercase, kebab-case slug.
@@ -168,6 +185,10 @@ Output should be a single Markdown document saved as `/tasks/tasks-[prd-name].md
 ---
 
 ## Human Review Gate (Required)
+- Confirm: design decisions from `/decisions/design-decisions-[feature-name].md` have been applied to task generation
+- Confirm: tech stack choices reflected in file extensions, frameworks, and implementation approaches
+- Confirm: UX decisions integrated into frontend task structure and component organization
+- Confirm: learning goals from design decisions supported through task breakdown
 - Confirm: parent tasks (3–5), acceptance criteria per parent, and at least one test sub-task per parent.
 - Confirm: Relevant Files include both implementation and test stubs following conventions.
 - Confirm: traceability—acceptance criteria reference PRD `REQ-*` IDs.

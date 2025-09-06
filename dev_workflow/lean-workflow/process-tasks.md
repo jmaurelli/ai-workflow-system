@@ -85,15 +85,24 @@ This document integrates **Task List Management**, **Test-Driven Development (TD
 
 ### Phases
 
-1. **Pre-Implementation Planning**
+1. **Pre-Implementation Planning (Design-Decision Aware)**
+   - **Read Design Decisions**: Reference `/decisions/design-decisions-[project-name].md` for:
+     - **Tech stack choices**: Apply chosen technologies (Python vs Go, React vs Vue, etc.)
+     - **UX approach**: Follow chosen component library strategy and design patterns
+     - **Learning context**: Consider confidence levels and learning goals
+     - **Decision rationale**: Understand why specific technologies were chosen
    - Clearly define requirements and acceptance criteria.
-   - Propose at least two design approaches and select the lowest complexity option.
-   - Outline data flows, dependencies, and API contracts.
-2. **RED Phase: Author Failing Tests**
+   - **Propose approaches within chosen tech stack** and select the lowest complexity option.
+   - Outline data flows, dependencies, and API contracts **using chosen technologies**.
+2. **RED Phase: Author Failing Tests (Tech-Stack Specific)**
+   - **Use chosen testing frameworks**: Jest for Node.js, pytest for Python, testing/testify for Go, etc.
+   - **Apply UX testing decisions**: Component testing with chosen UI library patterns
    - Ensure coverage of all requirements (unit/integration/E2E tests).
    - Include edge cases and error-handling in test suites.
    - Use contract-based mocks exclusively.
-3. **GREEN Phase: Minimal Implementation**
+3. **GREEN Phase: Minimal Implementation (Learning-Guided)**
+   - **Implement using chosen technologies**: Follow tech stack decisions and patterns
+   - **Support learning goals**: Include comments and documentation for learning areas
    - Implement defensive and error-handling code first.
    - Write the minimal code to satisfy each test, addressing tests iteratively.
 4. **REFACTOR Phase: Code Quality Improvement**
@@ -240,10 +249,14 @@ for f in glob.glob("test/*.json"):\
 
 ## Definition of Done (Shared)
 - PRD present at `/prd/prd-[feature-name].md` and validated (sections/order/size).
+- **Design Decisions** present at `/decisions/design-decisions-[feature-name].md` and applied throughout implementation.
+- **Learning Progress** documented in `/decisions/learning-notes-[feature-name].md` with updated confidence levels.
 - Tasks present at `/tasks/tasks-[feature-name].md` with acceptance criteria and test subtasks.
 - **Task Dependencies** validated and critical path completed.
 - **Risk Mitigation** plans executed or contingency plans activated as needed.
 - **Success Criteria** validated against quality gates and MVP completion checklist.
+- **Tech Stack Compliance**: Implementation uses chosen technologies and follows design decisions.
+- **Learning Goals**: Implementation supports identified learning objectives with appropriate documentation.
 - Tests executed non-interactively; JSON results in `test/` conform to schema.
 - On full green, JSON artifacts removed; otherwise retained until fixed.
 - TDD-Lite satisfied for each parent task/change: failing smoke test preceded implementation; minimal code then refactor were performed.
