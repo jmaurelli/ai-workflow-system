@@ -4,6 +4,26 @@
 
 *🎉 Revolutionary Update: The orchestrators now ACTUALLY EXECUTE workflows and CREATE REAL FILES!*
 
+## **🤖 LATEST REVOLUTION: REAL LLM CONTENT GENERATION!**
+
+**🚀 ALL AUTOMATION MODES NOW SUPPORT REAL LLM API INTEGRATION!**
+
+Add `--llm-api` to any command below for **true end-to-end automation** with real content generation:
+
+```bash
+# 🚀 REVOLUTIONARY: Real PRD, SRS, tasks content generated automatically!
+./workflow-orchestrator.sh --mode=autonomous --feature=user-auth --llm-api
+./ai-workflow-runner.py --mode=autonomous --feature=dashboard --llm-api
+
+# Choose your LLM provider
+--llm-provider=openai      # GPT-3.5/GPT-4 (default)
+--llm-provider=anthropic   # Claude 3.5 Sonnet  
+--llm-provider=local_ollama # Free local models
+--llm-provider=groq        # Ultra-fast inference
+```
+
+**📖 Complete setup guide:** [llm-api-setup-guide.md](llm-api-setup-guide.md)
+
 ### **🚪 Option 1: GUIDED Mode (Maximum Oversight + Real Execution)**
 *Maximum human oversight with real file generation - stops at every major decision point*
 
@@ -12,13 +32,17 @@
 ./workflow-orchestrator.sh --mode=guided --feature=user-auth
 # ✅ CREATES: /features/2025-01-15-user-auth/ with real files!
 
+# 🚀 WITH LLM API: Generate REAL content automatically
+./workflow-orchestrator.sh --mode=guided --feature=user-auth --llm-api
+# ✅ CREATES: /features/2025-01-15-user-auth/ with REAL PRD, SRS, tasks content!
+
 # See execution plan before running
 ./ai-workflow-runner.py --mode=guided --feature=user-auth --dry-run
 # ✅ SHOWS: What will be created and where
 
-# ACTUALLY EXECUTE with AI agent coordination
-./ai-workflow-runner.py --mode=guided --feature=user-auth
-# ✅ RESULT: Complete feature directory with AI execution instructions!
+# ACTUALLY EXECUTE with AI agent coordination + LLM content generation
+./ai-workflow-runner.py --mode=guided --feature=user-auth --llm-api
+# ✅ RESULT: Complete feature directory with REAL content generated!
 ```
 
 **Best for**: First-time users, critical features, learning the workflow
@@ -28,6 +52,7 @@
 - Generates `feature-manifest.json` with execution tracking
 - Creates AI execution instructions for each workflow step (01-output.md → 09-output.md)
 - Provides AI agent guidance scripts (`ai-helper.sh`)
+- **🚀 WITH --llm-api: Generates REAL PRD, SRS, tasks content automatically!**
 
 ---
 

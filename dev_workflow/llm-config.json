@@ -1,0 +1,166 @@
+{
+  "default_provider": "openai",
+  "providers": {
+    "openai": {
+      "provider": "openai",
+      "model": "gpt-3.5-turbo",
+      "api_key": null,
+      "base_url": null,
+      "max_tokens": 4000,
+      "temperature": 0.7,
+      "timeout": 60,
+      "max_retries": 3,
+      "cost_limit_usd": 10.0
+    },
+    "openai_gpt4": {
+      "provider": "openai", 
+      "model": "gpt-4",
+      "api_key": null,
+      "base_url": null,
+      "max_tokens": 4000,
+      "temperature": 0.7,
+      "timeout": 120,
+      "max_retries": 3,
+      "cost_limit_usd": 20.0
+    },
+    "anthropic": {
+      "provider": "anthropic",
+      "model": "claude-3-5-sonnet-20241022",
+      "api_key": null,
+      "base_url": null,
+      "max_tokens": 4000,
+      "temperature": 0.7,
+      "timeout": 60,
+      "max_retries": 3,
+      "cost_limit_usd": 15.0
+    },
+    "anthropic_haiku": {
+      "provider": "anthropic",
+      "model": "claude-3-haiku-20240307",
+      "api_key": null,
+      "base_url": null,
+      "max_tokens": 4000,
+      "temperature": 0.7,
+      "timeout": 60,
+      "max_retries": 3,
+      "cost_limit_usd": 5.0
+    },
+    "local_ollama": {
+      "provider": "local_ollama",
+      "model": "llama3.1:8b",
+      "api_key": null,
+      "base_url": "http://localhost:11434",
+      "max_tokens": 4000,
+      "temperature": 0.7,
+      "timeout": 120,
+      "max_retries": 2,
+      "cost_limit_usd": 0.0
+    },
+    "groq": {
+      "provider": "groq",
+      "model": "llama2-70b-4096",
+      "api_key": null,
+      "base_url": "https://api.groq.com/openai/v1",
+      "max_tokens": 4000,
+      "temperature": 0.7,
+      "timeout": 60,
+      "max_retries": 3,
+      "cost_limit_usd": 2.0
+    }
+  },
+  "workflow_specific_configs": {
+    "mvp_entrypoint": {
+      "provider": "openai",
+      "model": "gpt-3.5-turbo",
+      "temperature": 0.5,
+      "max_tokens": 2000,
+      "system_prompt": "You are an expert product manager and software architect. Help collect and organize project requirements for MVP development. Be concise, practical, and focused on actionable outcomes."
+    },
+    "gen_prd": {
+      "provider": "openai", 
+      "model": "gpt-3.5-turbo",
+      "temperature": 0.6,
+      "max_tokens": 3000,
+      "system_prompt": "You are an expert product manager creating lean Product Requirements Documents. Focus on clarity, actionable requirements, and MVP scope. Keep content concise but comprehensive."
+    },
+    "gen_srs": {
+      "provider": "openai",
+      "model": "gpt-3.5-turbo", 
+      "temperature": 0.5,
+      "max_tokens": 2500,
+      "system_prompt": "You are a senior software architect creating Software Requirements Specifications. Focus on non-functional requirements, performance budgets, security, and technical constraints. Be specific and measurable."
+    },
+    "gen_design_decisions": {
+      "provider": "anthropic",
+      "model": "claude-3-5-sonnet-20241022",
+      "temperature": 0.7,
+      "max_tokens": 3500,
+      "system_prompt": "You are a senior technical lead making technology and design decisions. Provide clear rationale, consider trade-offs, and focus on practical implementation guidance. Include learning opportunities and decision documentation."
+    },
+    "gen_design": {
+      "provider": "openai",
+      "model": "gpt-3.5-turbo",
+      "temperature": 0.6,
+      "max_tokens": 3000,
+      "system_prompt": "You are a senior frontend architect analyzing existing codebases for component reuse and design consistency. Focus on practical integration guidance and component analysis."
+    },
+    "gen_tasks_and_testing": {
+      "provider": "anthropic",
+      "model": "claude-3-5-sonnet-20241022",
+      "temperature": 0.6,
+      "max_tokens": 4000,
+      "system_prompt": "You are an expert development lead creating detailed implementation tasks with TDD guidance. Break down complex features into manageable tasks with clear acceptance criteria, dependencies, and testing approaches."
+    },
+    "process_tasks": {
+      "provider": "openai",
+      "model": "gpt-4",
+      "temperature": 0.5,
+      "max_tokens": 2000,
+      "system_prompt": "You are a senior developer implementing tasks following TDD principles. Focus on practical implementation guidance, code quality, and test-driven development approaches."
+    },
+    "gen_completion_summary": {
+      "provider": "openai",
+      "model": "gpt-3.5-turbo",
+      "temperature": 0.6,
+      "max_tokens": 2500,
+      "system_prompt": "You are a project manager creating executive completion summaries. Focus on business value, technical achievements, and strategic insights with clear traceability to requirements."
+    },
+    "enterprise_scaling": {
+      "provider": "anthropic",
+      "model": "claude-3-5-sonnet-20241022",
+      "temperature": 0.6,
+      "max_tokens": 4000,
+      "system_prompt": "You are an enterprise architect designing scalable systems. Focus on distributed architecture, compliance requirements, multi-team coordination, and enterprise-grade quality standards."
+    }
+  },
+  "prompt_engineering": {
+    "common_instructions": [
+      "Generate practical, actionable content that can be immediately used by development teams.",
+      "Follow the workflow document instructions precisely and completely.", 
+      "Use markdown formatting for clear structure and readability.",
+      "Include specific examples and implementation guidance where appropriate.",
+      "Validate that all required sections are present and properly formatted.",
+      "Focus on MVP-appropriate scope and complexity unless specifically scaling for enterprise."
+    ],
+    "validation_criteria": {
+      "default": ["not_empty", "contains_markdown", "min_length:100"],
+      "prd": ["not_empty", "contains_markdown", "min_length:300", "contains:## Goals", "contains:## Scope"],
+      "srs": ["not_empty", "contains_markdown", "min_length:200", "contains:## Performance", "contains:## Security"],
+      "tasks": ["not_empty", "contains_markdown", "min_length:500", "contains:## Tasks", "contains:- [ ]"],
+      "design_decisions": ["not_empty", "contains_markdown", "min_length:400", "contains:## Technology", "contains:## Rationale"]
+    }
+  },
+  "cost_management": {
+    "daily_limit_usd": 50.0,
+    "per_workflow_limit_usd": 5.0,
+    "alert_threshold_usd": 80.0,
+    "track_usage": true,
+    "cost_log_file": "llm-usage.log"
+  },
+  "error_handling": {
+    "max_retries": 3,
+    "retry_delay_seconds": [1, 2, 4],
+    "fallback_providers": ["openai", "anthropic", "local_ollama"],
+    "timeout_handling": "graceful_degradation"
+  }
+}

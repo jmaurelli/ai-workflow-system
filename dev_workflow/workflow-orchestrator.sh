@@ -18,6 +18,11 @@ DRY_RUN=false
 VERBOSE=false
 SKIP_GATES=""
 REQUIRE_GATES=""
+LLM_API_ENABLED=false
+LLM_PROVIDER=""
+LLM_MODEL=""
+LLM_CONFIG_FILE=""
+COST_LIMIT=""
 
 # Colors for output
 RED='\033[0;31m'
@@ -117,6 +122,11 @@ OPTIONS:
     --verbose          Enable detailed logging
     --skip-gates=LIST  Comma-separated gate names to skip
     --require-gates=LIST Comma-separated gate names to always require
+    --llm-api          Enable real LLM API content generation (REVOLUTIONARY!)
+    --llm-provider=NAME LLM provider (openai, anthropic, local_ollama, groq)
+    --llm-model=NAME   LLM model to use
+    --llm-config=FILE  Path to LLM configuration file
+    --cost-limit=USD   Override cost limit for LLM usage
     --help             Show this help message
 
 EXAMPLES:
@@ -128,6 +138,12 @@ EXAMPLES:
 
     # Learning mode (adaptive gates)
     ./workflow-orchestrator.sh --mode=learning --feature=api-v2
+    
+    # 🚀 REVOLUTIONARY: Real LLM content generation!
+    ./workflow-orchestrator.sh --mode=autonomous --feature=user-auth --llm-api --llm-provider=openai
+    
+    # Complete automation with custom LLM configuration
+    ./workflow-orchestrator.sh --mode=autonomous --feature=dashboard --llm-api --llm-config=custom-llm.json
 
     # Custom gate configuration
     ./workflow-orchestrator.sh --mode=autonomous --feature=search \\
@@ -180,6 +196,21 @@ parse_args() {
                 ;;
             --require-gates=*)
                 REQUIRE_GATES="${1#*=}"
+                ;;
+            --llm-api)
+                LLM_API_ENABLED=true
+                ;;
+            --llm-provider=*)
+                LLM_PROVIDER="${1#*=}"
+                ;;
+            --llm-model=*)
+                LLM_MODEL="${1#*=}"
+                ;;
+            --llm-config=*)
+                LLM_CONFIG_FILE="${1#*=}"
+                ;;
+            --cost-limit=*)
+                COST_LIMIT="${1#*=}"
                 ;;
             --help)
                 show_help
@@ -322,13 +353,41 @@ execute_step() {
     # Create feature directory if it doesn't exist
     mkdir -p "$feature_dir"
     
+    # Prepare executor arguments
+    local executor_args=(
+        "${SCRIPT_DIR}/workflow-executor.py" "$doc_path"
+        --feature="$FEATURE_NAME"
+        --feature-dir="$feature_dir"
+        --mode="$MODE"
+        --step="$step"
+        --phase="$phase"
+    )
+    
+    # Add LLM API configuration if enabled
+    if [[ "$LLM_API_ENABLED" == "true" ]]; then
+        executor_args+=(--llm-api)
+        
+        if [[ -n "$LLM_PROVIDER" ]]; then
+            executor_args+=(--llm-provider="$LLM_PROVIDER")
+        fi
+        
+        if [[ -n "$LLM_MODEL" ]]; then
+            executor_args+=(--llm-model="$LLM_MODEL")
+        fi
+        
+        if [[ -n "$LLM_CONFIG_FILE" ]]; then
+            executor_args+=(--llm-config="$LLM_CONFIG_FILE")
+        fi
+        
+        if [[ -n "$COST_LIMIT" ]]; then
+            executor_args+=(--cost-limit="$COST_LIMIT")
+        fi
+        
+        log_info "🤖 LLM API enabled: Real content generation mode!"
+    fi
+    
     # Execute using workflow executor
-    if python3 "${SCRIPT_DIR}/workflow-executor.py" "$doc_path" \
-        --feature="$FEATURE_NAME" \
-        --feature-dir="$feature_dir" \
-        --mode="$MODE" \
-        --step="$step" \
-        --phase="$phase"; then
+    if python3 "${executor_args[@]}"; then
         
         log_success "✅ Step $step completed: $doc_name"
         log_success "📁 Output saved to: $feature_dir"

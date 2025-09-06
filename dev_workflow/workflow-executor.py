@@ -86,6 +86,13 @@ class WorkflowDocumentExecutor:
         self.debug = debug
         self.logger = self._setup_logging()
         
+        # LLM API integration attributes
+        self.llm_api_enabled = False
+        self.llm_provider = None
+        self.llm_model = None
+        self.llm_config_file = None
+        self.cost_limit = None
+        
     def _setup_logging(self) -> logging.Logger:
         """Setup logging configuration"""
         logger = logging.getLogger('workflow_executor')
@@ -259,9 +266,77 @@ class WorkflowDocumentExecutor:
                                document_path: Path, 
                                instructions: Dict[str, Any], 
                                context: WorkflowContext) -> bool:
-        """Execute workflow document using AI agent integration"""
+        """Execute workflow document using REAL LLM API integration"""
         
-        self.logger.info(f"🤖 Executing with AI agent: {document_path.name}")
+        self.logger.info(f"🤖 Executing with REAL LLM API: {document_path.name}")
+        
+        try:
+            # Import content generation engine
+            from content_generation_engine import ContentGenerationEngine, ContentGenerationRequest, WorkflowContext as CGContext
+            
+            # Create content generation engine
+            engine = ContentGenerationEngine(debug=self.debug)
+            
+            # Determine content type from document name
+            content_type = self._determine_content_type(document_path.name)
+            
+            # Create workflow context for content generation
+            cg_context = CGContext(
+                feature_name=context.feature_name,
+                feature_slug=context.feature_slug,
+                feature_dir=context.feature_dir,
+                workflow_step=context.step_number,
+                phase=context.phase,
+                project_data=context.project_data,
+                previous_outputs=self._load_previous_outputs(context)
+            )
+            
+            # Generate primary output file
+            primary_output = self._get_primary_output_file(document_path.name)
+            
+            if primary_output:
+                request = ContentGenerationRequest(
+                    workflow_document=document_path.name,
+                    context=cg_context,
+                    output_file=primary_output,
+                    content_type=content_type,
+                    template_sections=instructions.get('template_sections', {}),
+                    ai_directives=instructions.get('ai_directives', [])
+                )
+                
+                # Generate REAL content using LLM
+                content = engine.generate_content(request)
+                
+                # Save generated content
+                output_path = context.feature_dir / primary_output
+                output_path.parent.mkdir(parents=True, exist_ok=True)
+                
+                with open(output_path, 'w') as f:
+                    f.write(content)
+                
+                self.logger.info(f"✅ Generated REAL content: {output_path}")
+                context.generated_files.append(str(output_path))
+            
+            # Also create AI execution status file for tracking
+            status_file = context.feature_dir / f"{context.step_number}-output.md"
+            self._create_ai_execution_file(None, status_file, instructions, context)
+            
+            return True
+            
+        except ImportError:
+            self.logger.warning("Content generation engine not available, falling back to instruction creation")
+            return self._execute_with_ai_instructions_fallback(document_path, instructions, context)
+        except Exception as e:
+            self.logger.error(f"LLM API execution failed: {e}")
+            return self._execute_with_ai_instructions_fallback(document_path, instructions, context)
+    
+    def _execute_with_ai_instructions_fallback(self, 
+                                               document_path: Path, 
+                                               instructions: Dict[str, Any], 
+                                               context: WorkflowContext) -> bool:
+        """Fallback to creating AI instructions when LLM API is not available"""
+        
+        self.logger.info(f"📝 Creating AI execution instructions: {document_path.name}")
         
         # Create AI agent prompt
         ai_prompt = self._create_ai_agent_prompt(instructions, context)
@@ -272,7 +347,7 @@ class WorkflowDocumentExecutor:
             prompt_file = Path(f.name)
         
         try:
-            # For now, create a structured output file that AI can follow
+            # Create structured output file that AI can follow
             output_file = context.feature_dir / f"{context.step_number}-output.md"
             
             # Create execution instructions for AI
@@ -284,12 +359,82 @@ class WorkflowDocumentExecutor:
             return True
             
         except Exception as e:
-            self.logger.error(f"AI agent execution failed: {e}")
+            self.logger.error(f"AI instruction creation failed: {e}")
             return False
         finally:
             # Cleanup temp file
             if prompt_file.exists():
                 prompt_file.unlink()
+    
+    def _determine_content_type(self, document_name: str) -> str:
+        """Determine content type from workflow document name"""
+        
+        content_type_mapping = {
+            "01-mvp-entrypoint.md": "mvp_entrypoint",
+            "02-gen-prd.md": "prd",
+            "03-gen-srs.md": "srs", 
+            "04-gen-design-decisions-lite.md": "design_decisions",
+            "05-gen-design.md": "design_analysis",
+            "06-gen-tasks-and-testing.md": "tasks",
+            "07-process-tasks.md": "task_processing",
+            "08-gen-completion-summary.md": "completion_summary",
+            "09-gen-project-history.md": "project_history",
+            # Enterprise workflow mappings
+            "s01-mvp-to-scaling-transition.md": "enterprise",
+            "s02-gen-design-decisions-scaling.md": "design_decisions",
+            "s03-gen-srs-scaling.md": "srs",
+            "s04-create-prd-scaling.md": "prd",
+            "s05-gen-design-scaling.md": "design_analysis",
+            "s06-tasks-and-testing-scaling.md": "tasks",
+            "s07-gen-enterprise-completion-summary.md": "completion_summary",
+            "s08-gen-enterprise-history.md": "project_history"
+        }
+        
+        return content_type_mapping.get(document_name, "prd")
+    
+    def _get_primary_output_file(self, document_name: str) -> Optional[str]:
+        """Get primary output file for workflow document"""
+        
+        output_file_mapping = {
+            "01-mvp-entrypoint.md": "project-initialization.md",
+            "02-gen-prd.md": "prd.md",
+            "03-gen-srs.md": "srs.md",
+            "04-gen-design-decisions-lite.md": "design-decisions.md",
+            "05-gen-design.md": "design-analysis.md", 
+            "06-gen-tasks-and-testing.md": "tasks.md",
+            "07-process-tasks.md": "implementation-guide.md",
+            "08-gen-completion-summary.md": "completion-summary.md",
+            "09-gen-project-history.md": "project-history.md",
+            # Enterprise workflow mappings
+            "s01-mvp-to-scaling-transition.md": "transition-analysis.md",
+            "s02-gen-design-decisions-scaling.md": "enterprise-design-decisions.md",
+            "s03-gen-srs-scaling.md": "enterprise-srs.md",
+            "s04-create-prd-scaling.md": "enterprise-prd.md",
+            "s05-gen-design-scaling.md": "enterprise-design-analysis.md",
+            "s06-tasks-and-testing-scaling.md": "enterprise-tasks.md",
+            "s07-gen-enterprise-completion-summary.md": "enterprise-completion-summary.md",
+            "s08-gen-enterprise-history.md": "enterprise-project-history.md"
+        }
+        
+        return output_file_mapping.get(document_name)
+    
+    def _load_previous_outputs(self, context: WorkflowContext) -> Dict[str, str]:
+        """Load content from previous workflow outputs for context"""
+        
+        previous_outputs = {}
+        
+        # Try to load previous outputs from feature directory
+        for file_path in context.feature_dir.glob("*.md"):
+            if file_path.name not in [f"{context.step_number}-output.md"]:
+                try:
+                    with open(file_path, 'r') as f:
+                        content = f.read()
+                        if len(content) > 50:  # Only include substantial content
+                            previous_outputs[file_path.stem] = content
+                except Exception:
+                    pass  # Skip files that can't be read
+        
+        return previous_outputs
     
     def _create_ai_agent_prompt(self, instructions: Dict[str, Any], context: WorkflowContext) -> str:
         """Create structured prompt for AI agent execution"""
@@ -493,14 +638,41 @@ def main():
                        help="Use template-based execution instead of AI agent")
     
     parser.add_argument("--debug",
-                       action="store_true",
-                       help="Enable debug logging")
+                        action="store_true",
+                        help="Enable debug logging")
+    
+    # LLM API integration arguments
+    parser.add_argument("--llm-api",
+                        action="store_true",
+                        help="Enable real LLM API content generation")
+    
+    parser.add_argument("--llm-provider",
+                        help="LLM provider (openai, anthropic, local_ollama, groq)")
+    
+    parser.add_argument("--llm-model",
+                        help="LLM model to use")
+    
+    parser.add_argument("--llm-config",
+                        type=Path,
+                        help="Path to LLM configuration file")
+    
+    parser.add_argument("--cost-limit",
+                        type=float,
+                        help="Override cost limit for LLM usage")
     
     args = parser.parse_args()
     
     try:
         # Initialize executor
         executor = WorkflowDocumentExecutor(debug=args.debug)
+        
+        # Pass LLM configuration to executor if enabled
+        if args.llm_api:
+            executor.llm_api_enabled = True
+            executor.llm_provider = args.llm_provider
+            executor.llm_model = args.llm_model
+            executor.llm_config_file = args.llm_config
+            executor.cost_limit = args.cost_limit
         
         # Setup feature directory
         if args.feature_dir:

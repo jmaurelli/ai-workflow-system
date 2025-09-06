@@ -55,6 +55,13 @@ class WorkflowOrchestrator:
         self.workflow_steps = self._initialize_workflow_steps()
         self.logger = self._setup_logging()
         
+        # LLM API integration attributes
+        self.llm_api_enabled = False
+        self.llm_provider = None
+        self.llm_model = None
+        self.llm_config_file = None
+        self.cost_limit = None
+        
     def _load_config(self) -> Dict:
         """Load automation configuration"""
         try:
@@ -331,18 +338,36 @@ class WorkflowOrchestrator:
         
         # Execute using workflow executor
         try:
-            import subprocess
-            
-            cmd = [
-                "python3", 
-                str(Path(__file__).parent / "workflow-executor.py"),
-                str(doc_path),
-                "--feature", context.feature_name,
-                "--feature-dir", str(feature_dir),
-                "--mode", context.mode.value,
-                "--step", step.number,
-                "--phase", step.phase
-            ]
+               import subprocess
+               
+               cmd = [
+                   "python3", 
+                   str(Path(__file__).parent / "workflow-executor.py"),
+                   str(doc_path),
+                   "--feature", context.feature_name,
+                   "--feature-dir", str(feature_dir),
+                   "--mode", context.mode.value,
+                   "--step", step.number,
+                   "--phase", step.phase
+               ]
+               
+               # Add LLM API configuration if enabled
+               if self.llm_api_enabled:
+                   cmd.append("--llm-api")
+                   
+                   if self.llm_provider:
+                       cmd.extend(["--llm-provider", self.llm_provider])
+                   
+                   if self.llm_model:
+                       cmd.extend(["--llm-model", self.llm_model])
+                   
+                   if self.llm_config_file:
+                       cmd.extend(["--llm-config", str(self.llm_config_file)])
+                   
+                   if self.cost_limit:
+                       cmd.extend(["--cost-limit", str(self.cost_limit)])
+                   
+                   self.logger.info(f"🤖 LLM API enabled: Real content generation mode!")
             
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
             
@@ -391,6 +416,25 @@ def main():
                        action="store_true", 
                        help="Enable verbose logging")
     
+    # LLM API integration arguments
+    parser.add_argument("--llm-api",
+                       action="store_true",
+                       help="Enable real LLM API content generation")
+    
+    parser.add_argument("--llm-provider",
+                       help="LLM provider (openai, anthropic, local_ollama, groq)")
+    
+    parser.add_argument("--llm-model",
+                       help="LLM model to use")
+    
+    parser.add_argument("--llm-config",
+                       type=Path,
+                       help="Path to LLM configuration file")
+    
+    parser.add_argument("--cost-limit",
+                       type=float,
+                       help="Override cost limit for LLM usage")
+    
     args = parser.parse_args()
     
     # Setup logging level
@@ -400,6 +444,14 @@ def main():
     try:
         # Initialize orchestrator
         orchestrator = WorkflowOrchestrator(args.config)
+        
+        # Configure LLM API if enabled
+        if args.llm_api:
+            orchestrator.llm_api_enabled = True
+            orchestrator.llm_provider = args.llm_provider
+            orchestrator.llm_model = args.llm_model
+            orchestrator.llm_config_file = args.llm_config
+            orchestrator.cost_limit = args.cost_limit
         
         # Create execution context
         context = ExecutionContext(
