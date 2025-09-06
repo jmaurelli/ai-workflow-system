@@ -23,39 +23,47 @@ Provide clear guidance for transitioning from MVP workflow to scaling workflow w
 
 ## Transition Workflow
 
-### Phase 1: Assessment & Planning
-1. **Design Analysis Audit**
+### Phase 1: Assessment & Planning (Enterprise Feature-Centric)
+
+1. **Initialize Enterprise Feature Directory**
+   - Create date-prefixed enterprise feature directory: `/enterprise-features/[YYYY-MM-DD]-[project-name]/` (auto-generate date from OS, convert `[project-name]` to kebab-case)
+   - Initialize `feature-manifest.json` with enterprise workflow tracking and multi-team coordination metadata
+   - Setup enterprise directory structure with comprehensive `artifacts/` subdirectories for enterprise-grade content
+   - Migrate relevant MVP artifacts and documentation to enterprise feature directory
+
+2. **Design Analysis Audit**
    - Run `gen-design-recovery.md` on entire codebase
    - Document all existing components and patterns
    - Identify design debt and inconsistencies
    - Create component inventory
+   - Save results to `./design-analysis.md` within enterprise feature directory
 
-2. **Enterprise Design Decisions (Learning-Guided)**
+3. **Enterprise Design Decisions (Learning-Guided)**
    - Run `gen-design-decisions-scaling.md` to make informed enterprise-level decisions
    - **System Architecture**: Choose microservices strategy, database scaling, distributed system patterns
    - **Design System Strategy**: Plan enterprise component library, design token architecture, governance model
    - **Technology Evolution**: Plan migration paths from MVP stack to enterprise technologies
    - **UX Architecture**: Design complex user experiences, personalization, and accessibility strategies
    - **API Strategy**: Plan enterprise API architecture, integration patterns, security approach
-   - Generate `/decisions/design-decisions-scaling-[project-name].md` with comprehensive rationale
+   - Generate `./design-decisions-scaling.md` with comprehensive rationale within enterprise feature directory
    - **Human Gate**: Review and approve enterprise architecture and design system strategy
 
-3. **Enterprise SRS (Mandatory - Quality Foundation)**
+4. **Enterprise SRS (Mandatory - Quality Foundation)**
    - Run `gen-srs-scaling.md` to capture comprehensive enterprise NFRs
    - **Performance Requirements**: Response time budgets, throughput, scalability targets
    - **Security Specifications**: Enterprise security, compliance requirements, data protection
    - **Availability Standards**: Uptime targets, fault tolerance, disaster recovery
    - **Integration Constraints**: API performance, external system requirements
-   - Generate `/srs/srs-scaling-[project-name].md` with measurable enterprise quality constraints
+   - Generate `./srs.md` with measurable enterprise quality constraints within enterprise feature directory
    - **Human Gate**: Review and approve enterprise performance budgets and compliance requirements
 
-4. **Artifact Upgrade Planning**
+5. **Artifact Upgrade Planning**
    - Map MVP artifacts to scaling equivalents based on design decisions and SRS requirements
-   - Plan document enhancement timeline
-   - Identify missing documentation gaps
-   - Assess testing coverage and quality
+   - Plan document enhancement timeline within enterprise feature directory structure
+   - Identify missing documentation gaps and enterprise artifact requirements
+   - Assess testing coverage and quality for enterprise compliance
 
-5. **Risk Assessment**
+6. **Risk Assessment**
    - Evaluate breaking changes needed for chosen architecture
    - Plan migration strategies for existing code to new tech stack
    - Identify user impact and mitigation
@@ -222,6 +230,91 @@ Provide this block to scaling workflow documents:
   },
   "scaling_ready": true
 }
+```
+
+---
+
+## Enterprise Feature Directory Initialization Protocol
+
+### **Automatic Enterprise Directory Creation**
+```bash
+# Auto-generate enterprise feature directory with OS timestamp
+FEATURE_DATE=$(date +"%Y-%m-%d")
+FEATURE_SLUG="[convert-project-name-to-kebab-case]"  
+ENTERPRISE_FEATURE_DIR="/enterprise-features/${FEATURE_DATE}-${FEATURE_SLUG}"
+
+# Create comprehensive enterprise directory structure
+mkdir -p "${ENTERPRISE_FEATURE_DIR}/artifacts/architecture-diagrams"
+mkdir -p "${ENTERPRISE_FEATURE_DIR}/artifacts/api-contracts"
+mkdir -p "${ENTERPRISE_FEATURE_DIR}/artifacts/design-system"
+mkdir -p "${ENTERPRISE_FEATURE_DIR}/artifacts/performance-reports"
+mkdir -p "${ENTERPRISE_FEATURE_DIR}/artifacts/security-audits"
+mkdir -p "${ENTERPRISE_FEATURE_DIR}/artifacts/integration-tests"
+mkdir -p "${ENTERPRISE_FEATURE_DIR}/artifacts/deployment-configs"
+mkdir -p "${ENTERPRISE_FEATURE_DIR}/artifacts/monitoring-dashboards"
+
+# Initialize enterprise feature manifest
+cat > "${ENTERPRISE_FEATURE_DIR}/feature-manifest.json" << 'EOF'
+{
+  "feature_metadata": {
+    "feature_name": "[Collected Project Name]",
+    "feature_slug": "[kebab-case-slug]",
+    "feature_directory": "[YYYY-MM-DD]-[kebab-case-slug]",
+    "creation_date": "[ISO-8601-timestamp]",
+    "creator": "scaling-transition-workflow",
+    "project_context": "[Enterprise project context]",
+    "enterprise_scope": "cross_team_coordination",
+    "transition_from_mvp": true
+  },
+  "workflow_status": {
+    "current_phase": "transition_initialization",
+    "phases_completed": [],
+    "phases_remaining": ["assessment", "foundation_enhancement", "implementation", "completion_summary"],
+    "estimated_completion": null,
+    "last_updated": "[ISO-8601-timestamp]"
+  },
+  "multi_team_coordination": {
+    "coordination_mode": "enterprise_multi_team",
+    "team_assignments": {},
+    "coordination_lead": "to_be_determined",
+    "review_board": [],
+    "approval_gates": ["architecture_review", "security_review", "design_system_compliance"]
+  },
+  "enterprise_context": {
+    "architecture_tier": "enterprise_distributed",
+    "compliance_requirements": [],
+    "performance_tier": "enterprise_scale",
+    "integration_complexity": "high_cross_service"
+  },
+  "document_status": {
+    "prd": {"status": "pending", "path": "./prd.md"},
+    "srs": {"status": "pending", "path": "./srs.md"},
+    "design_decisions_scaling": {"status": "pending", "path": "./design-decisions-scaling.md"},
+    "design_analysis": {"status": "pending", "path": "./design-analysis.md"},
+    "design_system_governance": {"status": "pending", "path": "./design-system-governance.md"},
+    "tasks": {"status": "pending", "path": "./tasks.md"},
+    "learning_notes_scaling": {"status": "pending", "path": "./learning-notes-scaling.md"},
+    "completion_summary": {"status": "pending", "path": "./completion-summary.md"}
+  }
+}
+EOF
+
+# Set working directory for all subsequent scaling workflow steps
+cd "${ENTERPRISE_FEATURE_DIR}"
+```
+
+### **MVP to Enterprise Migration Protocol**
+```bash
+# Migrate relevant MVP artifacts to enterprise feature directory
+if [[ -d "/features/" ]]; then
+  echo "Migrating relevant MVP artifacts to enterprise structure..."
+  
+  # Copy relevant MVP documents and enhance for enterprise
+  find /features -name "*.md" -type f | while read mvp_file; do
+    # Logic to determine relevance and copy/enhance for enterprise use
+    # This preserves MVP learning while evolving to enterprise complexity
+  done
+fi
 ```
 
 ---

@@ -7,14 +7,20 @@ Even for solo dev, this ensures documentation survives time gaps and supports fu
 ---
 
 ## Workflow
-1. **Read Enterprise Design Decisions**: Reference `/decisions/design-decisions-scaling-[project-name].md` for:
+1. **Auto-detect Document Structure**: Check if working in enterprise feature directory or legacy scaling structure
+
+2. **Read Enterprise Design Decisions**: 
+   - **Enterprise Feature-Centric**: Reference `./design-decisions-scaling.md` for enterprise architecture and technology decisions
+   - **Legacy Scaling**: Reference `/decisions/design-decisions-scaling-[project-name].md` for enterprise decisions
    - **System Architecture Choices**: Apply enterprise architecture decisions to feature design
    - **Design System Strategy**: Use established component library and design patterns
    - **Technology Stack**: Ensure feature aligns with chosen enterprise technologies
    - **UX Architecture**: Follow established complex user experience patterns
    - **API Strategy**: Design feature APIs consistent with enterprise integration approach
 
-1.5. **Read Enterprise SRS**: Reference `/srs/srs-scaling-[project-name].md` for:
+3. **Read Enterprise SRS**: 
+   - **Enterprise Feature-Centric**: Reference `./srs.md` to incorporate established NFRs
+   - **Legacy Scaling**: Reference `/srs/srs-scaling-[project-name].md` to incorporate established NFRs
    - **Performance Budgets**: Apply response time, throughput, and scalability constraints
    - **Security Requirements**: Incorporate enterprise security and compliance standards
    - **Availability Targets**: Design for uptime and reliability requirements
