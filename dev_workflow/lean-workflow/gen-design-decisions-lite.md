@@ -15,6 +15,7 @@ Guide technical and UX design decisions through interactive questionnaires and t
 
 ## Prerequisites
 - Completed PRD at `/prd/prd-[feature-name].md`
+- **Completed SRS at `/srs/srs-[feature-name].md`** with performance budgets and quality constraints
 - Basic understanding of project goals and user needs
 - Willingness to learn and document decision rationale
 
@@ -44,24 +45,35 @@ Guide technical and UX design decisions through interactive questionnaires and t
 
 #### **Interactive Questionnaire: Backend Technology**
 
-**Question Set A: Project Requirements**
+**Question Set A: Project Requirements & NFR Constraints**
 1. **Primary functionality** of your backend:
    - [ ] **Simple CRUD operations** → *Python/FastAPI or Node.js/Express recommended*
    - [ ] **High-performance processing** → *Go or Rust recommended*
    - [ ] **Data-heavy analytics** → *Python recommended*
    - [ ] **Real-time features** → *Node.js or Go recommended*
 
-2. **Your learning preference**:
+2. **Performance requirements from SRS**:
+   - [ ] **Response time < 100ms** → *Go, Rust, or optimized Node.js*
+   - [ ] **Response time < 500ms** → *Python FastAPI, Node.js, Go*
+   - [ ] **Response time < 2 seconds** → *Any technology with proper architecture*
+   - [ ] **High concurrency (1000+ requests/sec)** → *Go, Node.js, or async Python*
+
+3. **Security requirements from SRS**:
+   - [ ] **Basic security (authentication, HTTPS)** → *Any modern framework*
+   - [ ] **Enterprise security (OAuth, encryption)** → *Mature ecosystems: Python, Node.js, Java*
+   - [ ] **Compliance requirements (HIPAA, SOC2)** → *Well-audited: Python, Node.js, Java*
+
+4. **Your learning preference**:
    - [ ] **Want to learn industry-standard** → *Python or JavaScript/TypeScript*
    - [ ] **Want maximum performance** → *Go or Rust*
    - [ ] **Want rapid prototyping** → *Python or Node.js*
 
-3. **Deployment preference**:
+5. **Deployment preference**:
    - [ ] **Cloud platforms (AWS, GCP, Azure)** → *Python, Node.js, or Go*
    - [ ] **Simple hosting** → *Python or Node.js*
    - [ ] **Container deployment** → *Any language*
 
-**Learning Notes**: *Backend choice affects development speed, performance, and learning curve. Python excels in readability and data processing, Go in performance and simplicity, Node.js in full-stack JavaScript consistency.*
+**Learning Notes**: *Backend choice affects development speed, performance, and learning curve. Consider SRS performance budgets when choosing - Go excels at low latency, Python at rapid development, Node.js at full-stack consistency. Security and compliance requirements may limit technology choices.*
 
 #### **Template: Backend Decision Framework**
 

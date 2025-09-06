@@ -40,13 +40,22 @@ Provide clear guidance for transitioning from MVP workflow to scaling workflow w
    - Generate `/decisions/design-decisions-scaling-[project-name].md` with comprehensive rationale
    - **Human Gate**: Review and approve enterprise architecture and design system strategy
 
-3. **Artifact Upgrade Planning**
-   - Map MVP artifacts to scaling equivalents based on design decisions
+3. **Enterprise SRS (Mandatory - Quality Foundation)**
+   - Run `gen-srs-scaling.md` to capture comprehensive enterprise NFRs
+   - **Performance Requirements**: Response time budgets, throughput, scalability targets
+   - **Security Specifications**: Enterprise security, compliance requirements, data protection
+   - **Availability Standards**: Uptime targets, fault tolerance, disaster recovery
+   - **Integration Constraints**: API performance, external system requirements
+   - Generate `/srs/srs-scaling-[project-name].md` with measurable enterprise quality constraints
+   - **Human Gate**: Review and approve enterprise performance budgets and compliance requirements
+
+4. **Artifact Upgrade Planning**
+   - Map MVP artifacts to scaling equivalents based on design decisions and SRS requirements
    - Plan document enhancement timeline
    - Identify missing documentation gaps
    - Assess testing coverage and quality
 
-4. **Risk Assessment**
+5. **Risk Assessment**
    - Evaluate breaking changes needed for chosen architecture
    - Plan migration strategies for existing code to new tech stack
    - Identify user impact and mitigation

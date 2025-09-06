@@ -13,6 +13,12 @@ Even for solo dev, this ensures documentation survives time gaps and supports fu
    - **Technology Stack**: Ensure feature aligns with chosen enterprise technologies
    - **UX Architecture**: Follow established complex user experience patterns
    - **API Strategy**: Design feature APIs consistent with enterprise integration approach
+
+1.5. **Read Enterprise SRS**: Reference `/srs/srs-scaling-[project-name].md` for:
+   - **Performance Budgets**: Apply response time, throughput, and scalability constraints
+   - **Security Requirements**: Incorporate enterprise security and compliance standards
+   - **Availability Targets**: Design for uptime and reliability requirements
+   - **Integration Standards**: Follow API performance and external system constraints
 2. Capture idea with business and technical context.  
 3. Ask thorough clarifying questions (who, what, why, how).  
 4. Fill out the **Full PRD template** incorporating design decisions.  
