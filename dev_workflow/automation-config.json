@@ -1,0 +1,134 @@
+{
+  "automation_modes": {
+    "guided": {
+      "description": "Maximum human oversight - stop at every major gate",
+      "gate_behavior": "require_all",
+      "risk_tolerance": "minimal",
+      "auto_proceed": false,
+      "gates": {
+        "feature_directory_creation": "required",
+        "prd_generation": "required", 
+        "srs_generation": "required",
+        "design_decisions": "required",
+        "design_analysis": "optional",
+        "task_creation": "required",
+        "task_implementation": "required_for_destructive",
+        "completion_summary": "optional",
+        "project_history": "optional"
+      }
+    },
+    "autonomous": {
+      "description": "Minimal human oversight - proceed automatically with smart safety checks",
+      "gate_behavior": "smart_risk_based",
+      "risk_tolerance": "moderate",
+      "auto_proceed": true,
+      "gates": {
+        "feature_directory_creation": "optional",
+        "prd_generation": "optional",
+        "srs_generation": "optional", 
+        "design_decisions": "required_for_new_tech",
+        "design_analysis": "skip",
+        "task_creation": "optional",
+        "task_implementation": "required_for_destructive",
+        "completion_summary": "skip",
+        "project_history": "skip"
+      }
+    },
+    "learning": {
+      "description": "Adaptive oversight - learns from approval patterns and reduces gates over time",
+      "gate_behavior": "adaptive_learning",
+      "risk_tolerance": "adaptive",
+      "auto_proceed": "contextual",
+      "gates": {
+        "feature_directory_creation": "learn_from_history",
+        "prd_generation": "learn_from_history",
+        "srs_generation": "learn_from_history",
+        "design_decisions": "learn_from_history",
+        "design_analysis": "learn_from_history", 
+        "task_creation": "learn_from_history",
+        "task_implementation": "always_required_for_destructive",
+        "completion_summary": "learn_from_history",
+        "project_history": "learn_from_history"
+      },
+      "learning_thresholds": {
+        "approval_rate_for_auto": 0.85,
+        "minimum_history_samples": 3,
+        "confidence_threshold": 0.9
+      }
+    }
+  },
+  "risk_assessment": {
+    "low_risk_indicators": [
+      "familiar_technology_stack",
+      "incremental_feature_change", 
+      "well_tested_patterns",
+      "small_scope_change"
+    ],
+    "high_risk_indicators": [
+      "new_technology_introduction",
+      "breaking_api_changes",
+      "database_schema_changes",
+      "external_service_integration",
+      "security_model_changes",
+      "performance_critical_changes"
+    ],
+    "destructive_actions": [
+      "database_migrations",
+      "file_deletions",
+      "external_api_calls",
+      "deployment_operations",
+      "config_changes_production"
+    ]
+  },
+  "workflow_execution": {
+    "numbered_sequence": [
+      "01-mvp-entrypoint.md",
+      "02-gen-prd.md", 
+      "03-gen-srs.md",
+      "04-gen-design-decisions-lite.md",
+      "05-gen-design.md",
+      "06-gen-tasks-and-testing.md",
+      "07-process-tasks.md",
+      "08-gen-completion-summary.md",
+      "09-gen-project-history.md"
+    ],
+    "phase_mapping": {
+      "foundation": ["01", "02", "03"],
+      "design": ["04", "05"], 
+      "implementation": ["06", "07"],
+      "completion": ["08", "09"]
+    },
+    "dependency_chain": {
+      "01": [],
+      "02": ["01"],
+      "03": ["02"], 
+      "04": ["03"],
+      "05": ["04"],
+      "06": ["02", "03", "04", "05"],
+      "07": ["06"],
+      "08": ["07"],
+      "09": ["08"]
+    }
+  },
+  "quality_gates": {
+    "automated_validation": {
+      "document_structure_check": true,
+      "required_sections_present": true,
+      "context_references_valid": true,
+      "manifest_consistency": true
+    },
+    "manual_validation_triggers": {
+      "scope_exceeds_threshold": "prd_word_count > 800",
+      "new_technology_detected": "tech_stack_differs_from_history",
+      "high_risk_changes": "risk_score > 0.7",
+      "performance_impact": "srs_performance_budgets_strict"
+    }
+  },
+  "user_preferences": {
+    "default_mode": "guided",
+    "trusted_technology_stacks": [],
+    "approval_history": [],
+    "learning_confidence": {},
+    "custom_gate_overrides": {}
+  }
+}

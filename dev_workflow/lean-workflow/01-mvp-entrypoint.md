@@ -1,7 +1,31 @@
-# MVP Project Entry Point
+# MVP Project Entry Point - Step 01 (Foundation Phase)
 
 ## Purpose
 This document serves as the unified initialization point for MVP projects, automatically generating foundational documentation by collecting essential project data through guided questions. It consolidates the MVP core protocol and project entrypoint requirements into a streamlined workflow.
+
+## 🤖 Automation Support
+This document supports **three automation modes** for AI agents:
+
+### **🚦 Automation Modes**
+- **🚪 GUIDED Mode**: Maximum human oversight - traditional workflow with approval gates
+- **⚡ AUTONOMOUS Mode**: Minimal human oversight - AI agent proceeds automatically with smart safety checks  
+- **🧠 LEARNING Mode**: Adaptive oversight - learns from approval patterns and reduces gates over time
+
+### **🚀 Automated Execution**
+Use the workflow orchestrators to run this step automatically:
+
+```bash
+# Traditional shell orchestrator
+./workflow-orchestrator.sh --mode=guided --feature=user-auth
+
+# Intelligent Python orchestrator  
+./ai-workflow-runner.py --mode=autonomous --feature=dashboard
+
+# See execution plan without running
+./ai-workflow-runner.py --mode=learning --feature=api-v2 --dry-run
+```
+
+See `workflow-sequence-guide.md` for complete automation details.
 
 ## Project Initialization Questions
 
