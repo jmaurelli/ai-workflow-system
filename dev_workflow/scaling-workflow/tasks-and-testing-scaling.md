@@ -6,41 +6,115 @@ Prioritize traceability and maintainability.
 
 ---
 
-## Workflow
-1. **Read Enterprise Design Decisions**: Reference `/decisions/design-decisions-scaling-[project-name].md` for:
-   - **System Architecture**: Apply microservices, distributed system, and scaling patterns
-   - **Technology Stack**: Use enterprise technology choices for task generation
-   - **Design System**: Follow component library and design token strategies
-   - **UX Architecture**: Implement complex user experience patterns
-   - **API Strategy**: Apply enterprise integration and security patterns
-2. Read Full PRD.  
-3. Generate **comprehensive parent tasks** aligned with enterprise architecture.  
-4. Break into detailed sub-tasks (<½ day each) using chosen technologies.  
-5. Attach TDD steps to each coding task with enterprise testing standards.  
-6. Save to `/tasks/`.  
+## Enterprise Workflow (Context-Aware)
+1. **Context Distillation (Priority 1)**: Read and distill enterprise context sources:
+   - `/decisions/design-decisions-scaling-[project-name].md` → System architecture, tech evolution, design system strategy
+   - `/srs/srs-scaling-[project-name].md` → Enterprise performance budgets, security compliance, availability targets
+   - `/design/design-scaling-[project-name].md` → Component library integration, design system governance
+   - `/decisions/learning-notes-scaling-[project-name].md` → Team capabilities, architectural knowledge, skill development
+2. **Enterprise Context Mapping**: Map specific enterprise needs to document sections for just-in-time loading
+3. **Read Full PRD** with enterprise context lens applied
+4. **Generate comprehensive parent tasks** with embedded enterprise context (architecture patterns, performance targets, compliance requirements)
+5. **Break into detailed sub-tasks** (<½ day each) with minimal context per subtask (specific patterns, enterprise constraints, integration approaches)
+6. **Attach enterprise TDD** with design system validation, performance testing, security compliance, accessibility verification
+7. **Save to `/tasks/`** with enterprise context structure  
 
 ---
 
-## Task File Structure
+## Enhanced Task File Structure (Enterprise Design-Aware)
 ```markdown
 # Tasks for [Feature Name]
 
-## Changelog
-- [YYYY-MM-DD] Initial tasks created.
+## Executive Context (Enterprise-Distilled for AI Agents)
+**System Architecture**: [Microservices/distributed system patterns and service boundaries from design decisions]
+**Technology Evolution**: [Enterprise tech stack with migration considerations and integration patterns]
+**Design System Strategy**: [Component library governance, design token architecture, cross-platform requirements]
+**Performance Budgets**: [Enterprise-scale targets - 99.9% uptime, <100ms response, 10K+ concurrent users]
+**Security & Compliance**: [Enterprise requirements - GDPR, SOC2, security patterns, audit requirements]
+**Team Coordination**: [Multi-team integration, architectural decision communication, knowledge sharing]
 
-## Relevant Files
-- [file].ts – Implementation
-- [file].test.ts – Tests
+## Context References (Enterprise Just-in-Time Loading)
+**System Architecture**: `/decisions/design-decisions-scaling-[project-name].md` microservices strategy, service boundaries
+**Performance Specifications**: `/srs/srs-scaling-[project-name].md` REQ-PERF-001 to REQ-PERF-010, REQ-SCALE-001 to REQ-SCALE-005
+**Security Requirements**: `/srs/srs-scaling-[project-name].md` REQ-SEC-001 to REQ-SEC-020, compliance specifications
+**Design System Integration**: `/design/design-scaling-[project-name].md` component library, governance processes
+**Team Architecture**: `/decisions/learning-notes-scaling-[project-name].md` team capability, coordination patterns
+
+## Changelog
+- [YYYY-MM-DD] Initial enterprise tasks created.
+
+## Relevant Files (Design-System Aware)
+### Implementation Files
+- [microservice]/[feature].ts – Service implementation with enterprise patterns
+- [component-library]/[component].tsx – Design system component with tokens
+- [api-gateway]/[routes].ts – Enterprise API integration with security
+
+### Testing Files  
+- [microservice]/__tests__/[feature].test.ts – Unit tests with performance validation
+- [integration]/__tests__/[feature].integration.test.ts – Service integration tests
+- [e2e]/__tests__/[feature].e2e.test.ts – End-to-end with accessibility validation
+- [performance]/__tests__/[feature].performance.test.ts – Load and scalability tests
+
+### Design System Files
+- [design-system]/components/[component].tsx – Reusable component implementation
+- [design-system]/tokens/[theme].ts – Design token definitions
+- [design-system]/docs/[component].stories.tsx – Component documentation
 
 ## Notes
-- Follow strict TDD (write test before code).
+- Enterprise architecture constraints and design system compliance requirements
+- Cross-team coordination and integration considerations
 
-## Tasks
-- [ ] 1.0 Parent Task
-  - [ ] 1.1 Define schema
-  - [ ] 1.2 Write failing test
-  - [ ] 1.3 Implement minimal code
-  - [ ] 1.4 Refactor + add edge cases
+## Tasks (Enterprise Context-Embedded)
+- [ ] 1.0 [Parent Task - Enterprise Pattern]
+  - **Context**: [Architecture pattern, performance targets, security requirements, design system integration, team coordination]
+  - [ ] 1.1 [Subtask] - [Microservice pattern, <100ms target, OAuth integration, component library usage]
+  - [ ] 1.2 [Subtask] - [Distributed system pattern, fault tolerance, monitoring integration, accessibility compliance]
+  - [ ] 1.3 [Subtask] - [Design system component, token usage, cross-platform consistency, team documentation]
+  ...
+- [ ] 2.0 [Parent Task - Design System Integration]
+  - **Context**: [Component library strategy, design token architecture, governance process, team adoption]
+  ...
+
+### Acceptance Criteria (Enterprise NFR-Enhanced)
+- [Criteria for Parent Task 1] (PRD: REQ-X, SRS: REQ-PERF-Y, Design: COMP-Z, Security: SEC-A, Accessibility: A11Y-B)
+- [Criteria for Parent Task 2] (Performance: <X ms @ Y scale, Security: compliance-C, Design: token-usage-D)
+
+## Task Dependencies (Enterprise Coordination)
+
+### Critical Path (Cross-Service Dependencies)
+1. **Service A Task X.Y** → **Service B Task A.B** → **API Gateway Task C.D** (microservice dependency chain)
+2. **Design System Task D.E** → **Component Implementation Task F.G** (design system dependency)
+3. **Infrastructure Task H.I** → **Performance Testing Task J.K** (scaling dependency)
+
+### Parallel Tasks (Multi-Team Coordination)
+- **Week X**: Backend services, Frontend components, Infrastructure setup (can run simultaneously)
+- **Week Y**: Integration testing, Performance validation, Security audit (coordinated validation)
+
+## Risk Mitigation (Enterprise Scale)
+
+### High-Risk Tasks (Enterprise Complexity)
+- **Microservice Integration (Task X.Y)**: Risk of service communication complexity and latency
+- **Design System Migration (Task A.B)**: Risk of component library adoption and team coordination
+- **Performance Optimization (Task C.D)**: Risk of enterprise-scale performance targets
+
+### Contingency Plans (Enterprise Recovery)
+- **Service Communication Issues**: Circuit breaker implementation, fallback service patterns
+- **Design System Adoption Resistance**: Phased rollout, training program, incentive alignment
+- **Performance Target Misses**: Horizontal scaling, caching layer, architecture optimization
+
+## Success Criteria (Enterprise Quality Gates)
+
+### Enterprise Completion
+- [ ] 99.9% uptime achieved across all services
+- [ ] <100ms response time at 10K+ concurrent users
+- [ ] 100% design system compliance with accessibility validation
+- [ ] Security audit passed with zero critical vulnerabilities
+- [ ] Cross-team integration successful with documented APIs
+
+### Quality Gates (Enterprise Validation)
+- **Week X**: ✅ Microservices deployed with monitoring, design system foundation complete
+- **Week Y**: ✅ Performance targets validated, security compliance verified
+- **Week Z**: ✅ End-to-end integration complete, team adoption metrics achieved
 ```
 
 ---
@@ -142,15 +216,45 @@ Prioritize traceability and maintainability.
 
 ---
 
-## AI Agent Directives
-- Always include **comprehensive test sub-tasks** for each coding task (unit, integration, visual, accessibility)
-- Require design system compliance validation for all component tasks
-- Ensure traceability from PRD requirements through tasks to test validation
-- Validate performance impact and bundle size for all component changes
-- Require accessibility testing and compliance validation
+## AI Agent Directives (Enterprise Context-Aware Task Generation)
+
+### Enterprise Context Distillation (Priority 1)
+- **Always read and distill** the following enterprise sources into Executive Context:
+  - `/decisions/design-decisions-scaling-[project-name].md` → System architecture, tech evolution, design system strategy
+  - `/srs/srs-scaling-[project-name].md` → Enterprise performance budgets, security compliance, availability targets
+  - `/design/design-scaling-[project-name].md` → Component library integration, design system governance
+  - `/decisions/learning-notes-scaling-[project-name].md` → Team architectural capabilities, coordination patterns
+- **Distill into enterprise bullets** - each Executive Context item should capture enterprise complexity in 1-2 lines
+- **Focus on enterprise-critical info** - microservices coordination, design system governance, compliance requirements
+
+### Enterprise Context Reference Mapping (Priority 2)
+- **Map complex enterprise needs** to exact document sections for just-in-time loading
+- **Example**: "For microservice integration → `/srs/srs-scaling.md` REQ-PERF-001 to REQ-PERF-005, REQ-SCALE-001 to REQ-SCALE-010"
+- **Be architecture-specific**: Service boundary decisions, component library governance sections, compliance requirement clusters
+
+### Enterprise Task Context Embedding (Priority 3)
+- **Each parent task gets enterprise context** - architecture pattern, performance targets, compliance requirements, team coordination
+- **Each subtask gets specific context** - microservice pattern, design system component, security compliance, accessibility requirement
+- **Balance enterprise complexity vs clarity** - enough context for enterprise implementation, minimal enterprise bloat
+
+### Enterprise Context Management
+- **Avoid enterprise context duplication** - reference don't repeat detailed architecture decisions
+- **Use enterprise shorthand** - "microservice CQRS pattern", "design system governance process", "SOC2 compliance validation"
+- **Flag high-complexity enterprise tasks** - when tasks need extensive architectural or compliance context
+
+### Enterprise Technical Implementation Rules
+- **Apply enterprise architecture decisions** to service boundaries, communication patterns, data flow
+- **Honor design system governance** when structuring component tasks and design token usage
+- **Include enterprise NFR validation** in acceptance criteria with specific enterprise metrics (99.9% uptime, <100ms response, GDPR compliance)
+- **Reference architectural decision rationale** when explaining enterprise integration approaches
+- **Require comprehensive test coverage** - unit, integration, performance, security, accessibility for enterprise quality
+- **Validate design system compliance** for all component and interface tasks
+- **Ensure enterprise traceability** from architectural decisions through implementation to validation
+- **Include team coordination context** for cross-functional and multi-service integration
+- Always include **comprehensive test sub-tasks** for each coding task (unit, integration, visual, accessibility, performance, security)
 - Save enhanced task files in `/tasks/tasks-[feature-name]-scaling.md`
-- Reference any existing MVP task files and build upon their foundation
-Set reasoning_effort = high; scaling tasks require comprehensive planning and validation
+- Reference any existing MVP task files and build upon their foundation for enterprise evolution
+Set reasoning_effort = high; enterprise tasks require comprehensive planning, architectural coordination, and multi-layered validation
 
 ---
 
