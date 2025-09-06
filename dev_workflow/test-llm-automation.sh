@@ -66,6 +66,11 @@ check_api_keys() {
         log_success "Groq API key found"
     fi
     
+    if [[ -n "${GOOGLE_API_KEY:-}" ]]; then
+        providers_available+=("google")
+        log_success "Google Gemini API key found"
+    fi
+    
     # Check for local Ollama
     if curl -s http://localhost:11434/api/tags >/dev/null 2>&1; then
         providers_available+=("local_ollama")
@@ -78,6 +83,7 @@ check_api_keys() {
         log_info "  export OPENAI_API_KEY=your_key_here"
         log_info "  export ANTHROPIC_API_KEY=your_key_here"
         log_info "  export GROQ_API_KEY=your_key_here"
+        log_info "  export GOOGLE_API_KEY=your_key_here"
         log_info "Or start Ollama: ollama serve"
         return 1
     fi
@@ -285,6 +291,7 @@ REQUIREMENTS:
     - export OPENAI_API_KEY=your_key_here
     - export ANTHROPIC_API_KEY=your_key_here  
     - export GROQ_API_KEY=your_key_here
+    - export GOOGLE_API_KEY=your_key_here
     
     OR start local Ollama:
     - ollama serve

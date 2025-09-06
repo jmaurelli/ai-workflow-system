@@ -18,6 +18,7 @@ Add `--llm-api` to any command below for **true end-to-end automation** with rea
 # Choose your LLM provider
 --llm-provider=openai      # GPT-3.5/GPT-4 (default)
 --llm-provider=anthropic   # Claude 3.5 Sonnet  
+--llm-provider=google      # Google Gemini
 --llm-provider=local_ollama # Free local models
 --llm-provider=groq        # Ultra-fast inference
 ```

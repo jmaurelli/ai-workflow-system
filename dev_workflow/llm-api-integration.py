@@ -26,6 +26,7 @@ class LLMProvider(Enum):
     AZURE_OPENAI = "azure_openai"
     LOCAL_OLLAMA = "local_ollama"
     GROQ = "groq"
+    GOOGLE = "google"
 
 @dataclass
 class LLMConfig:
@@ -135,6 +136,19 @@ class LLMAPIIntegration:
             openai.api_key = self.config.api_key
             openai.api_base = self.config.base_url
             return openai
+            
+        elif self.config.provider == LLMProvider.GOOGLE:
+            if not self.config.api_key:
+                self.config.api_key = os.getenv('GOOGLE_API_KEY')
+            if not self.config.api_key:
+                raise ValueError("Google API key required. Set GOOGLE_API_KEY environment variable.")
+            
+            try:
+                import google.generativeai as genai
+                genai.configure(api_key=self.config.api_key)
+                return genai
+            except ImportError:
+                raise ValueError("Google GenerativeAI package required. Install with: pip install google-generativeai")
     
     def generate_content(self, request: LLMRequest) -> LLMResponse:
         """Generate content using configured LLM provider"""
@@ -160,6 +174,8 @@ class LLMAPIIntegration:
                     response = self._generate_ollama(request)
                 elif self.config.provider == LLMProvider.GROQ:
                     response = self._generate_groq(request)
+                elif self.config.provider == LLMProvider.GOOGLE:
+                    response = self._generate_google(request)
                 else:
                     raise ValueError(f"Unsupported provider: {self.config.provider}")
                 
@@ -301,6 +317,45 @@ class LLMAPIIntegration:
         response.cost_usd = self._calculate_groq_cost(response.tokens_used, self.config.model)
         return response
     
+    def _generate_google(self, request: LLMRequest) -> LLMResponse:
+        """Generate content using Google Gemini API"""
+        
+        # Create model instance
+        model = self.client.GenerativeModel(self.config.model)
+        
+        # Prepare prompt
+        full_prompt = request.prompt
+        if request.system_prompt:
+            full_prompt = f"System: {request.system_prompt}\n\nUser: {full_prompt}"
+        if request.context_data:
+            full_prompt += f"\n\nContext Data:\n```json\n{json.dumps(request.context_data, indent=2)}\n```"
+        
+        # Configure generation
+        generation_config = {
+            'temperature': self.config.temperature,
+            'max_output_tokens': self.config.max_tokens,
+        }
+        
+        response = model.generate_content(
+            full_prompt,
+            generation_config=generation_config
+        )
+        
+        content = response.text
+        
+        # Estimate tokens (rough approximation)
+        tokens_used = len(content.split()) * 1.3  # Rough token estimation
+        cost_usd = self._calculate_google_cost(tokens_used, self.config.model)
+        
+        return LLMResponse(
+            content=content,
+            provider=self.config.provider.value,
+            model=self.config.model,
+            tokens_used=int(tokens_used),
+            cost_usd=cost_usd,
+            execution_time=0
+        )
+    
     def _calculate_openai_cost(self, tokens: int, model: str) -> float:
         """Calculate approximate cost for OpenAI models"""
         cost_per_1k_tokens = {
@@ -332,6 +387,18 @@ class LLMAPIIntegration:
             "llama2-70b-4096": 0.0007,
             "mixtral-8x7b-32768": 0.0006,
             "gemma-7b-it": 0.0001
+        }
+        
+        rate = cost_per_1k_tokens.get(model, 0.0005)  # Default rate
+        return (tokens / 1000) * rate
+    
+    def _calculate_google_cost(self, tokens: int, model: str) -> float:
+        """Calculate approximate cost for Google Gemini models"""
+        cost_per_1k_tokens = {
+            "gemini-pro": 0.0005,
+            "gemini-pro-vision": 0.0025,
+            "gemini-1.5-pro": 0.0035,
+            "gemini-1.5-flash": 0.000075
         }
         
         rate = cost_per_1k_tokens.get(model, 0.0005)  # Default rate

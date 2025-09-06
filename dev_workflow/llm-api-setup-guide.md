@@ -85,7 +85,28 @@ echo 'export GROQ_API_KEY="your-groq-key-here"' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-### **🏠 Option 4: Local Ollama (Free!)**
+### **🌟 Option 4: Google Gemini**
+
+**1. Get API Key:**
+- Visit: https://makersuite.google.com/app/apikey
+- Create new API key
+- Copy the key
+
+**2. Set Environment Variable:**
+```bash
+export GOOGLE_API_KEY="your-gemini-key-here"
+
+# Add to your shell profile:
+echo 'export GOOGLE_API_KEY="your-gemini-key-here"' >> ~/.bashrc
+source ~/.bashrc
+```
+
+**3. Test Integration:**
+```bash
+./test-llm-automation.sh
+```
+
+### **🏠 Option 5: Local Ollama (Free!)**
 
 **1. Install Ollama:**
 ```bash
@@ -118,8 +139,11 @@ ollama serve
 # Anthropic Claude automation  
 ./ai-workflow-runner.py --mode=autonomous --feature=dashboard --llm-api --llm-provider=anthropic
 
+# Google Gemini automation
+./workflow-orchestrator.sh --mode=autonomous --feature=api-v2 --llm-api --llm-provider=google
+
 # Local Ollama automation (free!)
-./workflow-orchestrator.sh --mode=guided --feature=api-v2 --llm-api --llm-provider=local_ollama
+./workflow-orchestrator.sh --mode=guided --feature=chat-system --llm-api --llm-provider=local_ollama
 ```
 
 ### **🎛️ Advanced Configuration**
@@ -127,6 +151,10 @@ ollama serve
 # Custom model and cost limits
 ./ai-workflow-runner.py --mode=autonomous --feature=e-commerce \
     --llm-api --llm-provider=openai --llm-model=gpt-4 --cost-limit=25.0
+
+# Google Gemini with custom model
+./ai-workflow-runner.py --mode=autonomous --feature=payment-gateway \
+    --llm-api --llm-provider=google --llm-model=gemini-pro
 
 # Custom LLM configuration file
 ./workflow-orchestrator.sh --mode=learning --feature=chat-system \
