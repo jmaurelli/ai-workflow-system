@@ -1,21 +1,38 @@
-# 🚀 Workflow Automation Quickstart Guide - FULL EXECUTION SYSTEM
+# 🚀 Python Workflow System - Complete MVP & Feature Automation
 
-## **🎯 Three Ways to ACTUALLY RUN Your MVP Workflow**
+## **🎯 Two Clear Workflows: MVP Creation vs Feature Addition**
 
-*🎉 Revolutionary Update: The orchestrators now ACTUALLY EXECUTE workflows and CREATE REAL FILES!*
+*🎉 Revolutionary Update: Python-based system with clear separation between MVP projects and feature additions!*
 
-## **🤖 LATEST REVOLUTION: REAL LLM CONTENT GENERATION!**
+## **🤖 LATEST REVOLUTION: REAL LLM CONTENT GENERATION + ORGANIZED PROJECT STRUCTURE!**
 
-**🚀 ALL AUTOMATION MODES NOW SUPPORT REAL LLM API INTEGRATION!**
+**🚀 ALL AUTOMATION MODES NOW SUPPORT REAL LLM API INTEGRATION WITH ORGANIZED PROJECT MANAGEMENT!**
 
-Add `--llm-api` to any command below for **true end-to-end automation** with real content generation:
-
+### **🚀 For NEW MVP Projects:**
 ```bash
-# 🚀 REVOLUTIONARY: Real PRD, SRS, tasks content generated automatically!
-./workflow-orchestrator.sh --mode=autonomous --feature=user-auth --llm-api
-./ai-workflow-runner.py --mode=autonomous --feature=dashboard --llm-api
+# Create complete MVP project with real content generation
+./mvp-initializer.py --project=task-manager-app --mode=autonomous --llm-api
 
-# Choose your LLM provider
+# Creates organized project in /projects/task-manager-app/
+# Generates complete MVP specification with real PRD, SRS, tasks
+```
+
+### **➕ For FEATURES in Existing Projects:**
+```bash
+# Add features to existing MVP projects
+./workflow-runner.py --feature=user-authentication --existing-project=task-manager-app --mode=autonomous --llm-api
+
+# Adds feature to existing project with full context awareness
+```
+
+### **🔧 For STANDALONE Features (Legacy):**
+```bash
+# Create standalone features (legacy mode)
+./workflow-runner.py --feature=standalone-component --mode=autonomous --llm-api
+```
+
+### **🌟 Choose Your LLM Provider:**
+```bash
 --llm-provider=openai      # GPT-3.5/GPT-4 (default)
 --llm-provider=anthropic   # Claude 3.5 Sonnet  
 --llm-provider=google      # Google Gemini
@@ -29,31 +46,29 @@ Add `--llm-api` to any command below for **true end-to-end automation** with rea
 *Maximum human oversight with real file generation - stops at every major decision point*
 
 ```bash
-# ACTUALLY RUN complete workflow with human approval gates
-./workflow-orchestrator.sh --mode=guided --feature=user-auth
-# ✅ CREATES: /features/2025-01-15-user-auth/ with real files!
+# 🚀 NEW MVP: Create complete project with guided oversight
+./mvp-initializer.py --project=task-manager --mode=guided --llm-api
+# ✅ CREATES: /projects/task-manager/ with complete MVP specification!
 
-# 🚀 WITH LLM API: Generate REAL content automatically
-./workflow-orchestrator.sh --mode=guided --feature=user-auth --llm-api
-# ✅ CREATES: /features/2025-01-15-user-auth/ with REAL PRD, SRS, tasks content!
+# ➕ ADD FEATURE: Add feature to existing project with oversight
+./workflow-runner.py --feature=user-auth --existing-project=task-manager --mode=guided --llm-api
+# ✅ CREATES: Feature documentation within existing project structure!
 
-# See execution plan before running
-./ai-workflow-runner.py --mode=guided --feature=user-auth --dry-run
+# 🧪 DRY RUN: See execution plan before running
+./mvp-initializer.py --project=my-app --mode=guided --llm-api --dry-run
+./workflow-runner.py --feature=dashboard --existing-project=my-app --mode=guided --llm-api --dry-run
 # ✅ SHOWS: What will be created and where
-
-# ACTUALLY EXECUTE with AI agent coordination + LLM content generation
-./ai-workflow-runner.py --mode=guided --feature=user-auth --llm-api
-# ✅ RESULT: Complete feature directory with REAL content generated!
 ```
 
 **Best for**: First-time users, critical features, learning the workflow
 
 **🎯 What Actually Happens:**
-- Creates `/features/YYYY-MM-DD-user-auth/` directory
-- Generates `feature-manifest.json` with execution tracking
+- **🚀 MVP**: Creates `/projects/task-manager/` with organized structure
+- **➕ Feature**: Adds feature documentation to existing project
+- Generates `project-manifest.json` with execution tracking  
 - Creates AI execution instructions for each workflow step (01-output.md → 09-output.md)
-- Provides AI agent guidance scripts (`ai-helper.sh`)
 - **🚀 WITH --llm-api: Generates REAL PRD, SRS, tasks content automatically!**
+- **📁 Organized**: All related documents in single project directory
 
 ---
 

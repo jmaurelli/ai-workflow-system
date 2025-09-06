@@ -45,6 +45,8 @@ class ExecutionContext:
     risk_score: float = 0.0
     technology_stack: List[str] = None
     approval_history: Dict[str, bool] = None
+    context_mode: str = "STANDALONE_FEATURE"
+    existing_project: Optional[str] = None
 
 class WorkflowOrchestrator:
     """Intelligent workflow orchestrator for AI agents"""
@@ -403,6 +405,9 @@ def main():
                        required=True,
                        help="Feature name for workflow execution")
     
+    parser.add_argument("--existing-project",
+                       help="Existing project name (for feature addition to MVP projects)")
+    
     parser.add_argument("--dry-run", 
                        action="store_true",
                        help="Show execution plan without running")
@@ -453,18 +458,58 @@ def main():
             orchestrator.llm_config_file = args.llm_config
             orchestrator.cost_limit = args.cost_limit
         
+        # Determine project directory and context mode
+        if args.existing_project:
+            # Feature addition to existing MVP project
+            project_root = Path.cwd() / "projects" / args.existing_project
+            context_mode = "FEATURE_ADDITION"
+            
+            if not project_root.exists():
+                print(f"❌ Error: Project '{args.existing_project}' not found in /projects/")
+                print(f"💡 Tip: Use mvp-initializer.py to create new projects")
+                sys.exit(1)
+                
+            print(f"➕ Adding feature '{args.feature}' to existing project '{args.existing_project}'")
+        else:
+            # Standalone feature (legacy mode)
+            project_root = Path.cwd()
+            context_mode = "STANDALONE_FEATURE"
+            print(f"🔧 Creating standalone feature '{args.feature}'")
+
         # Create execution context
         context = ExecutionContext(
             feature_name=args.feature,
             mode=AutomationMode(args.mode),
-            project_root=Path.cwd()
+            project_root=project_root
         )
+        
+        # Add context mode for LLM prompting
+        context.context_mode = context_mode
+        context.existing_project = args.existing_project
         
         # Assess risk
         context.risk_score = orchestrator.assess_risk_score(context)
         
         # Execute workflow
-        success = orchestrator.execute_workflow(context, dry_run=args.dry_run)
+        if args.dry_run:
+            print(f"\n🧪 DRY RUN - Execution Plan for '{args.feature}':")
+            if args.existing_project:
+                print(f"   📁 Target: Adding to existing project '{args.existing_project}'")
+            else:
+                print(f"   📁 Target: Creating standalone feature")
+            
+            success = orchestrator.execute_workflow(context, dry_run=True)
+        else:
+            success = orchestrator.execute_workflow(context, dry_run=False)
+            
+            if success:
+                if args.existing_project:
+                    print(f"\n🎉 Feature '{args.feature}' added successfully to project '{args.existing_project}'!")
+                    print(f"📁 Project location: {context.project_root}")
+                else:
+                    print(f"\n🎉 Standalone feature '{args.feature}' completed successfully!")
+            else:
+                print(f"\n❌ Workflow failed for '{args.feature}'")
         
         sys.exit(0 if success else 1)
         
