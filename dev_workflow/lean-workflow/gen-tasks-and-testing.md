@@ -89,11 +89,36 @@ Begin with a concise checklist (3-7 bullets) of intended sub-tasks before procee
 
 ---
 
-## AI Agent Instructions
-- **Always read design decisions first** from `/decisions/design-decisions-[feature-name].md`
-- **Apply tech stack choices** to all task generation (file extensions, frameworks, patterns)
+## AI Agent Instructions (Context-Aware Task Generation)
+
+### Context Distillation (Priority 1)
+- **Always read and distill** the following sources into Executive Context:
+  - `/decisions/design-decisions-[feature-name].md` → Tech stack rationale
+  - `/srs/srs-[feature-name].md` → Performance budgets and security baseline
+  - `/design/design-[feature-name].md` → Component strategy and integration approach
+  - `/decisions/learning-notes-[feature-name].md` → Team confidence and learning goals
+- **Distill into concise bullets** - each Executive Context item should be 1-2 lines maximum
+- **Focus on implementation-critical info** - what AI agents need to make good coding decisions
+
+### Context Reference Mapping (Priority 2)
+- **Map specific task needs** to exact document sections for just-in-time loading
+- **Example**: "For JWT implementation → `/srs/srs-auth.md` REQ-SEC-002, REQ-PERF-003"
+- **Be specific**: Section numbers, requirement IDs, decision rationale sections
+
+### Task Context Embedding (Priority 3)
+- **Each parent task gets essential context** - tech pattern, key constraints, integration points
+- **Each subtask gets minimal context** - specific pattern, performance target, or security requirement
+- **Balance completeness vs brevity** - enough context for AI to implement correctly, not more
+
+### Smart Context Management
+- **Avoid context duplication** - reference don't repeat detailed requirements
+- **Use shorthand for common patterns** - "FastAPI middleware pattern", "React component reuse"
+- **Flag high-context tasks** - when tasks need extensive external context, note it clearly
+
+### Technical Implementation Rules
+- **Apply tech stack choices** to all file extensions, frameworks, and patterns
 - **Honor UX decisions** when structuring frontend tasks and component organization
-- **Consider learning context** - include tasks that support identified learning goals
+- **Include NFR validation** in acceptance criteria with specific metrics
 - **Reference decision rationale** when explaining why specific approaches are chosen
 - Always generate both the task list and test stubs together.
 - For MVP, restrict tests to smoke tests only.
@@ -118,28 +143,44 @@ Output should be a single Markdown document saved as `/tasks/tasks-[prd-name].md
 ```markdown
 # Tasks for [PRD Name]
 
+## Executive Context (Distilled for AI Agents)
+**Tech Stack**: [Key technology choices and rationale from design decisions]
+**Performance Budgets**: [Critical SRS constraints - response times, throughput]
+**Security Baseline**: [Essential security requirements from SRS]
+**Component Strategy**: [Design analysis integration approach - reuse vs new]
+**Learning Context**: [Team confidence levels and skill-building goals]
+
+## Context References (Just-in-Time Loading)
+**Requirements**: `/prd/prd-[feature-name].md` sections [specific sections needed]
+**NFR Specifications**: `/srs/srs-[feature-name].md` [specific REQ-* IDs]
+**Design Decisions**: `/decisions/design-decisions-[feature-name].md` [relevant decision areas]
+**Component Integration**: `/design/design-[feature-name].md` [integration guidance]
+**Learning Notes**: `/decisions/learning-notes-[feature-name].md` [confidence tracking]
+
 ## Changelog
 - [YYYY-MM-DD] Initial tasks created.
 - [YYYY-MM-DD] [Description of subsequent changes]
 
-## Relevant Files
-- path/to/file1.ext – description
-- path/to/file2.ext – description
+## Relevant Files (Tech-Stack Aware)
+- path/to/file1.[ext] – [description with tech stack context]
+- path/to/file2.[ext] – [description with performance/security notes]
 
 ## Notes
-- [Freeform notes, including process deviations: e.g., "Only 2 parent tasks inferred due to limited PRD input." "User stories section missing from PRD; requirements inferred from goals."]
+- [Freeform notes, including process deviations and context decisions]
 
-## Tasks
+## Tasks (Context-Embedded)
 - [ ] 1.0 [Parent Task 1]
-  - [ ] 1.1 [Subtask 1]
-  - [ ] 1.2 [Subtask 2]
+  - **Context**: [Essential context for this task - tech choices, constraints, integration points]
+  - [ ] 1.1 [Subtask 1] - [Minimal context: tech pattern, performance target]
+  - [ ] 1.2 [Subtask 2] - [Minimal context: integration approach, security requirement]
   ...
 - [ ] 2.0 [Parent Task 2]
+  - **Context**: [Essential context for this task]
   ...
 
-### Acceptance Criteria
-- [Criteria for Parent Task 1] (reference PRD requirement IDs)
-- [Criteria for Parent Task 2]
+### Acceptance Criteria (NFR-Enhanced)
+- [Criteria for Parent Task 1] (PRD: REQ-X, SRS: NFR-Y, Performance: <Zms)
+- [Criteria for Parent Task 2] (PRD: REQ-A, SRS: NFR-B, Security: compliance-C)
 
 ## Task Dependencies
 

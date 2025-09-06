@@ -85,14 +85,21 @@ This document integrates **Task List Management**, **Test-Driven Development (TD
 
 ### Phases
 
-1. **Pre-Implementation Planning (Design-Decision Aware)**
-   - **Read Design Decisions**: Reference `/decisions/design-decisions-[project-name].md` for:
-     - **Tech stack choices**: Apply chosen technologies (Python vs Go, React vs Vue, etc.)
-     - **UX approach**: Follow chosen component library strategy and design patterns
-     - **Learning context**: Consider confidence levels and learning goals
-     - **Decision rationale**: Understand why specific technologies were chosen
+1. **Pre-Implementation Planning (Context-Aware)**
+   - **Read Executive Context**: Start with distilled context from task file header:
+     - **Tech Stack**: Apply chosen technologies and patterns immediately
+     - **Performance Budgets**: Implement with specific timing/throughput constraints
+     - **Security Baseline**: Follow established security requirements and patterns
+     - **Component Strategy**: Use identified reuse opportunities and integration approaches
+     - **Learning Context**: Structure implementation to support team skill development
+   - **Load Just-in-Time Context**: Reference specific sections only when needed:
+     - For complex requirements → Load specific PRD sections
+     - For detailed NFRs → Load specific SRS requirement IDs
+     - For architecture decisions → Load specific design decision rationale
+     - For integration details → Load specific design analysis sections
+   - **Use Task Context**: Apply parent task and subtask embedded context
    - Clearly define requirements and acceptance criteria.
-   - **Propose approaches within chosen tech stack** and select the lowest complexity option.
+   - **Select implementation approach** based on distilled context and constraints.
    - Outline data flows, dependencies, and API contracts **using chosen technologies**.
 2. **RED Phase: Author Failing Tests (Tech-Stack Specific)**
    - **Use chosen testing frameworks**: Jest for Node.js, pytest for Python, testing/testify for Go, etc.
@@ -111,11 +118,24 @@ This document integrates **Task List Management**, **Test-Driven Development (TD
 5. **Integration & Validation**
    - Execute full workflows across environments to verify performance, accessibility, and stability.
 
+### Context-Aware Implementation Strategy
+- **Start with Executive Context**: Use distilled context to make immediate implementation decisions
+- **Load context as needed**: Only reference detailed documents when task context is insufficient
+- **Efficient context usage**:
+  - Use task-embedded context for 80% of implementation decisions
+  - Load specific requirement sections only for complex edge cases
+  - Reference design decisions only when implementation approach is unclear
+  - Access learning materials only when encountering new patterns
+
 ### MVP TDD-Lite Enforcement
 - For each change set/parent task, you MUST:
   - Author a failing smoke test first (targeting acceptance criteria or key flow).
   - Implement the minimal code to pass (keep scope tight to the test).
   - Refactor immediately after passing (naming, duplication, simplicity).
+- **Apply context efficiently**:
+  - Use performance budgets from Executive Context in test assertions
+  - Follow security baseline patterns without re-reading SRS
+  - Apply component strategy from task context for integration
 - Scope remains MVP-level: smoke tests only, not full unit/integration breadth.
 
 ### Success Metrics
