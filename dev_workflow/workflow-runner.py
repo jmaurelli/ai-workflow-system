@@ -340,36 +340,36 @@ class WorkflowOrchestrator:
         
         # Execute using workflow executor
         try:
-               import subprocess
-               
-               cmd = [
-                   "python3", 
-                   str(Path(__file__).parent / "workflow-executor.py"),
-                   str(doc_path),
-                   "--feature", context.feature_name,
-                   "--feature-dir", str(feature_dir),
-                   "--mode", context.mode.value,
-                   "--step", step.number,
-                   "--phase", step.phase
-               ]
-               
-               # Add LLM API configuration if enabled
-               if self.llm_api_enabled:
-                   cmd.append("--llm-api")
-                   
-                   if self.llm_provider:
-                       cmd.extend(["--llm-provider", self.llm_provider])
-                   
-                   if self.llm_model:
-                       cmd.extend(["--llm-model", self.llm_model])
-                   
-                   if self.llm_config_file:
-                       cmd.extend(["--llm-config", str(self.llm_config_file)])
-                   
-                   if self.cost_limit:
-                       cmd.extend(["--cost-limit", str(self.cost_limit)])
-                   
-                   self.logger.info(f"🤖 LLM API enabled: Real content generation mode!")
+            import subprocess
+            
+            cmd = [
+                "python3", 
+                str(Path(__file__).parent / "workflow-executor.py"),
+                str(doc_path),
+                "--feature", context.feature_name,
+                "--feature-dir", str(feature_dir),
+                "--mode", context.mode.value,
+                "--step", step.number,
+                "--phase", step.phase
+            ]
+            
+            # Add LLM API configuration if enabled
+            if self.llm_api_enabled:
+                cmd.append("--llm-api")
+                
+                if self.llm_provider:
+                    cmd.extend(["--llm-provider", self.llm_provider])
+                
+                if self.llm_model:
+                    cmd.extend(["--llm-model", self.llm_model])
+                
+                if self.llm_config_file:
+                    cmd.extend(["--llm-config", str(self.llm_config_file)])
+                
+                if self.cost_limit:
+                    cmd.extend(["--cost-limit", str(self.cost_limit)])
+                
+                self.logger.info(f"🤖 LLM API enabled: Real content generation mode!")
             
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
             

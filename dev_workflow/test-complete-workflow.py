@@ -369,9 +369,10 @@ class WorkflowTester:
         
         cleanup_count = 0
         
-        # Clean up test projects
+        # Clean up test projects (including ones that might exist from previous runs)
         projects_dir = Path.cwd() / "projects"
         if projects_dir.exists():
+            # Clean up projects from current test run
             for project_name in self.test_projects:
                 project_dir = projects_dir / project_name
                 if project_dir.exists():
@@ -381,6 +382,16 @@ class WorkflowTester:
                         self.log_info(f"Removed test project: {project_dir}")
                     except Exception as e:
                         self.log_warning(f"Could not remove {project_dir}: {e}")
+            
+            # Clean up any leftover test projects from previous runs
+            for item in projects_dir.glob("test-mvp-*"):
+                try:
+                    if item.is_dir():
+                        shutil.rmtree(item)
+                        cleanup_count += 1
+                        self.log_info(f"Removed leftover test project: {item}")
+                except Exception as e:
+                    self.log_warning(f"Could not remove {item}: {e}")
         
         # Clean up test features (legacy)
         features_dir = Path.cwd() / "features"
@@ -395,6 +406,16 @@ class WorkflowTester:
                     self.log_info(f"Removed test artifact: {item}")
                 except Exception as e:
                     self.log_warning(f"Could not remove {item}: {e}")
+            
+            # Clean up standalone test features
+            for item in features_dir.glob("standalone-*"):
+                try:
+                    if item.is_dir():
+                        shutil.rmtree(item)
+                        cleanup_count += 1
+                        self.log_info(f"Removed standalone test feature: {item}")
+                except Exception as e:
+                    self.log_warning(f"Could not remove {item}: {e}")
         
         self.log_success(f"Cleanup completed: {cleanup_count} items removed")
     
@@ -403,6 +424,10 @@ class WorkflowTester:
         self.log_header("🧪 COMPLETE PYTHON WORKFLOW SYSTEM TEST SUITE")
         
         results = {}
+        
+        # Pre-cleanup any existing test artifacts
+        self.log_info("Pre-cleaning any existing test artifacts...")
+        self.cleanup_test_artifacts()
         
         # Check prerequisites
         if not self.check_prerequisites():
