@@ -189,48 +189,101 @@ Enable secure user authentication for web applications
 
 ## Workflow Integration
 
-### Next Steps After Initialization
+### Next Steps After Initialization (Feature-Centric)
 Developer: ### Next Steps After Initialization
 
 Begin with a concise checklist (3-7 bullets) of what you will do; keep items conceptual, not implementation-level.
 
-1. **Generate PRD:**
-   - Use the collected data to create `/prd/prd-[project-name].md` (convert `[project-name]` to kebab-case).
-   - **Human Gate:** Review and approve the project scope, constraints, and success criteria.
+1. **Initialize Feature Directory:**
+   - Create date-prefixed feature directory: `/features/[YYYY-MM-DD]-[project-name]/` (auto-generate date from OS, convert `[project-name]` to kebab-case)
+   - Initialize `feature-manifest.json` with metadata and workflow tracking
+   - Setup directory structure with `artifacts/` subdirectories for generated content
 
-2. **Generate SRS (Mandatory - Quality Foundation):**
-   - Run `gen-srs.md` to capture critical NFRs for quality MVP development.
-   - **Focus on MVP essentials**: Performance budgets, security baselines, accessibility foundations.
-   - Generate `/srs/srs-[project-name].md` with measurable quality constraints.
-   - **Human Gate:** Review and approve performance budgets and quality standards.
+2. **Generate PRD:**
+   - Use the collected data to create `./prd.md` within the feature directory
+   - **Human Gate:** Review and approve the project scope, constraints, and success criteria
 
-3. **Design Decisions (Learning-Guided):**
-   - Run `gen-design-decisions-lite.md` to make informed technical and UX decisions through interactive questionnaires.
-   - Generate `/decisions/design-decisions-[project-name].md` with documented rationale and learning insights.
-   - Update `/decisions/learning-notes-[project-name].md` with personal learning progress.
-   - **Human Gate:** Review and approve technology stack, UX approach, and design decisions.
+3. **Generate SRS (Mandatory - Quality Foundation):**
+   - Run `gen-srs.md` to capture critical NFRs for quality MVP development
+   - **Focus on MVP essentials**: Performance budgets, security baselines, accessibility foundations
+   - Generate `./srs.md` with measurable quality constraints within feature directory
+   - **Human Gate:** Review and approve performance budgets and quality standards
 
-4. **Design Analysis:**
-   - Run `gen-design.md` to analyze existing codebase for component reuse and integration opportunities.
-   - Generate `/design/design-[project-name].md` with implementation guidance.
-   - **Optional:** Run `gen-design-recovery.md` if inconsistencies are detected.
+4. **Design Decisions (Learning-Guided):**
+   - Run `gen-design-decisions-lite.md` to make informed technical and UX decisions through interactive questionnaires
+   - Generate `./design-decisions.md` with documented rationale and learning insights
+   - Update `./learning-notes.md` with personal learning progress
+   - **Human Gate:** Review and approve technology stack, UX approach, and design decisions
 
-5. **Create Tasks:**
-   - Use the generated PRD, SRS, design decisions, and design analysis as input to create `/tasks/tasks-[project-name].md`, referencing `gen-tasks-and-testing.md` and following the TDD-Lite approach.
-   - **Human Gate:** Review and approve the task assumptions and success criteria.
+5. **Design Analysis:**
+   - Run `gen-design.md` to analyze existing codebase for component reuse and integration opportunities
+   - Generate `./design-analysis.md` with implementation guidance within feature directory
+   - **Optional:** Run `gen-design-recovery.md` if inconsistencies are detected
 
-6. **Update Manifest:**
-   - Keep `/artifacts/manifest.json` up to date with ongoing progress.
+6. **Create Tasks:**
+   - Use the generated PRD, SRS, design decisions, and design analysis as input to create `./tasks.md`, referencing `gen-tasks-and-testing.md` and following the TDD-Lite approach
+   - **Human Gate:** Review and approve the task assumptions and success criteria
+
+7. **Update Feature Manifest:**
+   - Keep `./feature-manifest.json` up to date with workflow progress and document status
 
 After each substantive action or file update, briefly validate that the intended results were achieved and determine the next step or self-correct if necessary. At major milestones (after PRD and after tasks creation), provide a one to three sentence update summarizing progress, next steps, and any blockers. Attempt a first pass autonomously, but stop and ask for clarification if critical information is missing or approval is explicitly required.
 
-### Human-in-the-Loop Gates
-- **Before PRD Generation**: Review and approve project scope, constraints, and success criteria
+### Human-in-the-Loop Gates (Feature-Centric)
+- **Before Feature Directory Creation**: Review and approve feature name and scope for directory naming
+- **Before PRD Generation**: Review and approve project scope, constraints, and success criteria  
 - **Before SRS Generation**: Review and approve performance budgets and quality standards
 - **Before Design Decisions**: Review and approve technology stack, UX approach, and design decisions with documented rationale
 - **Before Task Creation**: Review and approve PRD assumptions and success criteria
 - **Before Development**: Approve task breakdown and acceptance criteria
 - **Scope Changes**: Approve any modifications to project scope or requirements
+
+### Feature Directory Initialization Protocol
+```bash
+# Auto-generate feature directory with OS timestamp
+FEATURE_DATE=$(date +"%Y-%m-%d")
+FEATURE_SLUG="[convert-project-name-to-kebab-case]"  
+FEATURE_DIR="/features/${FEATURE_DATE}-${FEATURE_SLUG}"
+
+# Create feature directory structure
+mkdir -p "${FEATURE_DIR}/artifacts/api-contracts"
+mkdir -p "${FEATURE_DIR}/artifacts/design-mockups"
+mkdir -p "${FEATURE_DIR}/artifacts/test-results"
+mkdir -p "${FEATURE_DIR}/artifacts/performance-reports"
+
+# Initialize feature manifest
+cat > "${FEATURE_DIR}/feature-manifest.json" << 'EOF'
+{
+  "feature_metadata": {
+    "feature_name": "[Collected Project Name]",
+    "feature_slug": "[kebab-case-slug]",
+    "feature_directory": "[YYYY-MM-DD]-[kebab-case-slug]",
+    "creation_date": "[ISO-8601-timestamp]",
+    "creator": "mvp-entrypoint-workflow",
+    "project_context": "[Collected project context]"
+  },
+  "workflow_status": {
+    "current_phase": "initialization",
+    "phases_completed": [],
+    "phases_remaining": ["foundation", "design_analysis", "implementation", "completion_summary"],
+    "estimated_completion": null,
+    "last_updated": "[ISO-8601-timestamp]"
+  },
+  "document_status": {
+    "prd": {"status": "pending", "path": "./prd.md"},
+    "srs": {"status": "pending", "path": "./srs.md"},
+    "design_decisions": {"status": "pending", "path": "./design-decisions.md"},
+    "design_analysis": {"status": "pending", "path": "./design-analysis.md"},
+    "tasks": {"status": "pending", "path": "./tasks.md"},
+    "learning_notes": {"status": "pending", "path": "./learning-notes.md"},
+    "completion_summary": {"status": "pending", "path": "./completion-summary.md"}
+  }
+}
+EOF
+
+# Set working directory for all subsequent workflow steps
+cd "${FEATURE_DIR}"
+```
 
 ## Notes
 - This template consolidates MVP core protocol requirements

@@ -5,23 +5,27 @@ Efficiently capture an idea and transform it into a **Lean PRD** focused on MVP 
 
 ---
 
-## Quickstart (Lean PRD)
-- Ensure the `/prd/` directory exists; create it if missing.
-- Define a slug for `[feature-name]` using lowercase kebab-case (e.g., "User Signup" → `user-signup`).
-- Capture the feature in 1–2 sentences.
-- Ask only critical clarifying questions (problem, user, success).
-- Complete the Lean PRD template below (≤ 400 words total).
-- Save as `/prd/prd-[feature-name].md` and validate section order and presence.
+## Quickstart (Lean PRD - Feature-Centric)
+- **Auto-detect structure**: Check if working in feature directory (`/features/[date]-[slug]/`) or legacy structure
+- **Feature-centric**: Save as `./prd.md` within current feature directory  
+- **Legacy compatibility**: Fall back to `/prd/prd-[feature-name].md` if not in feature directory
+- Define a slug for `[feature-name]` using lowercase kebab-case (e.g., "User Signup" → `user-signup`)
+- Capture the feature in 1–2 sentences
+- Ask only critical clarifying questions (problem, user, success)
+- Complete the Lean PRD template below (≤ 400 words total)
+- Update `./feature-manifest.json` with PRD completion status
 
 ---
 
-## Workflow (Lean-First)
+## Workflow (Lean-First - Feature-Centric)
 Begin with a concise checklist (3-7 bullets) of what you will do; keep items conceptual, not implementation-level.
-1. Ensure `/prd/` exists and define the `[feature-name]` slug (lowercase, kebab-case).
-2. Capture the feature or idea succinctly in 1–2 sentences.
-3. Ask only the most **critical clarifying questions** (e.g., What problem does this solve? Who is the user? What defines success?).
-4. Complete the **Lean PRD template** provided below (≤ 400 words).
-5. Save the PRD as `/prd/prd-[feature-name].md`.
+1. **Auto-detect document structure**: Check if in feature directory or legacy structure
+2. Define the `[feature-name]` slug (lowercase, kebab-case) if not already established
+3. Capture the feature or idea succinctly in 1–2 sentences
+4. Ask only the most **critical clarifying questions** (e.g., What problem does this solve? Who is the user? What defines success?)
+5. Complete the **Lean PRD template** provided below (≤ 400 words)
+6. **Feature-centric**: Save as `./prd.md` OR **Legacy**: Save as `/prd/prd-[feature-name].md`
+7. **Update feature manifest**: Mark PRD as completed in `./feature-manifest.json` (if feature-centric)
 After each step, verify that all required information has been captured; if not, request only the minimal essential clarification or complete the missing parts before proceeding.
 
 ---
@@ -97,16 +101,28 @@ If added complexity or NFRs are material to MVP execution, generate a Lean SRS u
 
 ---
 
-## AI Agent Directives
-- Default to creating a **Lean PRD** unless otherwise instructed.
-- Use a lowercase, kebab-case slug for `[feature-name]` consistently across PRD, tasks, and tests.
-- Prompt the human explicitly for `[feature-name]` as `feature_slug` and BLOCK until provided. Do NOT auto-generate, infer, or randomize the slug.
-- Validate `feature_slug` format (lowercase kebab-case). If invalid, show the format and re-prompt.
-- Ensure the `/prd/` directory exists; create it if missing.
-- Save files as `/prd/prd-[feature-name].md`.
-- Limit Lean PRDs to one page and ≤ 400 words.
-- Validate that the file exists, is accessible, and that all template sections appear in the specified order. If validation fails, self-correct before completion.
-- Include the optional Linkages section if the related tasks file exists.
+## AI Agent Directives (Feature-Centric)
+- Default to creating a **Lean PRD** unless otherwise instructed
+- **Auto-detect document structure**: Check current working directory for feature structure vs legacy structure
+- **Feature-centric mode**: If in `/features/[date]-[slug]/` directory, save as `./prd.md` and update `./feature-manifest.json`
+- **Legacy mode**: If not in feature directory, use legacy paths `/prd/prd-[feature-name].md`
+- Use a lowercase, kebab-case slug for `[feature-name]` consistently across PRD, tasks, and tests
+- Prompt the human explicitly for `[feature-name]` as `feature_slug` and BLOCK until provided. Do NOT auto-generate, infer, or randomize the slug
+- Validate `feature_slug` format (lowercase kebab-case). If invalid, show the format and re-prompt
+- **Path determination logic**: 
+  ```bash
+  if [[ "$PWD" == */features/*-* ]]; then
+    PRD_PATH="./prd.md"
+    UPDATE_MANIFEST=true
+  else
+    mkdir -p "/prd"
+    PRD_PATH="/prd/prd-[feature-name].md"
+    UPDATE_MANIFEST=false
+  fi
+  ```
+- Limit Lean PRDs to one page and ≤ 400 words
+- Validate that the file exists, is accessible, and that all template sections appear in the specified order. If validation fails, self-correct before completion
+- Include the optional Linkages section with appropriate paths (feature-centric vs legacy)
 Set reasoning_effort = minimal; keep outputs concise and focused.
 
 ---

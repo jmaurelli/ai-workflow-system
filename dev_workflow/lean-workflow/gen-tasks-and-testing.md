@@ -138,7 +138,11 @@ After generating the Markdown task file, validate that all required sections (Ch
 
 ## Output Format
 
-Output should be a single Markdown document saved as `/tasks/tasks-[prd-name].md` and conform to the following structure:
+Output should be a single Markdown document saved as:
+- **Feature-centric**: `./tasks.md` (within current feature directory)
+- **Legacy**: `/tasks/tasks-[prd-name].md` (traditional scattered structure)
+
+The document should conform to the following structure:
 
 ```markdown
 # Tasks for [PRD Name]
@@ -151,11 +155,11 @@ Output should be a single Markdown document saved as `/tasks/tasks-[prd-name].md
 **Learning Context**: [Team confidence levels and skill-building goals]
 
 ## Context References (Just-in-Time Loading)
-**Requirements**: `/prd/prd-[feature-name].md` sections [specific sections needed]
-**NFR Specifications**: `/srs/srs-[feature-name].md` [specific REQ-* IDs]
-**Design Decisions**: `/decisions/design-decisions-[feature-name].md` [relevant decision areas]
-**Component Integration**: `/design/design-[feature-name].md` [integration guidance]
-**Learning Notes**: `/decisions/learning-notes-[feature-name].md` [confidence tracking]
+**Requirements**: `./prd.md` sections [specific sections needed] (feature-centric) OR `/prd/prd-[feature-name].md` (legacy)
+**NFR Specifications**: `./srs.md` [specific REQ-* IDs] (feature-centric) OR `/srs/srs-[feature-name].md` (legacy)
+**Design Decisions**: `./design-decisions.md` [relevant decision areas] (feature-centric) OR `/decisions/design-decisions-[feature-name].md` (legacy)
+**Component Integration**: `./design-analysis.md` [integration guidance] (feature-centric) OR `/design/design-[feature-name].md` (legacy)
+**Learning Notes**: `./learning-notes.md` [confidence tracking] (feature-centric) OR `/decisions/learning-notes-[feature-name].md` (legacy)
 
 ## Changelog
 - [YYYY-MM-DD] Initial tasks created.

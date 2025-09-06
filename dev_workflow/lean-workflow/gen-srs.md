@@ -5,20 +5,26 @@ Capture only the minimum non-functional requirements (NFRs), constraints, and bu
 
 ---
 
-## Quickstart (Lean SRS)
-- Read existing PRD at `/prd/prd-[feature_slug].md`
+## Quickstart (Lean SRS - Feature-Centric)
+- **Auto-detect structure**: Check if working in feature directory or legacy structure
+- **Feature-centric**: Read PRD at `./prd.md` and save as `./srs.md`
+- **Legacy**: Read PRD at `/prd/prd-[feature_slug].md` and save as `/srs/srs-[feature_slug].md`
 - Capture 8–10 critical NFRs with measurable budgets
 - Focus on performance, reliability, security, and constraints
-- Save as `/srs/srs-[feature_slug].md`
+- Update `./feature-manifest.json` with SRS completion status (if feature-centric)
 
 ---
 
-## Workflow (Lean-First)
-1. **Read PRD**: Review `/prd/prd-[feature_slug].md` to understand functional requirements.
-2. **Identify NFRs**: List critical constraints and NFRs that affect design/implementation and testing.
-3. **Define Budgets**: Set measurable budgets (e.g., p50/p95 latency, error rates, uptime).
-4. **Prioritize**: Keep to ≤ 1 page; prioritize only what must be enforced during MVP.
-5. **Save & Validate**: Save to `/srs/srs-[feature_slug].md` and validate section order.
+## Workflow (Lean-First - Feature-Centric)
+1. **Auto-detect structure & Read PRD**: 
+   - **Feature-centric**: Review `./prd.md` to understand functional requirements
+   - **Legacy**: Review `/prd/prd-[feature_slug].md` to understand functional requirements
+2. **Identify NFRs**: List critical constraints and NFRs that affect design/implementation and testing
+3. **Define Budgets**: Set measurable budgets (e.g., p50/p95 latency, error rates, uptime)
+4. **Prioritize**: Keep to ≤ 1 page; prioritize only what must be enforced during MVP
+5. **Save & Validate**: 
+   - **Feature-centric**: Save to `./srs.md` and update `./feature-manifest.json`
+   - **Legacy**: Save to `/srs/srs-[feature_slug].md` and validate section order
 
 ---
 
@@ -52,8 +58,8 @@ One short paragraph describing scope and boundaries. Reference PRD; do not resta
 - PRD Requirements: REQ-1 → NFR-1, NFR-3; REQ-2 → NFR-2
 
 ## Linkages
-- PRD: /prd/prd-[feature_slug].md
-- Tasks: /tasks/tasks-[feature_slug].md
+- PRD: ./prd.md (feature-centric) OR /prd/prd-[feature_slug].md (legacy)
+- Tasks: ./tasks.md (feature-centric) OR /tasks/tasks-[feature_slug].md (legacy)
 ```
 
 ---
