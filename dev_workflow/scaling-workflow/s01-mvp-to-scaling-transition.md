@@ -1,7 +1,35 @@
-# Workflow: MVP to Scaling Transition (Design-Aware)
+# Workflow: MVP to Scaling Transition - Step s01 (Transition Phase)
 
 ## Objective
 Provide clear guidance for transitioning from MVP workflow to scaling workflow while preserving design-aware enhancements and maintaining project continuity. Ensure component reuse knowledge and design decisions transfer seamlessly.
+
+## 🏢 Enterprise Automation Support
+This document supports **three enterprise automation modes** for AI agents:
+
+### **🚦 Enterprise Automation Modes**
+- **🚪 GUIDED Mode**: Maximum enterprise oversight - traditional workflow with governance gates
+- **⚡ AUTONOMOUS Mode**: Balanced enterprise oversight - AI agent proceeds automatically with enterprise safety checks  
+- **🧠 LEARNING Mode**: Adaptive enterprise oversight - learns from approval patterns and enterprise governance requirements
+
+### **🚀 Automated Enterprise Execution**
+Use the enterprise workflow orchestrators to run the complete scaling sequence automatically:
+
+```bash
+# Traditional enterprise shell orchestrator
+./enterprise-workflow-orchestrator.sh --mode=guided --feature=user-service
+
+# Intelligent enterprise Python orchestrator  
+./enterprise-ai-workflow-runner.py --mode=autonomous --feature=api-gateway
+
+# Compliance-aware enterprise workflow
+./enterprise-ai-workflow-runner.py --mode=autonomous --feature=payment-system \
+    --compliance=GDPR --multi-team --architecture-impact
+
+# See enterprise execution plan without running
+./enterprise-ai-workflow-runner.py --mode=learning --feature=microservice --dry-run
+```
+
+See `workflow-sequence-guide.md` and `enterprise-automation-quickstart.md` for complete automation details.
 
 ## When to Transition to Scaling
 
