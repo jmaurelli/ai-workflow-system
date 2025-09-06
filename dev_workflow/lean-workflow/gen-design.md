@@ -11,17 +11,25 @@ Analyze existing codebase for design patterns, components, and integration oppor
 
 ## Workflow Steps
 
-### 1. Codebase Analysis
-- Scan existing codebase for related components and patterns
-- Identify existing UI elements that serve similar functions
-- Document current design patterns and conventions
-- **Flag inconsistencies** for potential recovery workflow (optional)
+### 1. Design Decisions Integration
+- **Read design decisions** from `/decisions/design-decisions-[project-name].md`
+- **Apply tech stack choices** to component analysis (React vs Vue, CSS approach, etc.)
+- **Use UX decisions** to guide component selection and user flow integration
+- **Consider learning goals** from design decisions when suggesting approaches
 
-### 2. Integration Planning
-- Determine integration approach (replace, enhance, or add new)
-- Identify opportunities for component reuse
-- Plan user experience integration points
+### 2. Codebase Analysis (Design-Decision Aware)
+- Scan existing codebase for related components and patterns **matching chosen tech stack**
+- Identify existing UI elements that serve similar functions **within chosen design approach**
+- Document current design patterns and conventions **compatible with chosen frameworks**
+- **Flag inconsistencies** for potential recovery workflow (optional)
+- **Validate alignment** between existing code and design decisions
+
+### 3. Integration Planning (Learning-Guided)
+- Determine integration approach (replace, enhance, or add new) **based on design decisions**
+- Identify opportunities for component reuse **within chosen tech stack**
+- Plan user experience integration points **supporting chosen UX approach**
 - **Recommend recovery actions** if inconsistencies are found (optional)
+- **Suggest learning opportunities** when integration requires new skills
 
 ## Inconsistency Detection (Optional)
 - **Automatic Detection**: Scan for duplicate or similar components
@@ -72,19 +80,25 @@ Analyze existing codebase for design patterns, components, and integration oppor
 ---
 
 ## AI Agent Directives
-- Always run after PRD creation for existing codebases
-- Scan for existing components before generating new ones
+- **Always read design decisions first** from `/decisions/design-decisions-[project-name].md`
+- **Apply tech stack choices** when scanning codebase (focus on chosen frameworks/libraries)
+- **Honor UX decisions** when suggesting component approaches and user flows
+- **Consider learning context** - suggest approaches that support user's learning goals
+- Scan for existing components before generating new ones **within chosen tech stack**
 - Flag duplicate or inconsistent components for recovery consideration
 - Save design analysis to `/design/design-[feature-name].md`
-- Validate integration approach matches PRD Design Context
-Set reasoning_effort = medium; thorough analysis but concise output
+- Validate integration approach matches PRD Design Context **and design decisions**
+- **Suggest learning opportunities** when integration involves new concepts for the user
+Set reasoning_effort = medium; thorough analysis with design decision integration
 
 ---
 
 ## Human Review Gate (Required)
-- Confirm: existing components identified and reuse opportunities documented
-- Confirm: integration approach aligns with PRD Design Context
+- Confirm: design decisions from `/decisions/design-decisions-[project-name].md` have been integrated
+- Confirm: existing components identified and reuse opportunities documented **for chosen tech stack**
+- Confirm: integration approach aligns with PRD Design Context **and design decisions**
 - Confirm: any inconsistencies flagged for potential recovery
+- Confirm: learning opportunities identified for skill development
 - Approve proceeding to task generation with design guidance
 
 ---

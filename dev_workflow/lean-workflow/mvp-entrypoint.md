@@ -198,22 +198,29 @@ Begin with a concise checklist (3-7 bullets) of what you will do; keep items con
    - Use the collected data to create `/prd/prd-[project-name].md` (convert `[project-name]` to kebab-case).
    - **Human Gate:** Review and approve the project scope, constraints, and success criteria.
 
-2. **Design Analysis:**
+2. **Design Decisions (Learning-Guided):**
+   - Run `gen-design-decisions-lite.md` to make informed technical and UX decisions through interactive questionnaires.
+   - Generate `/decisions/design-decisions-[project-name].md` with documented rationale and learning insights.
+   - Update `/decisions/learning-notes-[project-name].md` with personal learning progress.
+   - **Human Gate:** Review and approve technology stack, UX approach, and design decisions.
+
+3. **Design Analysis:**
    - Run `gen-design.md` to analyze existing codebase for component reuse and integration opportunities.
    - Generate `/design/design-[project-name].md` with implementation guidance.
    - **Optional:** Run `gen-design-recovery.md` if inconsistencies are detected.
 
-3. **Create Tasks:**
-   - Use the generated PRD and design analysis as input to create `/tasks/tasks-[project-name].md`, referencing `gen-tasks-and-testing.md` and following the TDD-Lite approach.
+4. **Create Tasks:**
+   - Use the generated PRD, design decisions, and design analysis as input to create `/tasks/tasks-[project-name].md`, referencing `gen-tasks-and-testing.md` and following the TDD-Lite approach.
    - **Human Gate:** Review and approve the task assumptions and success criteria.
 
-3. **Update Manifest:**
+5. **Update Manifest:**
    - Keep `/artifacts/manifest.json` up to date with ongoing progress.
 
 After each substantive action or file update, briefly validate that the intended results were achieved and determine the next step or self-correct if necessary. At major milestones (after PRD and after tasks creation), provide a one to three sentence update summarizing progress, next steps, and any blockers. Attempt a first pass autonomously, but stop and ask for clarification if critical information is missing or approval is explicitly required.
 
 ### Human-in-the-Loop Gates
 - **Before PRD Generation**: Review and approve project scope, constraints, and success criteria
+- **Before Design Decisions**: Review and approve technology stack, UX approach, and design decisions with documented rationale
 - **Before Task Creation**: Review and approve PRD assumptions and success criteria
 - **Before Development**: Approve task breakdown and acceptance criteria
 - **Scope Changes**: Approve any modifications to project scope or requirements
