@@ -332,11 +332,12 @@ class WorkflowTester:
         # Test 3: Duplicate project creation
         if self.test_projects:
             try:
+                # Use normalized project name like in MVP creation test
+                normalized_project = self.test_projects[0].lower().replace('_', '-')
                 cmd = [
                     "python3", str(self.script_dir / "mvp-initializer.py"),
-                    "--project", self.test_projects[0],
-                    "--mode", "autonomous",
-                    "--dry-run"
+                    "--project", normalized_project,
+                    "--mode", "autonomous"
                 ]
                 
                 result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
