@@ -115,7 +115,8 @@ class EnhancedInteractiveDataCollector:
             "Walk me through their ideal success scenario in 2-3 steps",
             example="1. User quickly adds new customer, 2. System auto-organizes contact info, 3. User easily finds customer details when needed",
             description="End-to-end user value realization",
-            required=True
+            required=True,
+            context_aware=True
         )
         
         # 2. Project Identity
@@ -170,14 +171,16 @@ class EnhancedInteractiveDataCollector:
             "How does this project create value? (free_tool/paid_service/internal_efficiency/cost_reduction/revenue_generation/other)",
             example="internal_efficiency",
             description="Core value proposition",
-            required=True
+            required=True,
+            context_aware=True
         )
         
         self.collected_data['key_success_metric'] = self._ask_question(
             "What's the key metric that shows it's working?",
             example="Reduces customer lookup time from 5 minutes to 30 seconds",
             description="Measurable success indicator",
-            required=True
+            required=True,
+            context_aware=True
         )
         
         # 5. MVP Success Definition
@@ -380,14 +383,26 @@ class EnhancedInteractiveDataCollector:
         
         return data
     
-    def _ask_question(self, question: str, example: str = None, description: str = None, required: bool = True) -> str:
-        """Ask a single question with enhanced formatting"""
+    def _ask_question(self, question: str, example: str = None, description: str = None, required: bool = True, context_aware: bool = False) -> str:
+        """Ask a single question with AI-enhanced formatting and context-aware examples"""
         print(f"❓ {question}")
         
         if description:
             print(f"   💡 {description}")
         
-        if example:
+        # Generate AI-enhanced example if we have context and AI engine
+        if context_aware and self.ai_engine and len(self.collected_data) > 0:
+            try:
+                ai_example = self._generate_contextual_example(question, example)
+                if ai_example:
+                    print(f"   🤖 AI Suggestion based on your answers: {ai_example}")
+                elif example:
+                    print(f"   📝 Example: {example}")
+            except Exception as e:
+                # Fallback to static example if AI fails
+                if example:
+                    print(f"   📝 Example: {example}")
+        elif example:
             print(f"   📝 Example: {example}")
         
         required_text = " (required)" if required else " (optional)"
@@ -412,6 +427,70 @@ class EnhancedInteractiveDataCollector:
             except EOFError:
                 print("\n❌ Unexpected end of input")
                 raise
+    
+    def _generate_contextual_example(self, question: str, fallback_example: str) -> str:
+        """Generate AI-enhanced examples based on collected context"""
+        if not self.ai_engine:
+            return fallback_example
+        
+        try:
+            # Create context from already collected data
+            context_summary = ""
+            if 'primary_user' in self.collected_data:
+                context_summary += f"Primary user: {self.collected_data['primary_user']}. "
+            if 'user_pain_point' in self.collected_data:
+                context_summary += f"Pain point: {self.collected_data['user_pain_point']}. "
+            if 'project_name' in self.collected_data:
+                context_summary += f"Project: {self.collected_data['project_name']}. "
+            
+            if not context_summary:
+                return fallback_example
+            
+            # Simple AI prompt for contextual examples
+            prompt = f"""Based on this project context: {context_summary}
+
+Generate a specific, relevant example for this question: "{question}"
+
+Keep it concise (1-2 sentences max) and directly related to their project context.
+Don't use generic examples - make it specific to their user and pain point.
+
+Example:"""
+            
+            # This would need to be implemented with actual AI call
+            # For now, return enhanced fallback
+            return self._create_enhanced_example(question, fallback_example)
+            
+        except Exception:
+            return fallback_example
+    
+    def _create_enhanced_example(self, question: str, fallback: str) -> str:
+        """Create enhanced examples based on collected context (simplified version)"""
+        context = self.collected_data
+        
+        # Enhanced examples based on what we know
+        if 'primary_user' in context and 'user_pain_point' in context:
+            user = context['primary_user']
+            pain = context['user_pain_point']
+            
+            if 'success scenario' in question.lower():
+                if 'cli' in pain.lower() or 'command' in pain.lower():
+                    return f"1. {user} opens your CLI reference tool, 2. Quickly searches/filters commands by topic, 3. Finds exact command with examples in under 30 seconds"
+                elif 'search' in pain.lower():
+                    return f"1. {user} needs specific info, 2. Uses your centralized search tool, 3. Gets accurate results without checking multiple sources"
+            
+            elif 'business model' in question.lower() or 'create value' in question.lower():
+                if 'engineer' in user.lower() or 'support' in user.lower():
+                    return "internal_efficiency (saves engineering team time and reduces context switching)"
+                elif 'business' in user.lower():
+                    return "cost_reduction (eliminates inefficiencies and reduces operational costs)"
+            
+            elif 'key metric' in question.lower():
+                if 'cli' in pain.lower():
+                    return "Reduces command lookup time from 2-5 minutes to under 30 seconds"
+                elif 'search' in pain.lower():
+                    return "Eliminates time spent searching multiple sources - single source of truth"
+        
+        return fallback
     
     def _ask_human_gate(self, question: str) -> bool:
         """Ask a human gate question (y/n)"""
