@@ -308,20 +308,87 @@ class WorkflowOrchestrator:
         return success
     
     def _execute_human_gate(self, step: WorkflowStep, context: ExecutionContext) -> bool:
-        """Execute human approval gate"""
+        """Execute human approval gate with enhanced context"""
         print(f"\n🚪 HUMAN GATE: {step.gate_name}")
-        print(f"Phase: {step.phase}")
-        print(f"Step: {step.number} - {step.doc_name}")
+        print("=" * 60)
+        print(f"📋 Phase: {step.phase.upper()}")
+        print(f"📄 Step: {step.number} - {step.doc_name}")
+        print(f"🎯 Feature: {context.feature_name}")
+        print()
         
-        response = input("Do you approve proceeding? (y/N): ")
-        approved = response.lower() == 'y'
+        # Show step context and impact
+        step_descriptions = {
+            "01-mvp-entrypoint.md": "Collect project requirements and initialize project data",
+            "02-gen-prd.md": "Generate Product Requirements Document with features and goals",
+            "03-gen-srs.md": "Create Software Requirements Specification with quality standards",
+            "04-gen-design-decisions-lite.md": "Choose technology stack and architecture patterns",
+            "05-gen-design.md": "Analyze existing code and plan component integration",
+            "06-gen-tasks-and-testing.md": "Generate implementation tasks with acceptance criteria",
+            "07-process-tasks.md": "Execute tasks with Test-Driven Development approach",
+            "08-gen-completion-summary.md": "Generate executive summary with traceability links",
+            "09-gen-project-history.md": "Capture organizational learning and insights"
+        }
         
-        if approved:
-            self.logger.info(f"Gate approved: {step.gate_name}")
+        description = step_descriptions.get(step.doc_name, "Execute workflow step")
+        print(f"📝 About to: {description}")
+        
+        # Show impact
+        if "design-decisions" in step.doc_name:
+            print(f"💡 Impact: Technology choices will affect all subsequent implementation steps")
+        elif "tasks" in step.doc_name:
+            print(f"💡 Impact: Generated tasks will define the implementation roadmap")
+        elif "prd" in step.doc_name:
+            print(f"💡 Impact: Requirements will define scope and success criteria")
+        elif "completion" in step.doc_name:
+            print(f"💡 Impact: Creates final project report and documentation")
         else:
-            self.logger.warning(f"Gate rejected: {step.gate_name}")
+            print(f"💡 Impact: Generates documentation for {step.phase} phase")
         
-        return approved
+        print(f"📁 Output location: {context.feature_dir}")
+        print()
+        print("Options:")
+        print("  y - Approve and proceed")
+        print("  n - Reject and stop workflow")
+        print("  s - Skip this step")
+        print("  ? - Show more details")
+        
+        while True:
+            try:
+                response = input("Decision (y/N/s/?): ").lower().strip()
+                
+                if response == 'y':
+                    print("✅ Step approved - proceeding...")
+                    self.logger.info(f"Gate approved: {step.gate_name}")
+                    return True
+                    
+                elif response == 'n' or response == '':
+                    print("❌ Step rejected - stopping workflow")
+                    self.logger.warning(f"Gate rejected: {step.gate_name}")
+                    return False
+                    
+                elif response == 's':
+                    print("⏭️ Step skipped - continuing to next step")
+                    self.logger.info(f"Gate skipped: {step.gate_name}")
+                    return True
+                    
+                elif response == '?':
+                    print(f"\n📖 STEP DETAILS:")
+                    print(f"Document: {step.doc_name}")
+                    print(f"Purpose: {description}")
+                    print(f"Phase: {step.phase}")
+                    print(f"Previous steps: {step.number - 1} completed")
+                    print(f"Feature directory: {context.feature_dir}")
+                    print(f"Project root: {context.project_root}")
+                    print()
+                    continue
+                    
+                else:
+                    print("Please enter 'y' (yes), 'n' (no), 's' (skip), or '?' (help)")
+                    continue
+                    
+            except KeyboardInterrupt:
+                print("\n❌ Workflow cancelled by user")
+                return False
     
     def _execute_document_workflow(self, step: WorkflowStep, context: ExecutionContext) -> bool:
         """Execute the actual document workflow step"""

@@ -15,6 +15,186 @@ from datetime import datetime
 from typing import Dict, Any, Optional
 import subprocess
 
+def prompt_project_questions(non_interactive: bool = False) -> Dict[str, str]:
+    """Prompt user for project initialization questions"""
+    if non_interactive or not sys.stdin.isatty():
+        return {}
+    
+    print("\n🎯 PROJECT INITIALIZATION QUESTIONS")
+    print("=" * 50)
+    
+    questions = {
+        "project_goal": {
+            "prompt": "🎯 What is the one-liner goal of this project?",
+            "example": "Enable secure user authentication for web applications",
+            "required": True
+        },
+        "mvp_scope": {
+            "prompt": "📋 What is the MVP scope in 2-3 sentences?",
+            "example": "User registration, login, password reset, and basic profile management. No social login or advanced security features in MVP.",
+            "required": True
+        },
+        "mvp_constraints": {
+            "prompt": "⚠️ What are the primary constraints for this MVP?",
+            "example": "Must be deployable to standard cloud hosting, complete within 2 weeks, use existing tech stack",
+            "required": False
+        },
+        "tech_stack": {
+            "prompt": "🔧 What is your preferred technology stack?",
+            "example": "Node.js + Express + PostgreSQL + React",
+            "default": "Node.js + Express + SQLite + HTML/CSS/JS",
+            "required": False
+        },
+        "external_services": {
+            "prompt": "🔌 Do you need external services or integrations? (y/N)",
+            "type": "boolean",
+            "required": False
+        },
+        "deployment_target": {
+            "prompt": "🚀 What is your deployment target?",
+            "options": ["local", "cloud", "container", "serverless"],
+            "default": "local",
+            "required": False
+        },
+        "success_criteria": {
+            "prompt": "✅ What defines MVP success? (list 2-3 key criteria)",
+            "example": "Users can register and login successfully, basic profile management works, system handles 100 concurrent users",
+            "required": True
+        }
+    }
+    
+    answers = {}
+    print()
+    
+    for key, config in questions.items():
+        while True:
+            try:
+                # Build prompt text
+                prompt_text = config["prompt"]
+                if "default" in config:
+                    prompt_text += f" [{config['default']}]"
+                if "example" in config and config.get("required", False):
+                    print(f"💡 Example: {config['example']}")
+                
+                response = input(f"{prompt_text}: ").strip()
+                
+                # Handle defaults
+                if not response and "default" in config:
+                    response = config["default"]
+                
+                # Handle required fields
+                if config.get("required", False) and not response:
+                    print("❌ This field is required. Please provide an answer.")
+                    continue
+                
+                # Handle boolean type
+                if config.get("type") == "boolean":
+                    response = response.lower() in ['y', 'yes', 'true', '1']
+                
+                # Handle options validation
+                if "options" in config and response and response not in config["options"]:
+                    print(f"❌ Please choose from: {', '.join(config['options'])}")
+                    continue
+                
+                answers[key] = response if response else ""
+                print()
+                break
+                
+            except KeyboardInterrupt:
+                print("\n❌ Setup cancelled by user")
+                return {}
+    
+    print("✅ Project initialization complete!")
+    print()
+    return answers
+
+def view_project_report(project_name: str, base_dir: Path = None) -> None:
+    """View executive report for an existing project"""
+    if not base_dir:
+        base_dir = Path.home() / "Projects"
+    
+    project_dir = base_dir / project_name
+    if not project_dir.exists():
+        print(f"❌ Project '{project_name}' not found in {base_dir}/")
+        print("💡 Use --project-dir to specify a different location")
+        return
+    
+    manifest_path = project_dir / "project-manifest.json"
+    if not manifest_path.exists():
+        print(f"❌ No project manifest found for '{project_name}'")
+        return
+    
+    try:
+        with open(manifest_path, 'r') as f:
+            manifest = json.load(f)
+        
+        print(f"\n📊 PROJECT REPORT: {project_name}")
+        print("=" * 60)
+        
+        # Basic project info
+        print(f"📁 Location: {project_dir}")
+        print(f"📅 Created: {manifest.get('created_at', 'Unknown')}")
+        print(f"🏷️  Type: {manifest.get('project_type', 'Unknown')}")
+        print(f"📊 Status: {manifest.get('status', 'Unknown')}")
+        print(f"🤖 Mode: {manifest.get('mvp_context', {}).get('automation_mode', 'Unknown')}")
+        
+        # Project initialization context
+        if "project_initialization" in manifest:
+            init_data = manifest["project_initialization"]
+            print(f"\n🎯 PROJECT CONTEXT ({init_data['questions_answered']} questions answered):")
+            print("-" * 40)
+            context = init_data.get("project_context", {})
+            
+            for key, value in context.items():
+                if value:  # Only show non-empty answers
+                    label = key.replace("_", " ").title()
+                    print(f"• {label}: {value}")
+        
+        # Features summary
+        features = manifest.get("features", [])
+        print(f"\n🔧 FEATURES ({len(features)} total):")
+        print("-" * 40)
+        if features:
+            for feature in features:
+                print(f"• {feature}")
+        else:
+            print("• No additional features yet")
+        
+        # Feature directory contents
+        features_dir = project_dir / "features"
+        if features_dir.exists():
+            feature_dirs = [d for d in features_dir.iterdir() if d.is_dir()]
+            if feature_dirs:
+                print(f"\n📄 GENERATED DOCUMENTATION:")
+                print("-" * 40)
+                for feature_dir in feature_dirs:
+                    print(f"📁 {feature_dir.name}/")
+                    
+                    # Show key files
+                    output_files = list(feature_dir.glob("*-output.md"))
+                    if output_files:
+                        print(f"   📋 {len(output_files)} workflow documents generated")
+                    
+                    manifest_file = feature_dir / "feature-manifest.json"
+                    if manifest_file.exists():
+                        try:
+                            with open(manifest_file, 'r') as f:
+                                feature_manifest = json.load(f)
+                            status = feature_manifest.get('status', 'unknown')
+                            print(f"   📊 Status: {status}")
+                        except:
+                            print(f"   📊 Status: manifest found")
+        
+        print(f"\n🚀 NEXT STEPS:")
+        print("-" * 40)
+        print(f"• Review documentation: {project_dir}/features/")
+        print(f"• Add features: ./workflow-runner.py --feature=FEATURE_NAME --existing-project={project_name}")
+        print(f"• View files: ls -la {project_dir}/")
+        print()
+        
+    except Exception as e:
+        print(f"❌ Error reading project report: {e}")
+
 def setup_logging(verbose: bool = False) -> logging.Logger:
     """Setup logging configuration"""
     logger = logging.getLogger('mvp_initializer')
@@ -68,7 +248,7 @@ def create_project_directory(project_name: str, base_dir: Path) -> Path:
     
     return project_dir
 
-def create_project_manifest(project_dir: Path, project_name: str, args: argparse.Namespace) -> None:
+def create_project_manifest(project_dir: Path, project_name: str, args: argparse.Namespace, project_context: Dict[str, str] = None) -> None:
     """Create project manifest file"""
     manifest = {
         "project_name": project_name,
@@ -89,6 +269,14 @@ def create_project_manifest(project_dir: Path, project_name: str, args: argparse
             "artifacts": "Generated content and assets"
         }
     }
+    
+    # Add project initialization questions if provided
+    if project_context:
+        manifest["project_initialization"] = {
+            "questions_answered": len(project_context),
+            "project_context": project_context,
+            "context_timestamp": datetime.now().isoformat()
+        }
     
     manifest_path = project_dir / "project-manifest.json"
     with open(manifest_path, 'w') as f:
@@ -191,7 +379,6 @@ def main():
     )
     
     parser.add_argument("--project",
-                       required=True,
                        help="Project name for new MVP")
     
     parser.add_argument("--project-dir", 
@@ -231,10 +418,26 @@ def main():
                        type=float,
                        help="Override cost limit for LLM usage")
     
+    parser.add_argument("--view-report",
+                       metavar="PROJECT_NAME",
+                       help="View executive report for existing project")
+    
     args = parser.parse_args()
     
     # Setup logging
     logger = setup_logging(args.verbose)
+    
+    # Handle view-report mode
+    if args.view_report:
+        base_dir = None
+        if args.project_dir:
+            base_dir = Path(args.project_dir).expanduser().resolve()
+        view_project_report(args.view_report, base_dir)
+        return
+    
+    # Validate required arguments for project creation
+    if not args.project:
+        parser.error("--project is required when not using --view-report")
     
     try:
         # Validate and normalize project name
@@ -271,11 +474,16 @@ def main():
             else:
                 base_dir = default_base
         
+        # Prompt for project questions (interactive only)
+        project_context = prompt_project_questions(args.non_interactive)
+        
         # Handle dry-run mode
         if args.dry_run:
             project_dir = base_dir / project_name
             logger.info(f"🧪 [DRY RUN] Would create project directory: {project_dir}")
             logger.info("🧪 [DRY RUN] Would create project structure (features/, docs/, artifacts/)")
+            if project_context:
+                logger.info(f"🧪 [DRY RUN] Would store project context: {len(project_context)} answers provided")
             logger.info("🧪 [DRY RUN] Would run complete MVP workflow")
             return
         
@@ -285,8 +493,11 @@ def main():
         logger.info(f"📁 Created project directory: {project_dir}")
         
         # Create project manifest
-        create_project_manifest(project_dir, project_name, args)
-        logger.info("📊 Created project manifest")
+        create_project_manifest(project_dir, project_name, args, project_context)
+        if project_context:
+            logger.info(f"📊 Created project manifest with {len(project_context)} initialization answers")
+        else:
+            logger.info("📊 Created project manifest")
         
         # Run MVP workflow
         success = run_workflow_for_mvp(project_dir, project_name, args, logger)
