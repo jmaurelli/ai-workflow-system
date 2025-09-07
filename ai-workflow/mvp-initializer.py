@@ -50,10 +50,13 @@ def validate_project_name(project_name: str) -> str:
 
 def create_project_directory(project_name: str, base_dir: Path) -> Path:
     """Create project directory structure"""
-    project_dir = base_dir / "projects" / project_name
+    project_dir = base_dir / project_name
     
     if project_dir.exists():
         raise FileExistsError(f"Project '{project_name}' already exists at {project_dir}")
+    
+    # Create base directory if it doesn't exist
+    base_dir.mkdir(parents=True, exist_ok=True)
     
     # Create project directory structure
     project_dir.mkdir(parents=True, exist_ok=True)
@@ -237,17 +240,36 @@ def main():
         
         logger.info(f"🚀 Initializing new MVP project: {project_name}")
         
+        # Determine project base directory
+        if args.project_dir:
+            base_dir = Path(args.project_dir).expanduser().resolve()
+        else:
+            # Default to ~/Projects for better organization
+            default_base = Path.home() / "Projects"
+            
+            # In guided mode, prompt for project directory
+            if args.mode == "guided":
+                try:
+                    response = input(f"📁 Where do you want to create this project? [{default_base}]: ").strip()
+                    if response:
+                        base_dir = Path(response).expanduser().resolve()
+                    else:
+                        base_dir = default_base
+                except KeyboardInterrupt:
+                    logger.info("❌ Operation cancelled by user")
+                    return
+            else:
+                base_dir = default_base
+        
         # Handle dry-run mode
         if args.dry_run:
-            base_dir = Path.cwd()
-            project_dir = base_dir / "projects" / project_name
+            project_dir = base_dir / project_name
             logger.info(f"🧪 [DRY RUN] Would create project directory: {project_dir}")
             logger.info("🧪 [DRY RUN] Would create project structure (features/, docs/, artifacts/)")
             logger.info("🧪 [DRY RUN] Would run complete MVP workflow")
             return
         
         # Create project directory (only in non-dry-run mode)
-        base_dir = Path.cwd()
         project_dir = create_project_directory(project_name, base_dir)
         
         logger.info(f"📁 Created project directory: {project_dir}")
