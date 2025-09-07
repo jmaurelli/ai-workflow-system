@@ -42,9 +42,14 @@ class ContentGenerationRequest:
 class ContentGenerationEngine:
     """Generates real workflow content using LLM APIs"""
     
-    def __init__(self, llm_config_path: Optional[Path] = None, debug: bool = False):
+    def __init__(self, llm_config_path: Optional[Path] = None, debug: bool = False, 
+                 user_provider: Optional[str] = None, user_model: Optional[str] = None):
         self.debug = debug
         self.logger = self._setup_logging()
+        
+        # Store user-specified provider and model (overrides config)
+        self.user_provider = user_provider
+        self.user_model = user_model
         
         # Load LLM configuration
         if llm_config_path and llm_config_path.exists():
@@ -57,7 +62,7 @@ class ContentGenerationEngine:
                 self.llm_config_data = json.load(f)
         
         # Initialize default LLM integration (defer until needed)
-        default_provider = self.llm_config_data["default_provider"]
+        default_provider = self.user_provider or self.llm_config_data["default_provider"]
         self.default_provider = default_provider
         self.default_llm = None
         
@@ -142,14 +147,21 @@ class ContentGenerationEngine:
         
         if config_key in workflow_configs:
             config = workflow_configs[config_key]
-            provider_name = config["provider"]
             
-            # Create specialized LLM integration
+            # Use user selection if available, otherwise fall back to config or default
+            provider_name = self.user_provider or config.get("provider", self.default_provider)
+            model_name = self.user_model or config.get("model")
+            
+            # Get base provider configuration
             provider_config = self.llm_config_data["providers"][provider_name].copy()
+            
+            # Override with workflow-specific settings, but preserve user model choice
+            if model_name:
+                provider_config["model"] = model_name
+            
             provider_config.update({
-                "model": config["model"],
-                "temperature": config["temperature"],
-                "max_tokens": config["max_tokens"]
+                "temperature": config.get("temperature", provider_config["temperature"]),
+                "max_tokens": config.get("max_tokens", provider_config["max_tokens"])
             })
             
             llm_config = LLMConfig(

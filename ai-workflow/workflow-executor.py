@@ -278,8 +278,12 @@ class WorkflowDocumentExecutor:
             # Import content generation engine
             from content_generation_engine import ContentGenerationEngine, ContentGenerationRequest, WorkflowContext as CGContext
             
-            # Create content generation engine
-            engine = ContentGenerationEngine(debug=self.debug)
+            # Create content generation engine with user's provider/model selection
+            engine = ContentGenerationEngine(
+                debug=self.debug,
+                user_provider=self.llm_provider,
+                user_model=self.llm_model
+            )
             
             # Determine content type from document name
             content_type = self._determine_content_type(document_path.name)
@@ -498,8 +502,12 @@ class WorkflowDocumentExecutor:
             # Now generate the document using collected data
             from content_generation_engine import ContentGenerationEngine, ContentGenerationRequest, WorkflowContext as CGContext
             
-            # Create content generation engine
-            engine = ContentGenerationEngine(debug=self.debug)
+            # Create content generation engine with user's provider/model selection
+            engine = ContentGenerationEngine(
+                debug=self.debug,
+                user_provider=self.llm_provider,
+                user_model=self.llm_model
+            )
             
             # Create workflow context with collected project data
             cg_context = CGContext(

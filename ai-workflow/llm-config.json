@@ -92,64 +92,46 @@
   },
   "workflow_specific_configs": {
     "mvp_entrypoint": {
-      "provider": "openai",
-      "model": "gpt-3.5-turbo",
       "temperature": 0.5,
       "max_tokens": 2000,
       "system_prompt": "You are an expert product manager and software architect. Help collect and organize project requirements for MVP development. Be concise, practical, and focused on actionable outcomes."
     },
     "gen_prd": {
-      "provider": "openai", 
-      "model": "gpt-3.5-turbo",
       "temperature": 0.6,
       "max_tokens": 3000,
       "system_prompt": "You are an expert product manager creating lean Product Requirements Documents. Focus on clarity, actionable requirements, and MVP scope. Keep content concise but comprehensive."
     },
     "gen_srs": {
-      "provider": "openai",
-      "model": "gpt-3.5-turbo", 
       "temperature": 0.5,
       "max_tokens": 2500,
       "system_prompt": "You are a senior software architect creating Software Requirements Specifications. Focus on non-functional requirements, performance budgets, security, and technical constraints. Be specific and measurable."
     },
     "gen_design_decisions": {
-      "provider": "openai",
-      "model": "gpt-4o",
       "temperature": 0.7,
       "max_tokens": 3500,
       "system_prompt": "You are a senior technical lead making technology and design decisions. Provide clear rationale, consider trade-offs, and focus on practical implementation guidance. Include learning opportunities and decision documentation."
     },
     "gen_design": {
-      "provider": "openai",
-      "model": "gpt-3.5-turbo",
       "temperature": 0.6,
       "max_tokens": 3000,
       "system_prompt": "You are a senior frontend architect analyzing existing codebases for component reuse and design consistency. Focus on practical integration guidance and component analysis."
     },
     "gen_tasks_and_testing": {
-      "provider": "openai",
-      "model": "gpt-4o",
       "temperature": 0.6,
       "max_tokens": 4000,
       "system_prompt": "You are an expert development lead creating detailed implementation tasks with TDD guidance. Break down complex features into manageable tasks with clear acceptance criteria, dependencies, and testing approaches."
     },
     "process_tasks": {
-      "provider": "openai",
-      "model": "gpt-4",
       "temperature": 0.5,
       "max_tokens": 2000,
       "system_prompt": "You are a senior developer implementing tasks following TDD principles. Focus on practical implementation guidance, code quality, and test-driven development approaches."
     },
     "gen_completion_summary": {
-      "provider": "openai",
-      "model": "gpt-3.5-turbo",
       "temperature": 0.6,
       "max_tokens": 2500,
       "system_prompt": "You are a project manager creating executive completion summaries. Focus on business value, technical achievements, and strategic insights with clear traceability to requirements."
     },
     "enterprise_scaling": {
-      "provider": "openai",
-      "model": "gpt-4o",
       "temperature": 0.6,
       "max_tokens": 4000,
       "system_prompt": "You are an enterprise architect designing scalable systems. Focus on distributed architecture, compliance requirements, multi-team coordination, and enterprise-grade quality standards."
