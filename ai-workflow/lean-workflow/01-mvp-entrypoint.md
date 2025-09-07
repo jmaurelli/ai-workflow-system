@@ -27,6 +27,26 @@ Use the workflow orchestrators to run this step automatically:
 
 See `workflow-sequence-guide.md` for complete automation details.
 
+## AI Agent Instructions
+
+### CRITICAL: Interactive Data Collection Required
+
+**YOU MUST conduct an interactive Q&A session with the user to collect the project initialization data. Do NOT proceed with document generation until you have collected answers to all required questions.**
+
+**Execution Protocol:**
+1. **Present each question clearly** to the user one at a time
+2. **Wait for the user's response** before proceeding to the next question  
+3. **Validate required fields** - do not accept empty responses for required questions
+4. **Use defaults** for optional fields if user provides no answer
+5. **Store all answers** in a structured format for document generation
+6. **Only after collecting all data** should you generate the project-initialization.md file
+
+**Interactive Format:**
+- Present questions in a friendly, conversational manner
+- Show examples when helpful
+- Confirm user's answers before proceeding
+- Allow user to revise previous answers if needed
+
 ## Project Initialization Questions
 
 ### Project Foundation
