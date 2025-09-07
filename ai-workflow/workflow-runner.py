@@ -11,6 +11,7 @@ import sys
 import argparse
 import logging
 import subprocess
+import getpass
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Optional, Tuple
@@ -47,6 +48,413 @@ class ExecutionContext:
     approval_history: Dict[str, bool] = None
     context_mode: str = "STANDALONE_FEATURE"
     existing_project: Optional[str] = None
+
+def prompt_ai_vendor_setup() -> tuple:
+    """Interactive prompt for AI vendor, model selection, and API key"""
+    print("\n🤖 AI CONSULTANT SETUP")
+    print("=" * 40)
+    
+    # Step 1: Choose provider
+    providers = {
+        "1": {"name": "OpenAI", "provider": "openai", "env_var": "OPENAI_API_KEY"},
+        "2": {"name": "Claude (Anthropic)", "provider": "anthropic", "env_var": "ANTHROPIC_API_KEY"},
+        "3": {"name": "Google Gemini", "provider": "google", "env_var": "GOOGLE_API_KEY"},
+        "4": {"name": "Exit (AI consultant required)", "provider": None}
+    }
+    
+    print("⚡ Choose your AI provider:")
+    for key, provider in providers.items():
+        if provider["provider"]:
+            print(f"   {key}. {provider['name']}")
+        else:
+            print(f"   {key}. {provider['name']}")
+    print()
+    
+    while True:
+        try:
+            max_choice = len(providers)
+            choice = input(f"Select AI provider (1-{max_choice}): ").strip()
+            if choice in providers:
+                selected_provider = providers[choice]
+                if not selected_provider["provider"]:
+                    print("\n🚫 AI consultant is required for this project")
+                    return "skip", None
+                
+                # Step 2: Get API key
+                existing_key = os.getenv(selected_provider["env_var"])
+                api_key = None
+                
+                if existing_key:
+                    print(f"✅ Found existing {selected_provider['name']} API key")
+                    api_key = existing_key
+                else:
+                    # Prompt for API key with 3 attempt limit
+                    max_attempts = 3
+                    for attempt in range(max_attempts):
+                        print(f"\n🔑 {selected_provider['name']} API Key (Attempt {attempt + 1}/{max_attempts})")
+                        if selected_provider['provider'] == 'openai':
+                            print("💡 Get your key from: https://platform.openai.com/api-keys")
+                        elif selected_provider['provider'] == 'anthropic':
+                            print("💡 Get your key from: https://console.anthropic.com/settings/keys")
+                        elif selected_provider['provider'] == 'google':
+                            print("💡 Get your key from: https://aistudio.google.com/app/apikey")
+                        print("🔒 Your API key will be hidden for security")
+                        
+                        try:
+                            api_key = getpass.getpass(f"Enter your {selected_provider['name']} API key: ").strip()
+                        except (KeyboardInterrupt, EOFError):
+                            print("\n❌ API key input cancelled")
+                            return "cancelled", None
+                            
+                        if not api_key:
+                            print("❌ API key required for AI consultant")
+                            if attempt < max_attempts - 1:
+                                continue
+                            else:
+                                break
+                        
+                        # Validate API key format
+                        if not _validate_api_key(selected_provider["provider"], api_key):
+                            print(f"❌ Invalid {selected_provider['name']} API key format")
+                            if selected_provider['provider'] == 'openai':
+                                print("💡 OpenAI keys start with 'sk-' and are ~51 characters long")
+                            elif selected_provider['provider'] == 'anthropic':
+                                print("💡 Claude keys start with 'sk-ant-' and are longer")
+                            elif selected_provider['provider'] == 'google':
+                                print("💡 Google keys are typically 39 characters, mix of letters/numbers")
+                            
+                            if attempt < max_attempts - 1:
+                                print("🔄 Please try again with a valid API key")
+                                continue
+                            else:
+                                break
+                        else:
+                            print(f"✅ API key format looks valid for {selected_provider['name']}")
+                            break
+                    
+                    if not api_key or not _validate_api_key(selected_provider["provider"], api_key):
+                        print(f"\n❌ Failed to get valid {selected_provider['name']} API key after {max_attempts} attempts")
+                        print("🚫 AI consultant is required for this project - cannot proceed")
+                        return "failed", None
+
+                # Step 3: Get available models (simplified for workflow-runner)
+                available_models = _get_fallback_models(selected_provider["provider"])
+                
+                print(f"\nChoose your {selected_provider['name']} model:")
+                for i, model in enumerate(available_models, 1):
+                    print(f"   {i}. {model['name']} - {model['description']}")
+                print()
+                
+                # Model selection loop
+                while True:
+                    try:
+                        model_choice = input(f"Select model (1-{len(available_models)}): ").strip()
+                        if model_choice.isdigit():
+                            model_idx = int(model_choice) - 1
+                            if 0 <= model_idx < len(available_models):
+                                selected_model = available_models[model_idx]
+                                
+                                # Create final vendor config
+                                vendor_config = {
+                                    "name": selected_provider["name"],
+                                    "provider": selected_provider["provider"], 
+                                    "model": selected_model["id"],
+                                    "env_var": selected_provider["env_var"]
+                                }
+                                
+                                print(f"✅ Selected: {selected_model['name']} ({selected_model['id']})")
+                                
+                                # Set API key in environment for subprocess inheritance
+                                os.environ[selected_provider["env_var"]] = api_key
+                                
+                                return vendor_config, api_key
+                            else:
+                                print(f"❌ Please enter a number from 1 to {len(available_models)}")
+                        else:
+                            print(f"❌ Please enter a number from 1 to {len(available_models)}")
+                            
+                    except KeyboardInterrupt:
+                        print("\n❌ Model selection cancelled")
+                        return "cancelled", None
+                        
+            else:
+                print(f"❌ Please enter a number from 1 to {max_choice}")
+                
+        except KeyboardInterrupt:
+            print("\n❌ AI setup cancelled")
+            return "cancelled", None
+
+def _validate_api_key(provider: str, api_key: str) -> bool:
+    """Validate API key format for different providers"""
+    if not api_key or not api_key.strip():
+        return False
+    
+    api_key = api_key.strip()
+    
+    if provider == "openai":
+        # OpenAI keys start with 'sk-' and are typically 51 characters
+        return api_key.startswith("sk-") and len(api_key) >= 20
+    
+    elif provider == "anthropic":
+        # Anthropic keys start with 'sk-ant-' 
+        return api_key.startswith("sk-ant-") and len(api_key) >= 20
+    
+    elif provider == "google":
+        # Google API keys are typically 39 characters, alphanumeric + some symbols
+        return len(api_key) >= 20 and len(api_key) <= 50 and api_key.replace("-", "").replace("_", "").isalnum()
+    
+    return False
+
+def _get_fallback_models(provider: str) -> List[Dict[str, str]]:
+    """Get fallback models for a provider"""
+    fallback_models = {
+        "openai": [
+            {"id": "gpt-4o", "name": "GPT-4o", "description": "Latest multimodal model - text, images, audio"},
+            {"id": "gpt-4o-mini", "name": "GPT-4o Mini", "description": "Efficient & fast multimodal model"},
+            {"id": "gpt-4-turbo", "name": "GPT-4 Turbo", "description": "Advanced reasoning with large context"},
+            {"id": "gpt-3.5-turbo", "name": "GPT-3.5 Turbo", "description": "Fast & cost-effective"}
+        ],
+        "anthropic": [
+            {"id": "claude-3-5-sonnet-20241022", "name": "Claude 3.5 Sonnet", "description": "Latest Sonnet - Balanced intelligence & speed"},
+            {"id": "claude-3-5-haiku-20241022", "name": "Claude 3.5 Haiku", "description": "Fastest - Optimized for speed"},
+            {"id": "claude-3-opus-20240229", "name": "Claude 3 Opus", "description": "Most intelligent - Complex reasoning"}
+        ],
+        "google": [
+            {"id": "gemini-2.0-flash-exp", "name": "Gemini 2.0 Flash", "description": "Latest experimental - fast & efficient"},
+            {"id": "gemini-1.5-pro", "name": "Gemini 1.5 Pro", "description": "Advanced reasoning & large context"},
+            {"id": "gemini-1.5-flash", "name": "Gemini 1.5 Flash", "description": "Fast & efficient processing"}
+        ]
+    }
+    
+    return fallback_models.get(provider, [])
+
+def create_project_structure(project_path: Path, project_name: str) -> None:
+    """Create standard project structure with basic files"""
+    try:
+        # Create standard directories
+        directories = ["src", "docs", "tests", "features"]
+        for dir_name in directories:
+            dir_path = project_path / dir_name
+            if not dir_path.exists():
+                dir_path.mkdir()
+                print(f"📁 Created {dir_name}/ directory")
+        
+        # Create standard README.md
+        readme_path = project_path / "README.md"
+        if not readme_path.exists():
+            readme_content = f"""# {project_name.replace('-', ' ').title()}
+
+## Overview
+
+This project was created using the AI Workflow System for automated MVP development and documentation.
+
+## Project Structure
+
+```
+{project_name}/
+├── README.md              # This file - project overview
+├── src/                   # Source code
+├── docs/                  # Project documentation
+├── tests/                 # Test files
+├── features/              # AI-generated workflow specifications
+│   └── 2025-XX-XX-{project_name}-mvp-initialization/
+│       ├── prd.md         # Product Requirements Document
+│       ├── srs.md         # Software Requirements Specification
+│       ├── tasks.md       # Implementation roadmap
+│       └── design-analysis.md # Architecture decisions
+└── project-manifest.json  # Project metadata
+```
+
+## Getting Started
+
+1. **Review the AI-generated specifications**: Navigate to `features/` directory
+2. **Check the latest workflow**: Look in the most recent dated directory in `features/`
+3. **Follow the implementation plan**: Use the generated `tasks.md` for development guidance
+4. **Start development**: Build your application in the `src/` directory
+
+## Adding Features
+
+```bash
+# Add new features to this project
+./workflow-runner.py add-feature FEATURE_NAME --to {project_name}
+```
+
+## Development
+
+This project follows standard development practices with AI-assisted planning and documentation generation.
+
+---
+*Generated by AI Workflow System*
+"""
+            readme_path.write_text(readme_content)
+            print("📄 Created standard README.md")
+        
+        # Create basic .gitignore
+        gitignore_path = project_path / ".gitignore"
+        if not gitignore_path.exists():
+            gitignore_content = """# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Build outputs
+dist/
+build/
+*.egg-info/
+"""
+            gitignore_path.write_text(gitignore_content)
+            print("📄 Created .gitignore")
+        
+        # Create project manifest
+        manifest_path = project_path / "project-manifest.json"
+        if not manifest_path.exists():
+            from datetime import datetime
+            manifest = {
+                "project_name": project_name,
+                "created_at": datetime.now().isoformat(),
+                "project_type": "MVP", 
+                "status": "initializing",
+                "workflow_version": "3.0",
+                "features": [],
+                "mvp_context": {
+                    "initialization_mode": "workflow-runner-create-mvp",
+                    "automation_mode": "guided"
+                }
+            }
+            
+            import json
+            with open(manifest_path, 'w') as f:
+                json.dump(manifest, f, indent=2)
+            print("📊 Created project-manifest.json")
+            
+        print("🎉 Standard project structure created!")
+        
+    except Exception as e:
+        print(f"⚠️  Error creating project structure: {e}")
+
+def validate_project_name(project_name: str) -> str:
+    """Validate and normalize project name"""
+    if not project_name:
+        raise ValueError("Project name cannot be empty")
+    
+    # Convert to lowercase and replace spaces/underscores with hyphens
+    normalized = project_name.lower().replace(' ', '-').replace('_', '-')
+    
+    # Remove any characters that aren't alphanumeric or hyphens
+    import re
+    normalized = re.sub(r'[^a-z0-9-]', '', normalized)
+    
+    if not normalized:
+        raise ValueError("Project name must contain alphanumeric characters")
+    
+    return normalized
+
+def list_projects() -> None:
+    """List all MVP projects in ~/Projects/"""
+    projects_dir = Path.home() / "Projects"
+    
+    if not projects_dir.exists():
+        print("📁 No ~/Projects/ directory found")
+        print("💡 Create your first MVP with: ./workflow-runner.py create-mvp PROJECT_NAME")
+        return
+    
+    project_dirs = [d for d in projects_dir.iterdir() if d.is_dir()]
+    
+    if not project_dirs:
+        print("📁 No projects found in ~/Projects/")
+        print("💡 Create your first MVP with: ./workflow-runner.py create-mvp PROJECT_NAME")
+        return
+    
+    print("📋 MVP PROJECTS IN ~/Projects/")
+    print("=" * 40)
+    
+    for project_dir in sorted(project_dirs):
+        manifest_path = project_dir / "project-manifest.json"
+        if manifest_path.exists():
+            try:
+                import json
+                with open(manifest_path, 'r') as f:
+                    manifest = json.load(f)
+                status = manifest.get('status', 'unknown')
+                created = manifest.get('created_at', 'unknown')[:10]  # Just date
+                features_count = len(manifest.get('features', []))
+                print(f"  📁 {project_dir.name} - {status} (created: {created}, {features_count} features)")
+            except:
+                print(f"  📁 {project_dir.name} - status unknown")
+        else:
+            print(f"  📁 {project_dir.name} - not an MVP project")
+
+def show_project_status(project_name: str) -> None:
+    """Show detailed status for a project"""
+    project_path = Path.home() / "Projects" / project_name
+    
+    if not project_path.exists():
+        print(f"❌ Project '{project_name}' not found in ~/Projects/")
+        print("💡 Use 'list-projects' to see available projects")
+        return
+    
+    manifest_path = project_path / "project-manifest.json"
+    if not manifest_path.exists():
+        print(f"❌ '{project_name}' is not an MVP project (no project-manifest.json)")
+        return
+    
+    try:
+        import json
+        with open(manifest_path, 'r') as f:
+            manifest = json.load(f)
+        
+        print(f"📊 PROJECT STATUS: {project_name}")
+        print("=" * 50)
+        print(f"📁 Location: {project_path}")
+        print(f"📅 Created: {manifest.get('created_at', 'Unknown')}")
+        print(f"📊 Status: {manifest.get('status', 'Unknown')}")
+        print(f"🤖 Workflow Version: {manifest.get('workflow_version', 'Unknown')}")
+        
+        features = manifest.get('features', [])
+        print(f"\n🔧 FEATURES ({len(features)} total):")
+        print("-" * 30)
+        if features:
+            for feature in features:
+                print(f"  • {feature}")
+        else:
+            print("  • No additional features yet")
+        
+        # Show feature directories
+        features_dir = project_path / "features"
+        if features_dir.exists():
+            feature_dirs = sorted([d for d in features_dir.iterdir() if d.is_dir()])
+            if feature_dirs:
+                print(f"\n📄 GENERATED DOCUMENTATION:")
+                print("-" * 30)
+                for feature_dir in feature_dirs:
+                    print(f"  📁 {feature_dir.name}/")
+                    # Count generated files
+                    md_files = list(feature_dir.glob("*.md"))
+                    if md_files:
+                        print(f"     📋 {len(md_files)} documents generated")
+        
+        print(f"\n🚀 NEXT STEPS:")
+        print("-" * 30)
+        print(f"  • Add features: ./workflow-runner.py add-feature FEATURE_NAME --to {project_name}")
+        print(f"  • View files: ls -la {project_path}/")
+        
+    except Exception as e:
+        print(f"❌ Error reading project status: {e}")
 
 class WorkflowOrchestrator:
     """Intelligent workflow orchestrator for AI agents"""
@@ -441,7 +849,10 @@ class WorkflowOrchestrator:
                 
                 self.logger.info(f"🤖 LLM API enabled: Real content generation mode!")
             
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+            # Ensure environment variables (including API keys) are passed to subprocess
+            import os
+            env = os.environ.copy()
+            result = subprocess.run(cmd, capture_output=True, text=True, timeout=300, env=env)
             
             if result.returncode == 0:
                 print(f"  ✅ Completed: {step.doc_name}")
@@ -461,22 +872,17 @@ class WorkflowOrchestrator:
             return False
 
 def main():
-    """Main entry point"""
+    """Main entry point with subcommand support"""
     parser = argparse.ArgumentParser(
-        description="🤖 AI Workflow Runner - Intelligent Numbered Sequence Execution"
+        description="🤖 AI Workflow Runner - Intelligent Project & Feature Management",
+        prog="workflow-runner.py"
     )
     
+    # Global flags
     parser.add_argument("--mode", 
                        choices=[mode.value for mode in AutomationMode],
                        default="guided",
-                       help="Automation mode")
-    
-    parser.add_argument("--feature", 
-                       required=True,
-                       help="Feature name for workflow execution")
-    
-    parser.add_argument("--existing-project",
-                       help="Existing project name (for feature addition to MVP projects)")
+                       help="Automation mode (default: guided)")
     
     parser.add_argument("--dry-run", 
                        action="store_true",
@@ -491,16 +897,12 @@ def main():
                        action="store_true", 
                        help="Enable verbose logging")
     
-    # LLM API integration arguments
-    parser.add_argument("--llm-api",
-                       action="store_true",
-                       help="Enable real LLM API content generation")
-    
+    # Advanced LLM configuration (LLM API is always enabled)
     parser.add_argument("--llm-provider",
-                       help="LLM provider (openai, anthropic, local_ollama, groq)")
+                       help="LLM provider (openai, anthropic, google) - will prompt if not specified")
     
     parser.add_argument("--llm-model",
-                       help="LLM model to use")
+                       help="LLM model to use - will prompt if not specified")
     
     parser.add_argument("--llm-config",
                        type=Path,
@@ -510,76 +912,221 @@ def main():
                        type=float,
                        help="Override cost limit for LLM usage")
     
+    # Create subparsers for commands
+    subparsers = parser.add_subparsers(
+        dest="command",
+        help="Available commands",
+        metavar="COMMAND"
+    )
+    
+    # create-mvp subcommand
+    create_mvp_parser = subparsers.add_parser(
+        "create-mvp",
+        help="Create a new MVP project with standard structure",
+        description="🚀 Create a new MVP project in ~/Projects/ with AI-generated documentation"
+    )
+    create_mvp_parser.add_argument(
+        "project_name",
+        help="Name of the new MVP project"
+    )
+    
+    # add-feature subcommand  
+    add_feature_parser = subparsers.add_parser(
+        "add-feature", 
+        help="Add a feature to an existing MVP project",
+        description="➕ Add a new feature to an existing MVP project with AI-generated documentation"
+    )
+    add_feature_parser.add_argument(
+        "feature_name",
+        help="Name of the feature to add"
+    )
+    add_feature_parser.add_argument(
+        "--to",
+        dest="project_name",
+        required=True,
+        help="Target project name (must exist in ~/Projects/)"
+    )
+    
+    # list-projects subcommand
+    list_projects_parser = subparsers.add_parser(
+        "list-projects",
+        help="List all MVP projects",
+        description="📋 List all MVP projects in ~/Projects/"
+    )
+    
+    # status subcommand
+    status_parser = subparsers.add_parser(
+        "status",
+        help="Show project status and recent activity", 
+        description="📊 Show detailed status for an MVP project"
+    )
+    status_parser.add_argument(
+        "project_name", 
+        help="Project name to show status for"
+    )
+    
     args = parser.parse_args()
+    
+    # Show help if no command provided
+    if not args.command:
+        parser.print_help()
+        sys.exit(1)
     
     # Setup logging level
     if args.verbose:
         logging.getLogger('workflow_orchestrator').setLevel(logging.DEBUG)
     
+    # Handle utility commands first (no orchestrator needed)
+    if args.command == "list-projects":
+        list_projects()
+        return
+    
+    if args.command == "status":
+        show_project_status(args.project_name)
+        return
+    
     try:
-        # Initialize orchestrator
+        # Initialize orchestrator for workflow commands
         orchestrator = WorkflowOrchestrator(args.config)
         
-        # Configure LLM API if enabled
-        if args.llm_api:
+        # Always configure LLM API (no --llm-api flag needed)
+        api_key_available = any([
+            os.getenv("OPENAI_API_KEY"),
+            os.getenv("ANTHROPIC_API_KEY"), 
+            os.getenv("GOOGLE_API_KEY")
+        ])
+        
+        # If no API key available and no specific provider/model given, prompt for setup
+        if not api_key_available and not (args.llm_provider and args.llm_model):
+            print("🤖 LLM API required - no API key found in environment variables")
+            vendor_setup = prompt_ai_vendor_setup()
+            
+            if vendor_setup in ["cancelled", "failed", "skip"]:
+                print("❌ AI consultant is required for workflow operations")
+                sys.exit(1)
+            
+            vendor_config, api_key = vendor_setup
+            
+            # Use the selected provider and model
+            orchestrator.llm_api_enabled = True
+            orchestrator.llm_provider = vendor_config["provider"]
+            orchestrator.llm_model = vendor_config["model"]
+            orchestrator.llm_config_file = args.llm_config
+            orchestrator.cost_limit = args.cost_limit
+            
+            print(f"✅ Configured {vendor_config['name']} with model {vendor_config['model']}")
+        else:
+            # Use provided arguments or environment variables
             orchestrator.llm_api_enabled = True
             orchestrator.llm_provider = args.llm_provider
             orchestrator.llm_model = args.llm_model
             orchestrator.llm_config_file = args.llm_config
             orchestrator.cost_limit = args.cost_limit
-        
-        # Determine project directory and context mode
-        if args.existing_project:
-            # Feature addition to existing MVP project
-            project_root = Path.home() / "Projects" / args.existing_project
-            context_mode = "FEATURE_ADDITION"
             
-            if not project_root.exists():
-                print(f"❌ Error: Project '{args.existing_project}' not found in ~/Projects/")
-                print(f"💡 Tip: Use mvp-initializer.py to create new projects")
-                sys.exit(1)
-                
-            print(f"➕ Adding feature '{args.feature}' to existing project '{args.existing_project}'")
-        else:
-            # Standalone feature (legacy mode)
-            project_root = Path.cwd()
-            context_mode = "STANDALONE_FEATURE"
-            print(f"🔧 Creating standalone feature '{args.feature}'")
-
-        # Create execution context
-        context = ExecutionContext(
-            feature_name=args.feature,
-            mode=AutomationMode(args.mode),
-            project_root=project_root
-        )
+            if api_key_available:
+                print("✅ Using existing API key from environment variables")
         
-        # Add context mode for LLM prompting
-        context.context_mode = context_mode
-        context.existing_project = args.existing_project
+        # Handle create-mvp command
+        if args.command == "create-mvp":
+            project_name = validate_project_name(args.project_name)
+            project_root = Path.home() / "Projects" / project_name
+            
+            # Check if project already exists
+            if project_root.exists():
+                print(f"❌ Project '{project_name}' already exists at {project_root}")
+                print(f"💡 Use 'add-feature' to add features to existing projects")
+                sys.exit(1)
+            
+            # Create project directory and structure
+            project_root.mkdir(parents=True, exist_ok=True)
+            print(f"🚀 Creating new MVP project: {project_name}")
+            print(f"📁 Project location: {project_root}")
+            
+            # Create standard project structure
+            create_project_structure(project_root, project_name)
+            
+            # Create execution context for MVP initialization  
+            feature_name = f"{project_name}-mvp-initialization"
+            context = ExecutionContext(
+                feature_name=feature_name,
+                mode=AutomationMode(args.mode),
+                project_root=project_root,
+                context_mode="MVP_CREATION"
+            )
+            
+            print(f"\n🤖 Starting AI workflow for MVP initialization...")
+            
+        # Handle add-feature command
+        elif args.command == "add-feature":
+            project_name = args.project_name
+            feature_name = args.feature_name
+            project_root = Path.home() / "Projects" / project_name
+            
+            # Check if project exists
+            if not project_root.exists():
+                print(f"❌ Project '{project_name}' not found in ~/Projects/")
+                print(f"💡 Create it first with: ./workflow-runner.py create-mvp {project_name}")
+                sys.exit(1)
+            
+            # Verify it's an MVP project
+            manifest_path = project_root / "project-manifest.json"
+            if not manifest_path.exists():
+                print(f"❌ '{project_name}' is not an MVP project (no project-manifest.json)")
+                print(f"💡 Create it first with: ./workflow-runner.py create-mvp {project_name}")
+                sys.exit(1)
+            
+            print(f"➕ Adding feature '{feature_name}' to project '{project_name}'")
+            
+            # Create execution context for feature addition
+            context = ExecutionContext(
+                feature_name=feature_name,
+                mode=AutomationMode(args.mode),
+                project_root=project_root,
+                context_mode="FEATURE_ADDITION",
+                existing_project=project_name
+            )
         
         # Assess risk
         context.risk_score = orchestrator.assess_risk_score(context)
         
         # Execute workflow
         if args.dry_run:
-            print(f"\n🧪 DRY RUN - Execution Plan for '{args.feature}':")
-            if args.existing_project:
-                print(f"   📁 Target: Adding to existing project '{args.existing_project}'")
+            print(f"\n🧪 DRY RUN - Execution Plan:")
+            if args.command == "create-mvp":
+                print(f"   📁 Target: Create new MVP project '{project_name}' in ~/Projects/")
             else:
-                print(f"   📁 Target: Creating standalone feature")
+                print(f"   📁 Target: Add feature '{args.feature_name}' to '{args.project_name}'")
             
             success = orchestrator.execute_workflow(context, dry_run=True)
         else:
             success = orchestrator.execute_workflow(context, dry_run=False)
             
             if success:
-                if args.existing_project:
-                    print(f"\n🎉 Feature '{args.feature}' added successfully to project '{args.existing_project}'!")
-                    print(f"📁 Project location: {context.project_root}")
+                if args.command == "create-mvp":
+                    # Update project status
+                    try:
+                        import json
+                        manifest_path = project_root / "project-manifest.json"
+                        with open(manifest_path, 'r') as f:
+                            manifest = json.load(f)
+                        manifest["status"] = "initialized"
+                        manifest["mvp_context"]["automation_mode"] = args.mode
+                        with open(manifest_path, 'w') as f:
+                            json.dump(manifest, f, indent=2)
+                    except Exception as e:
+                        print(f"⚠️  Could not update project status: {e}")
+                    
+                    print(f"\n🎉 MVP project '{project_name}' created successfully!")
+                    print(f"📁 Project location: {project_root}")
+                    print(f"\n🚀 Next steps:")
+                    print(f"   • Review AI-generated documentation in features/ directory")
+                    print(f"   • Add features: ./workflow-runner.py add-feature FEATURE_NAME --to {project_name}")
+                    print(f"   • Start development in src/ directory")
                 else:
-                    print(f"\n🎉 Standalone feature '{args.feature}' completed successfully!")
+                    print(f"\n🎉 Feature '{args.feature_name}' added successfully to '{args.project_name}'!")
+                    print(f"📁 Project location: {project_root}")
             else:
-                print(f"\n❌ Workflow failed for '{args.feature}'")
+                print(f"\n❌ Workflow failed")
         
         sys.exit(0 if success else 1)
         

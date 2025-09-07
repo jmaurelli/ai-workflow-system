@@ -21,9 +21,6 @@ Transform your development process from hours of planning to minutes of automati
 
 ### 1. Setup
 ```bash
-# Choose your LLM provider
-export OPENAI_API_KEY="your-key-here"  # or ANTHROPIC_API_KEY, GOOGLE_API_KEY, etc.
-
 # Install dependencies  
 pip install openai anthropic google-generativeai requests
 
@@ -34,18 +31,18 @@ cd ai-workflow
 
 ### 2. Create Your First MVP
 ```bash
-# Create a complete MVP project
-./mvp-initializer.py --project=task-manager-app --mode=guided --llm-api
+# Create a complete MVP project (will prompt for API key)
+./workflow-runner.py create-mvp task-manager-app
 
 # Check what was created
-ls projects/task-manager-app/
-cat projects/task-manager-app/prd.md
+ls ~/Projects/task-manager-app/
+cat ~/Projects/task-manager-app/features/*/prd.md
 ```
 
 ### 3. Add Features
 ```bash
 # Add features to existing project
-./workflow-runner.py --feature=user-authentication --existing-project=task-manager-app --llm-api
+./workflow-runner.py add-feature user-authentication --to task-manager-app
 ```
 
 ## 📖 Complete Documentation
@@ -56,12 +53,13 @@ cat projects/task-manager-app/prd.md
 
 ## 🎯 Core Components
 
-### 🚀 MVP Creation
-- **`mvp-initializer.py`** - Create new MVP projects from scratch
-- **Complete specifications** - PRD, SRS, design decisions, tasks
+### 🚀 Unified Interface
+- **`workflow-runner.py`** - Single tool for all operations
+- **Subcommand interface** - `create-mvp`, `add-feature`, `list-projects`, `status`
+- **Always-on AI** - Automatic API key prompting and LLM integration
 
-### ➕ Feature Addition  
-- **`workflow-runner.py`** - Add features to existing projects
+### 📁 Project Management
+- **Standard structure** - README, src/, docs/, tests/, features/
 - **Context-aware** - Understands existing project structure
 
 ### 🤖 LLM Integration
@@ -76,49 +74,60 @@ cat projects/task-manager-app/prd.md
 ## 📁 Generated Project Structure
 
 ```
-/projects/your-project/
+~/Projects/your-project/
+├── 📄 README.md                # Project overview  
 ├── 📊 project-manifest.json     # Project tracking & metadata
-├── 📄 prd.md                   # Product Requirements
-├── 📄 srs.md                   # Software Requirements  
-├── 📄 design-decisions.md      # Technology choices
-├── 📄 tasks.md                 # Development roadmap
-├── 📄 implementation-guide.md  # Development process
-└── 📁 features/                # Feature-specific docs
+├── 📁 src/                     # Source code
+├── 📁 docs/                    # Project documentation
+├── 📁 tests/                   # Test files
+└── 📁 features/                # AI-generated specifications
+    └── 2025-XX-XX-your-project-mvp-initialization/
+        ├── 📄 prd.md           # Product Requirements
+        ├── 📄 srs.md           # Software Requirements  
+        ├── 📄 design-decisions.md  # Technology choices
+        ├── 📄 tasks.md         # Development roadmap
+        └── 📄 implementation-guide.md  # Development process
 ```
 
 ## 🌟 LLM Providers
 
+The system supports multiple LLM providers and will prompt you to choose:
+
+- **OpenAI** - Most reliable (GPT-4o, GPT-4o-mini, GPT-4-turbo)
+- **Anthropic Claude** - Advanced reasoning (Claude 3.5 Sonnet, Haiku, Opus)
+- **Google Gemini** - Fast & competitive (Gemini 2.0 Flash, 1.5 Pro, 1.5 Flash)
+
+Advanced users can specify provider/model:
 ```bash
-# OpenAI (most reliable)
---llm-provider=openai
-
-# Anthropic Claude (advanced reasoning)
---llm-provider=anthropic
-
-# Google Gemini (fast & competitive)  
---llm-provider=google
-
-# Groq (ultra-fast)
---llm-provider=groq
-
-# Local Ollama (free & private)
---llm-provider=local_ollama
+./workflow-runner.py create-mvp my-project --llm-provider=anthropic --llm-model=claude-3-5-sonnet-20241022
 ```
 
 ## 💡 Real-World Examples
 
 ### Task Management App
 ```bash
-./mvp-initializer.py --project=task-manager --mode=autonomous --llm-api
-./workflow-runner.py --feature=user-authentication --existing-project=task-manager --llm-api
-./workflow-runner.py --feature=team-collaboration --existing-project=task-manager --llm-api
+./workflow-runner.py create-mvp task-manager --mode=autonomous
+./workflow-runner.py add-feature user-authentication --to task-manager
+./workflow-runner.py add-feature team-collaboration --to task-manager
 ```
 
 ### E-commerce Store
 ```bash
-./mvp-initializer.py --project=online-store --mode=guided --llm-api --llm-provider=anthropic
-./workflow-runner.py --feature=payment-integration --existing-project=online-store --llm-api
-./workflow-runner.py --feature=inventory-management --existing-project=online-store --llm-api
+./workflow-runner.py create-mvp online-store --mode=guided --llm-provider=anthropic
+./workflow-runner.py add-feature payment-integration --to online-store
+./workflow-runner.py add-feature inventory-management --to online-store
+```
+
+### Project Management Commands
+```bash
+# List all your projects
+./workflow-runner.py list-projects
+
+# Check project status
+./workflow-runner.py status task-manager
+
+# See execution plan without running
+./workflow-runner.py create-mvp my-app --dry-run
 ```
 
 ## 🔧 Advanced Features
@@ -142,7 +151,7 @@ cat projects/task-manager-app/prd.md
 ```bash
 cd ai-workflow
 ./test-complete-workflow.py --quick
-./mvp-initializer.py --project=my-amazing-app --mode=guided --llm-api
+./workflow-runner.py create-mvp my-amazing-app --mode=guided
 ```
 
 **Welcome to the future of automated software development!** 🤖✨
