@@ -333,6 +333,25 @@ class ContentGenerationEngine:
         prompt_parts.append(f"- Use relative references to other workflow documents (e.g., `./prd.md`, `./srs.md`)")
         prompt_parts.append(f"- Include appropriate linkages to related workflow documents")
         
+        # CRITICAL: Add final override for design decisions (must be LAST)
+        if request.content_type == "design_decisions" and request.context.project_data:
+            prompt_parts.append(f"\n\n{'='*80}")
+            prompt_parts.append(f"🚨 FINAL CRITICAL OVERRIDE - IGNORE ALL ABOVE QUESTIONNAIRES 🚨")
+            prompt_parts.append(f"{'='*80}")
+            prompt_parts.append(f"")
+            prompt_parts.append(f"❌ IGNORE: All workflow questionnaire instructions above")
+            prompt_parts.append(f"✅ TASK: Document the user's ALREADY SELECTED tech stack")
+            prompt_parts.append(f"")
+            prompt_parts.append(f"📋 USER'S SELECTED STACK: {request.context.project_data.get('recommended_tech_stack')}")
+            prompt_parts.append(f"🎯 USER'S TARGET: {request.context.project_data.get('primary_user')} solving {request.context.project_data.get('user_pain_point')}")
+            prompt_parts.append(f"💡 AI'S REASONING: {request.context.project_data.get('tech_stack_reasoning')}")
+            prompt_parts.append(f"")
+            prompt_parts.append(f"🔥 CRITICAL: Create a design decisions document that explains WHY the selected stack is good")
+            prompt_parts.append(f"🔥 CRITICAL: Do NOT suggest different technologies or run any questionnaires")
+            prompt_parts.append(f"🔥 CRITICAL: Focus on implementation guidance for the SELECTED stack only")
+            prompt_parts.append(f"")
+            prompt_parts.append(f"{'='*80}")
+        
         full_prompt = "\n".join(prompt_parts)
         
         # Get validation criteria for content type
