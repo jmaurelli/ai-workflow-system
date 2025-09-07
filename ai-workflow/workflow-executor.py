@@ -317,54 +317,19 @@ class WorkflowDocumentExecutor:
                 self.logger.info(f"✅ Generated REAL content: {output_path}")
                 context.generated_files.append(str(output_path))
             
-            # Also create AI execution status file for tracking
-            status_file = context.feature_dir / f"{context.step_number}-output.md"
-            self._create_ai_execution_file(None, status_file, instructions, context)
+            # Status tracking now handled by feature manifest only
             
             return True
             
-        except ImportError:
-            self.logger.warning("Content generation engine not available, falling back to instruction creation")
-            return self._execute_with_ai_instructions_fallback(document_path, instructions, context)
+        except ImportError as e:
+            self.logger.error("❌ CRITICAL: Content generation engine not available - system requires LLM integration")
+            raise RuntimeError(f"LLM integration required but not available: {e}")
         except Exception as e:
-            self.logger.error(f"LLM API execution failed: {e}")
-            return self._execute_with_ai_instructions_fallback(document_path, instructions, context)
+            self.logger.error(f"❌ CRITICAL: LLM API execution failed: {e}")
+            raise RuntimeError(f"LLM API execution failed - system requires valid API key: {e}")
     
-    def _execute_with_ai_instructions_fallback(self, 
-                                               document_path: Path, 
-                                               instructions: Dict[str, Any], 
-                                               context: WorkflowContext) -> bool:
-        """Fallback to creating AI instructions when LLM API is not available"""
-        
-        self.logger.info(f"📝 Creating AI execution instructions: {document_path.name}")
-        
-        # Create AI agent prompt
-        ai_prompt = self._create_ai_agent_prompt(instructions, context)
-        
-        # Save prompt to temp file for AI agent execution
-        with tempfile.NamedTemporaryFile(mode='w', suffix='.md', delete=False) as f:
-            f.write(ai_prompt)
-            prompt_file = Path(f.name)
-        
-        try:
-            # Create structured output file that AI can follow
-            output_file = context.feature_dir / f"{context.step_number}-output.md"
-            
-            # Create execution instructions for AI
-            self._create_ai_execution_file(prompt_file, output_file, instructions, context)
-            
-            # Log the AI execution request
-            self.logger.info(f"📝 Created AI execution instructions: {output_file}")
-            
-            return True
-            
-        except Exception as e:
-            self.logger.error(f"AI instruction creation failed: {e}")
-            return False
-        finally:
-            # Cleanup temp file
-            if prompt_file.exists():
-                prompt_file.unlink()
+    # Removed _execute_with_ai_instructions_fallback function
+    # System now fails fast when LLM API is not available
     
     def _determine_content_type(self, document_name: str) -> str:
         """Determine content type from workflow document name"""
@@ -436,104 +401,9 @@ class WorkflowDocumentExecutor:
         
         return previous_outputs
     
-    def _create_ai_agent_prompt(self, instructions: Dict[str, Any], context: WorkflowContext) -> str:
-        """Create structured prompt for AI agent execution"""
-        
-        prompt = f"""# AI Agent Execution Request
-
-## Workflow Document: {instructions['document_name']}
-
-### Objective
-{instructions['objective']}
-
-### Context
-- Feature Name: {context.feature_name}
-- Feature Directory: {context.feature_dir}
-- Current Phase: {context.phase}
-- Current Step: {context.step_number}
-- Mode: {context.mode}
-
-### Available Project Data
-{json.dumps(context.project_data, indent=2)}
-
-### Required Inputs
-{chr(10).join(f"- {inp}" for inp in instructions['inputs_required'])}
-
-### Expected Outputs
-{chr(10).join(f"- {out}" for out in instructions['outputs_expected'])}
-
-### AI Directives
-{chr(10).join(f"- {directive}" for directive in instructions['ai_directives'])}
-
-### Template Sections
-"""
-        
-        for section_title, section_content in instructions['template_sections'].items():
-            prompt += f"\n#### {section_title}\n{section_content}\n"
-        
-        prompt += f"""
-### Validation Criteria
-{chr(10).join(f"- {criteria}" for criteria in instructions['validation_criteria'])}
-
-### Execution Instructions
-1. Read the workflow document: {instructions['document_name']}
-2. Follow the AI directives specified in the document
-3. Use the provided project data and context
-4. Generate the expected outputs in the feature directory: {context.feature_dir}
-5. Validate outputs against the criteria
-6. Update the execution status
-
-### Output Requirements
-- Save all generated files in: {context.feature_dir}/
-- Use relative paths in document references
-- Follow the feature-centric architecture
-- Update feature-manifest.json with completion status
-"""
-        
-        return prompt
+    # Removed _create_ai_agent_prompt function - no longer needed without fallback
     
-    def _create_ai_execution_file(self, 
-                                  prompt_file: Path, 
-                                  output_file: Path, 
-                                  instructions: Dict[str, Any], 
-                                  context: WorkflowContext):
-        """Create structured file for AI execution tracking"""
-        
-        execution_data = {
-            "workflow_step": {
-                "document": instructions['document_name'],
-                "step_number": context.step_number,
-                "phase": context.phase,
-                "timestamp": datetime.now().isoformat()
-            },
-            "execution_status": "ready_for_ai_agent",
-            "ai_prompt_file": str(prompt_file),
-            "feature_directory": str(context.feature_dir),
-            "expected_outputs": instructions['outputs_expected'],
-            "validation_criteria": instructions['validation_criteria'],
-            "completion_status": {
-                "started": False,
-                "completed": False,
-                "validated": False,
-                "errors": []
-            }
-        }
-        
-        with open(output_file, 'w') as f:
-            f.write(f"# AI Execution Status: {instructions['document_name']}\n\n")
-            f.write("```json\n")
-            f.write(json.dumps(execution_data, indent=2))
-            f.write("\n```\n\n")
-            f.write("## Instructions for AI Agent\n\n")
-            f.write(f"Execute the workflow document `{instructions['document_name']}` using the context and data provided.\n\n")
-            f.write("### Next Steps\n")
-            f.write("1. Read the workflow document\n")
-            f.write("2. Execute the instructions\n") 
-            f.write("3. Generate required outputs\n")
-            f.write("4. Validate results\n")
-            f.write("5. Update completion status\n")
-        
-        context.generated_files.append(str(output_file))
+    # Removed _create_ai_execution_file function - no longer needed without fallback
     
     def _execute_with_templates(self, 
                                 document_path: Path, 
