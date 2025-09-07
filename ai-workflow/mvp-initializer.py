@@ -412,6 +412,81 @@ def _call_google_api(api_key: str, messages: List[Dict], model: str = "gemini-1.
     
     return response.json()["candidates"][0]["content"]["parts"][0]["text"]
 
+def _call_openai_api_extended(api_key: str, messages: List[Dict], model: str) -> str:
+    """Call OpenAI API with extended token limit for complex responses"""
+    response = requests.post(
+        "https://api.openai.com/v1/chat/completions",
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        },
+        json={
+            "model": model,
+            "messages": messages,
+            "max_tokens": 1500,  # Much higher limit for complex JSON responses
+            "temperature": 0.7
+        },
+        timeout=60  # Longer timeout for complex responses
+    )
+    
+    if response.status_code != 200:
+        raise Exception(f"OpenAI API call failed: {response.status_code} - {response.text}")
+    
+    return response.json()["choices"][0]["message"]["content"]
+
+def _call_anthropic_api_extended(api_key: str, messages: List[Dict], model: str) -> str:
+    """Call Anthropic API with extended token limit for complex responses"""
+    system_msg = messages[0]["content"] if messages and messages[0]["role"] == "system" else ""
+    user_msg = messages[-1]["content"] if messages else ""
+    
+    response = requests.post(
+        "https://api.anthropic.com/v1/messages",
+        headers={
+            "x-api-key": api_key,
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json"
+        },
+        json={
+            "model": model,
+            "max_tokens": 1500,  # Much higher limit
+            "system": system_msg,
+            "messages": [{"role": "user", "content": user_msg}]
+        },
+        timeout=60
+    )
+    
+    if response.status_code != 200:
+        raise Exception(f"Anthropic API call failed: {response.status_code}")
+    
+    return response.json()["content"][0]["text"]
+
+def _call_google_api_extended(api_key: str, messages: List[Dict], model: str) -> str:
+    """Call Google Gemini API with extended token limit for complex responses"""
+    system_msg = messages[0]["content"] if messages and messages[0]["role"] == "system" else ""
+    user_msg = messages[-1]["content"] if messages else ""
+    
+    combined_prompt = f"{system_msg}\n\nUser: {user_msg}"
+    
+    response = requests.post(
+        f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}",
+        headers={"Content-Type": "application/json"},
+        json={
+            "contents": [{
+                "parts": [{"text": combined_prompt}]
+            }],
+            "generationConfig": {
+                "maxOutputTokens": 1500,  # Much higher limit
+                "temperature": 0.7
+            }
+        },
+        timeout=60
+    )
+    
+    if response.status_code != 200:
+        raise Exception(f"Gemini API call failed: {response.status_code}")
+    
+    return response.json()["candidates"][0]["content"]["parts"][0]["text"]
+
 def generate_dynamic_questions(project_goal: str, vendor_config: Dict, api_key: str, previous_answers: Dict[str, str] = None) -> List[Dict[str, Any]]:
     """Generate personalized follow-up questions using AI"""
     if not LLM_AVAILABLE or not vendor_config or not api_key:
@@ -631,6 +706,249 @@ def prompt_project_questions(non_interactive: bool = False, enable_ai: bool = Tr
     # If we get here, LLM is not available but AI is required
     print("\n💭 AI consultant is not available - this project requires AI capabilities")
     return None
+
+def ai_first_consultation(non_interactive: bool = False) -> Dict[str, Any]:
+    """Complete AI-driven project consultation from the very beginning"""
+    if non_interactive:
+        print("❌ AI-first mode requires interactive input")
+        return None
+    
+    print("\n🤖 AI-FIRST PROJECT CONSULTATION")
+    print("=" * 50)
+    print("💫 Welcome to your personal AI project consultant!")
+    print("💡 Let's discover your project together through conversation...")
+    print()
+    
+    # Step 1: AI Setup First (before any project discussion)
+    print("🔧 First, let's set up your AI consultant:")
+    vendor_setup = prompt_ai_vendor_setup()
+    
+    if not vendor_setup or vendor_setup in ["cancelled", "failed", "skip"]:
+        print("💭 AI consultant is required for AI-first mode")
+        return None
+    
+    vendor_config, api_key = vendor_setup
+    ai_name = vendor_config['name']
+    
+    # Step 2: Open-ended project discovery conversation
+    print(f"\n🎯 {ai_name.upper()} PROJECT DISCOVERY CONVERSATION")
+    print("=" * 60)
+    print(f"💬 Your {ai_name} consultant is ready to help!")
+    print()
+    
+    try:
+        # Initial open-ended question
+        print("🤔 Let's start with the big picture...")
+        project_idea = input("💡 Tell me about your project idea (be as detailed or brief as you like): ").strip()
+        
+        if not project_idea:
+            print("❌ We need some initial idea to work with")
+            return None
+            
+        print(f"\n🧠 {ai_name} is analyzing your idea and preparing personalized guidance...")
+        
+        # AI analyzes and guides the conversation
+        consultation_result = ai_guided_consultation(project_idea, vendor_config, api_key)
+        
+        if not consultation_result:
+            print(f"💭 {ai_name} consultation failed - falling back to standard questions")
+            return None
+            
+        return consultation_result
+        
+    except KeyboardInterrupt:
+        print(f"\n❌ {ai_name} consultation cancelled")
+        return None
+
+def ai_guided_consultation(initial_idea: str, vendor_config: Dict, api_key: str) -> Dict[str, Any]:
+    """AI guides the entire project consultation conversation"""
+    
+    consultation_prompt = f"""
+You are an expert project consultant. A user has described their project idea: "{initial_idea}"
+
+CRITICAL: Do NOT make assumptions about project type, platform, or architecture. Instead, create clarifying questions to understand what the user actually wants.
+
+Your task is to create an INTERACTIVE consultation and return a JSON response with the following structure:
+
+{{
+  "clarifying_questions": [
+    {{
+      "prompt": "What type of application are you envisioning?",
+      "options": ["Web application", "Mobile app", "Desktop app", "CLI tool", "API service", "Something else"],
+      "help": "This determines the entire technical approach"
+    }},
+    {{
+      "prompt": "Who will be using this log analyzer?",
+      "options": ["App developers", "DevOps engineers", "Support engineers", "System administrators"],
+      "help": "Understanding users shapes the interface and features"
+    }},
+    {{
+      "prompt": "How do users currently analyze logs?",
+      "options": ["Manual text files", "Basic grep/commands", "Enterprise tools", "No current solution"],
+      "help": "This helps us understand the improvement needed"
+    }},
+    {{
+      "prompt": "What's the main pain point you want to solve?",
+      "help": "Focus on the core problem - be specific"
+    }}
+  ],
+  "follow_up_questions": [
+    {{
+      "prompt": "How will you know this project is successful?",
+      "options": ["Faster issue detection", "Reduced debug time", "Team adoption", "Better insights"],
+      "help": "Define your success metrics early"
+    }}
+  ],
+  "potential_names": ["LogWise", "AppLogAnalyzer", "LogInsight"],
+  "next_steps": [
+    "Step 1: Clarify project requirements",
+    "Step 2: Choose platform and tech stack", 
+    "Step 3: Define core features",
+    "Step 4: Start with MVP"
+  ]
+}}
+
+IMPORTANT: Focus on asking clarifying questions rather than making assumptions. The user will answer these questions, then you can provide specific technical recommendations.
+"""
+    
+    try:
+        # Generate AI consultation response
+        if LLM_AVAILABLE == True:
+            # Use full LLM integration
+            request = LLMRequest(
+                prompt=consultation_prompt,
+                system_message="You are an expert project consultant who provides comprehensive, practical guidance."
+            )
+            llm = LLMAPIIntegration(LLMConfig(provider=LLMProvider[vendor_config["provider"].upper()]))
+            response = llm.generate_content(request)
+            content = response.content.strip()
+        else:
+            # Use extended API calls with higher token limits for complex consultation
+            messages = [
+                {"role": "system", "content": "You are an expert project consultant who provides comprehensive, practical guidance."},
+                {"role": "user", "content": consultation_prompt}
+            ]
+            
+            provider = vendor_config["provider"]
+            if provider == "openai":
+                content = _call_openai_api_extended(api_key, messages, vendor_config["model"])
+            elif provider == "anthropic":
+                content = _call_anthropic_api_extended(api_key, messages, vendor_config["model"])
+            elif provider == "google":
+                content = _call_google_api_extended(api_key, messages, vendor_config["model"])
+            else:
+                raise Exception(f"Unsupported provider: {provider}")
+        
+        # Parse AI consultation response
+        clean_content = content.strip()
+        if clean_content.startswith("```json"):
+            clean_content = clean_content[7:]
+        if clean_content.startswith("```"):
+            clean_content = clean_content[3:]
+        if clean_content.endswith("```"):
+            clean_content = clean_content[:-3]
+        clean_content = clean_content.strip()
+        
+        consultation_data = json.loads(clean_content)
+        
+        # Present AI analysis and get user feedback
+        return present_ai_consultation(consultation_data, vendor_config['name'])
+        
+    except Exception as e:
+        print(f"💭 AI consultation failed: {e}")
+        print("🔄 You can try again or contact support if this persists")
+        return None
+
+def present_ai_consultation(consultation_data: Dict, ai_name: str) -> Dict[str, Any]:
+    """Present AI consultation results and gather user input"""
+    
+    print(f"\n🤖 {ai_name.upper()} CONSULTATION QUESTIONS")
+    print("=" * 50)
+    
+    answers = {}
+    
+    # Handle clarifying questions first
+    clarifying_questions = consultation_data.get("clarifying_questions", [])
+    if clarifying_questions:
+        print("🤔 First, let me ask some clarifying questions:")
+        print()
+        
+        for i, question in enumerate(clarifying_questions, 1):
+            try:
+                if not _ask_dynamic_question(f"clarifying_{i}", question, answers):
+                    return None
+            except KeyboardInterrupt:
+                print("\n❌ AI consultation cancelled")
+                return None
+        
+        print(f"\n💡 Great! Now {ai_name} will analyze your answers and provide recommendations...")
+        
+        # TODO: Here we could make a second AI call with the user's answers to get specific recommendations
+        # For now, let's continue with name selection
+    
+    # Show suggested names
+    suggested_names = consultation_data.get("potential_names", [])
+    if suggested_names:
+        print(f"\n📝 {ai_name.upper()} SUGGESTS THESE NAMES:")
+        for i, name in enumerate(suggested_names[:3], 1):
+            print(f"   {i}. {name}")
+        print(f"   4. Let me choose my own name")
+        print()
+        
+        try:
+            name_choice = input("Choose a name (1-4): ").strip()
+            if name_choice in ["1", "2", "3"] and int(name_choice) <= len(suggested_names):
+                project_name = suggested_names[int(name_choice) - 1]
+            else:
+                project_name = input("💭 Enter your preferred project name: ").strip()
+        except KeyboardInterrupt:
+            print("\n❌ Name selection cancelled")
+            return None
+            
+        if not project_name:
+            print("❌ Project name is required")
+            return None
+    else:
+        try:
+            project_name = input("📝 What would you like to name this project? ").strip()
+        except KeyboardInterrupt:
+            print("\n❌ Project naming cancelled")
+            return None
+        if not project_name:
+            return None
+    
+    # Store core project information
+    answers.update({
+        "project_goal": f"AI-guided project: {project_name}",
+        "ai_consultation": consultation_data,
+        "project_name": project_name
+    })
+    
+    # Ask follow-up questions with proper error handling
+    follow_up_questions = consultation_data.get("follow_up_questions", [])
+    if follow_up_questions:
+        print(f"🤖 {ai_name} has some follow-up questions:")
+        print()
+        
+        for i, question in enumerate(follow_up_questions, 1):
+            try:
+                if not _ask_dynamic_question(f"ai_followup_{i}", question, answers):
+                    return None
+            except KeyboardInterrupt:
+                print("\n❌ Follow-up questions cancelled")
+                return None
+    
+    # Show next steps
+    next_steps = consultation_data.get("next_steps", [])
+    if next_steps:
+        print(f"\n📋 {ai_name.upper()} RECOMMENDED NEXT STEPS:")
+        for i, step in enumerate(next_steps, 1):
+            print(f"   {i}. {step}")
+        print()
+    
+    print(f"🎉 {ai_name} consultation complete! Your answers will guide the project creation.")
+    
+    return answers
 
 def view_project_report(project_name: str, base_dir: Path = None) -> None:
     """View executive report for an existing project"""
@@ -952,6 +1270,9 @@ def main():
     parser.add_argument("--enable-ai-questions", action="store_true", 
                        help="[DEPRECATED] AI questions are now enabled by default in guided mode")
     
+    parser.add_argument("--ai-first", action="store_true",
+                       help="🤖 AI-FIRST MODE: Complete AI-driven project consultation from the very beginning")
+    
     args = parser.parse_args()
     
     # Setup logging
@@ -965,82 +1286,125 @@ def main():
         view_project_report(args.view_report, base_dir)
         return
     
-    # Handle project name - prompt if not provided and in interactive mode
-    if not args.project and not args.view_report:
-        if not args.non_interactive and sys.stdin.isatty():
-            print("\n🚀 NEW PROJECT SETUP")
-            print("=" * 40)
-            try:
-                project_input = input("📝 What do you want to name this project? ").strip()
-                if not project_input:
-                    print("❌ Project name is required")
-                    return
-                args.project = project_input
-            except KeyboardInterrupt:
-                print("\n❌ Project setup cancelled")
-                return
-        else:
-            parser.error("--project is required when not using --view-report or in non-interactive mode")
-    
-    try:
-        # Validate and normalize project name
-        project_name = validate_project_name(args.project)
+    # Handle AI-first mode - complete AI-driven consultation
+    if args.ai_first:
+        if args.non_interactive:
+            print("❌ --ai-first mode requires interactive input (cannot be used with --non-interactive)")
+            return
         
-        if project_name != args.project:
-            logger.info(f"📝 Normalized project name: '{args.project}' → '{project_name}'")
+        print("🚀 WELCOME TO AI-FIRST PROJECT CREATION")
+        print("=" * 45)
+        print("🤖 Your AI consultant will guide you through the entire process")
+        print("💫 From initial idea to complete project specification")
+        print()
         
-        logger.info(f"🚀 Initializing new MVP project: {project_name}")
+        # Complete AI consultation
+        project_context = ai_first_consultation(args.non_interactive)
         
-        # Determine project base directory
-        if args.project_dir:
-            base_dir = Path(args.project_dir).expanduser().resolve()
-        else:
-            # Default to ~/Projects for better organization
-            default_base = Path.home() / "Projects"
+        if not project_context:
+            logger.info("❌ AI-first consultation cancelled")
+            return
             
-            # Prompt for project directory (unless non-interactive or not a tty)
+        # Extract project name from AI consultation
+        project_name = project_context.get("project_name")
+        if not project_name:
+            print("❌ AI consultation didn't provide a project name")
+            return
+            
+        # Validate project name
+        project_name = validate_project_name(project_name)
+        logger.info(f"🚀 AI-guided project: {project_name}")
+        
+        # AI suggests directory (for now, use default - could be enhanced)
+        base_dir = Path.home() / "Projects"
+        print(f"📁 AI recommends creating project at: {base_dir}/{project_name}/")
+        
+    else:
+        # Standard flow - handle project name prompt
+        if not args.project and not args.view_report:
             if not args.non_interactive and sys.stdin.isatty():
+                print("\n🚀 NEW PROJECT SETUP")
+                print("=" * 40)
                 try:
-                    print(f"\n📁 PROJECT LOCATION")
-                    print(f"Creating project: {project_name}")
-                    print(f"Default location: {default_base}/{project_name}/")
-                    print()
-                    print("💡 Press Enter for default, or specify a different parent directory")
-                    print("💡 Examples: '/home/user/my-projects' or '~/projects' or '../other-projects'")
-                    response = input(f"📂 Parent directory [{default_base}]: ").strip()
-                    if response:
-                        response_path = Path(response).expanduser()
-                        if not response_path.is_absolute():
-                            # If it's just the project name (like "clicc"), use default parent
-                            if '/' not in response and not response.startswith('.') and response == project_name:
-                                print(f"💡 '{response}' matches project name - using default parent directory")
-                                base_dir = default_base
-                            else:
-                                # It's a relative path like ../projects
-                                base_dir = (default_base / response).resolve()
-                        else:
-                            base_dir = response_path.resolve()
-                    else:
-                        base_dir = default_base
-                        
-                    print(f"✅ Project will be created at: {base_dir}/{project_name}/")
-                    print()
+                    project_input = input("📝 What do you want to name this project? ").strip()
+                    if not project_input:
+                        print("❌ Project name is required")
+                        return
+                    args.project = project_input
                 except KeyboardInterrupt:
-                    logger.info("❌ Operation cancelled by user")
+                    print("\n❌ Project setup cancelled")
                     return
             else:
-                base_dir = default_base
-        
-        # Determine AI questions setting - default True for guided mode unless disabled
-        enable_ai = not args.disable_ai_questions and args.mode == "guided"
-        
-        # Prompt for project questions (interactive only)
-        project_context = prompt_project_questions(args.non_interactive, enable_ai)
-        
-        # If user cancelled during questions, exit completely
-        if project_context is None:
-            logger.info("❌ Project initialization cancelled by user")
+                parser.error("--project is required when not using --view-report or in non-interactive mode")
+    
+    if not args.ai_first:
+        # Standard flow - validate project name and determine directory
+        try:
+            # Validate and normalize project name
+            project_name = validate_project_name(args.project)
+            
+            if project_name != args.project:
+                logger.info(f"📝 Normalized project name: '{args.project}' → '{project_name}'")
+            
+            logger.info(f"🚀 Initializing new MVP project: {project_name}")
+            
+            # Determine project base directory
+            if args.project_dir:
+                base_dir = Path(args.project_dir).expanduser().resolve()
+            else:
+                # Default to ~/Projects for better organization
+                default_base = Path.home() / "Projects"
+                
+                # Prompt for project directory (unless non-interactive or not a tty)
+                if not args.non_interactive and sys.stdin.isatty():
+                    try:
+                        print(f"\n📁 PROJECT LOCATION")
+                        print(f"Creating project: {project_name}")
+                        print(f"Default location: {default_base}/{project_name}/")
+                        print()
+                        print("💡 Press Enter for default, or specify a different parent directory")
+                        print("💡 Examples: '/home/user/my-projects' or '~/projects' or '../other-projects'")
+                        response = input(f"📂 Parent directory [{default_base}]: ").strip()
+                        if response:
+                            response_path = Path(response).expanduser()
+                            if not response_path.is_absolute():
+                                # If it's just the project name (like "clicc"), use default parent
+                                if '/' not in response and not response.startswith('.') and response == project_name:
+                                    print(f"💡 '{response}' matches project name - using default parent directory")
+                                    base_dir = default_base
+                                else:
+                                    # It's a relative path like ../projects
+                                    base_dir = (default_base / response).resolve()
+                            else:
+                                base_dir = response_path.resolve()
+                        else:
+                            base_dir = default_base
+                            
+                        print(f"✅ Project will be created at: {base_dir}/{project_name}/")
+                        print()
+                    except KeyboardInterrupt:
+                        logger.info("❌ Operation cancelled by user")
+                        return
+                else:
+                    base_dir = default_base
+            
+            # Determine AI questions setting - default True for guided mode unless disabled
+            enable_ai = not args.disable_ai_questions and args.mode == "guided"
+            
+            # Prompt for project questions (interactive only)
+            project_context = prompt_project_questions(args.non_interactive, enable_ai)
+            
+        except ValueError as e:
+            logger.error(f"❌ {e}")
             return
+    
+    # Continue with project creation (both AI-first and standard flow reach here)
+    # If user cancelled during questions, exit completely
+    if project_context is None:
+        logger.info("❌ Project initialization cancelled by user")
+        return
+    
+    try:
         
         # Handle dry-run mode
         if args.dry_run:
