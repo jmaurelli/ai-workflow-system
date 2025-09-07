@@ -265,7 +265,16 @@ class ContentGenerationEngine:
                 prompt_parts.append(f"- Target success metric: `{request.context.project_data.get('key_success_metric', 'success measures')}`")
                 prompt_parts.append(f"- Reference AI tech stack reasoning: `{request.context.project_data.get('tech_stack_reasoning', 'technical decisions')}`")
             
-            elif request.content_type in ["prd", "srs", "design_decisions", "design_analysis"]:
+            elif request.content_type == "design_decisions":
+                prompt_parts.append(f"\n**DESIGN DECISIONS INSTRUCTIONS**:")
+                prompt_parts.append(f"- CRITICAL: The user has ALREADY SELECTED their tech stack: `{request.context.project_data.get('recommended_tech_stack', 'technologies')}`")
+                prompt_parts.append(f"- DO NOT run questionnaires or suggest alternatives - DOCUMENT the selected stack with rationale")
+                prompt_parts.append(f"- AI reasoning provided: `{request.context.project_data.get('tech_stack_reasoning', 'reasoning')}`")
+                prompt_parts.append(f"- Focus on implementation details and best practices for the SELECTED stack")
+                prompt_parts.append(f"- Include learning resources for the CHOSEN technologies")
+                prompt_parts.append(f"- Target user type: {request.context.project_data.get('primary_user', 'users')} with pain point: {request.context.project_data.get('user_pain_point', 'challenges')}")
+            
+            elif request.content_type in ["prd", "srs", "design_analysis"]:
                 prompt_parts.append(f"\n**DOCUMENTATION INSTRUCTIONS**:")
                 prompt_parts.append(f"- Incorporate user context: {request.context.project_data.get('primary_user', 'users')} dealing with {request.context.project_data.get('user_pain_point', 'challenges')}")
                 prompt_parts.append(f"- Use the selected tech stack: {request.context.project_data.get('recommended_tech_stack', 'technologies')}")
