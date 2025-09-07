@@ -48,7 +48,7 @@ def prompt_ai_vendor_setup() -> tuple:
         "1": {"name": "OpenAI", "provider": "openai", "model": "gpt-3.5-turbo", "env_var": "OPENAI_API_KEY"},
         "2": {"name": "Claude (Anthropic)", "provider": "anthropic", "model": "claude-3-5-sonnet-20241022", "env_var": "ANTHROPIC_API_KEY"},
         "3": {"name": "Google Gemini", "provider": "google", "model": "gemini-1.5-flash", "env_var": "GOOGLE_API_KEY"},
-        "4": {"name": "Skip AI questions", "provider": None}
+        "4": {"name": "Exit (AI consultant required)", "provider": None}
     }
     
     # Show integration status
@@ -72,7 +72,8 @@ def prompt_ai_vendor_setup() -> tuple:
             if choice in vendors:
                 selected = vendors[choice]
                 if not selected["provider"]:
-                    return "skip", None  # User chose to skip AI questions
+                    print("\n🚫 AI consultant is required for this project")
+                    return "skip", None  # User chose to exit
                 
                 # Check if API key is already in environment
                 existing_key = os.getenv(selected["env_var"])
@@ -80,33 +81,81 @@ def prompt_ai_vendor_setup() -> tuple:
                     print(f"✅ Found existing {selected['name']} API key")
                     return selected, existing_key
                 
-                # Prompt for API key
-                print(f"\n🔑 {selected['name']} API Key")
-                if selected['provider'] == 'openai':
-                    print("💡 Get your key from: https://platform.openai.com/api-keys")
-                elif selected['provider'] == 'anthropic':
-                    print("💡 Get your key from: https://console.anthropic.com/settings/keys")
-                elif selected['provider'] == 'google':
-                    print("💡 Get your key from: https://aistudio.google.com/app/apikey")
-                print("🔒 Your API key will be hidden for security")
+                # Prompt for API key with 3 attempt limit
+                max_attempts = 3
+                for attempt in range(max_attempts):
+                    print(f"\n🔑 {selected['name']} API Key (Attempt {attempt + 1}/{max_attempts})")
+                    if selected['provider'] == 'openai':
+                        print("💡 Get your key from: https://platform.openai.com/api-keys")
+                    elif selected['provider'] == 'anthropic':
+                        print("💡 Get your key from: https://console.anthropic.com/settings/keys")
+                    elif selected['provider'] == 'google':
+                        print("💡 Get your key from: https://aistudio.google.com/app/apikey")
+                    print("🔒 Your API key will be hidden for security")
+                    
+                    try:
+                        api_key = getpass.getpass(f"Enter your {selected['name']} API key: ").strip()
+                    except (KeyboardInterrupt, EOFError):
+                        print("\n❌ API key input cancelled")
+                        return "cancelled", None
+                        
+                    if not api_key:
+                        print("❌ API key required for AI consultant")
+                        if attempt < max_attempts - 1:
+                            continue
+                        else:
+                            break
+                    
+                    # Validate API key format
+                    if not _validate_api_key(selected["provider"], api_key):
+                        print(f"❌ Invalid {selected['name']} API key format")
+                        if selected['provider'] == 'openai':
+                            print("💡 OpenAI keys start with 'sk-' and are ~51 characters long")
+                        elif selected['provider'] == 'anthropic':
+                            print("💡 Claude keys start with 'sk-ant-' and are longer")
+                        elif selected['provider'] == 'google':
+                            print("💡 Google keys are typically 39 characters, mix of letters/numbers")
+                        
+                        if attempt < max_attempts - 1:
+                            print("🔄 Please try again with a valid API key")
+                            continue
+                        else:
+                            break
+                    else:
+                        print(f"✅ API key format looks valid for {selected['name']}")
+                        return selected, api_key
                 
-                try:
-                    api_key = getpass.getpass(f"Enter your {selected['name']} API key: ").strip()
-                except (KeyboardInterrupt, EOFError):
-                    print("\n❌ API key input cancelled")
-                    continue
-                    
-                if not api_key:
-                    print("❌ API key required for AI questions")
-                    continue
-                    
-                return selected, api_key
+                # If we get here, all 3 attempts failed
+                print(f"\n❌ Failed to get valid {selected['name']} API key after {max_attempts} attempts")
+                print("🚫 AI consultant is required for this project - cannot proceed")
+                return "failed", None
             else:
                 print(f"❌ Please enter a number from 1 to {max_choice}")
                 
         except KeyboardInterrupt:
             print("\n❌ AI setup cancelled")
             return "cancelled", None
+
+def _validate_api_key(provider: str, api_key: str) -> bool:
+    """Validate API key format for different providers"""
+    if not api_key or not api_key.strip():
+        return False
+    
+    api_key = api_key.strip()
+    
+    if provider == "openai":
+        # OpenAI keys start with 'sk-' and are typically 51 characters
+        return api_key.startswith("sk-") and len(api_key) >= 20
+    
+    elif provider == "anthropic":
+        # Anthropic keys start with 'sk-ant-' 
+        return api_key.startswith("sk-ant-") and len(api_key) >= 20
+    
+    elif provider == "google":
+        # Google API keys are typically 39 characters, alphanumeric + some symbols
+        return len(api_key) >= 20 and len(api_key) <= 50 and api_key.replace("-", "").replace("_", "").isalnum()
+    
+    return False
 
 def _call_openai_api(api_key: str, messages: List[Dict], model: str = "gpt-3.5-turbo") -> str:
     """Simple OpenAI API call using requests"""
@@ -341,14 +390,18 @@ def prompt_project_questions(non_interactive: bool = False, enable_ai: bool = Tr
         # Prompt for AI vendor setup
         vendor_config, api_key = prompt_ai_vendor_setup()
         
-        # Check if user cancelled during AI setup
+        # Check if user cancelled or failed during AI setup
         if vendor_config == "cancelled":
             # User pressed Ctrl+C during AI setup - respect that and exit completely
             print("💭 AI setup cancelled - exiting")
             return None
+        elif vendor_config == "failed":
+            # User failed to provide valid API key after 3 attempts - AI is mandatory
+            print("💭 AI consultant setup failed - project cannot continue without valid API key")
+            return None
         elif vendor_config == "skip":
-            # User chose to skip AI questions - proceed to static questions
-            print("💭 Skipping AI questions, using standard questions...")
+            # User chose to exit - AI is mandatory
+            return None
         elif vendor_config and api_key:
             print(f"\n🤖 {vendor_config['name']} will help create personalized questions...")
             try:
@@ -366,88 +419,13 @@ def prompt_project_questions(non_interactive: bool = False, enable_ai: bool = Tr
                     return answers
                     
             except Exception as e:
-                print(f"💭 {vendor_config['name']} consultant unavailable ({e}), using standard questions...")
-    
-    # Fallback to static questions
-    static_questions = {
-        "what_to_build": {
-            "prompt": "🔨 What are the main things users will be able to do? (2-3 key features)",
-            "example": "Upload log files, search for errors, generate summary reports",
-            "required": True
-        },
-        "where_to_run": {
-            "prompt": "🌐 Where will this run?",
-            "options": ["local", "cloud", "container", "serverless"],
-            "option_help": {
-                "local": "On my computer only",
-                "cloud": "Online for others to use", 
-                "container": "In Docker/containers",
-                "serverless": "Cloud functions (AWS Lambda, etc.)"
-            },
-            "default": "local",
-            "required": False
-        },
-        "user_success": {
-            "prompt": "👤 How will users know this is working well for them?",
-            "example": "Tasks complete quickly, easy to find what they need, saves them time",
-            "required": True
-        }
-    }
-    
-    print("\n📝 A few more questions to understand your needs:")
-    
-    for key, config in static_questions.items():
-        while True:
-            try:
-                # Build prompt text
-                prompt_text = config["prompt"]
-                if "default" in config:
-                    prompt_text += f" [{config['default']}]"
-                    
-                # Show example for required fields or help text  
-                if "example" in config and config.get("required", False):
-                    print(f"💡 Example: {config['example']}")
-                elif "help" in config:
-                    print(f"💡 {config['help']}")
-                
-                # Show options with help text (only once)
-                if "options" in config and "option_help" in config:
-                    print("Options:")
-                    for option in config["options"]:
-                        help_text = config["option_help"].get(option, "")
-                        print(f"   {option} - {help_text}")
-                
-                response = input(f"{prompt_text}: ").strip()
-                
-                # Handle defaults
-                if not response and "default" in config:
-                    response = config["default"]
-                
-                # Handle required fields
-                if config.get("required", False) and not response:
-                    print("❌ This field is required. Please provide an answer.")
-                    continue
-                
-                # Handle boolean type
-                if config.get("type") == "boolean":
-                    response = response.lower() in ['y', 'yes', 'true', '1']
-                
-                # Handle options validation
-                if "options" in config and response and response not in config["options"]:
-                    print(f"❌ Please enter one of: {', '.join(config['options'])}")
-                    continue
-                
-                answers[key] = response if response else ""
-                print()
-                break
-                
-            except KeyboardInterrupt:
-                print("\n❌ Setup cancelled by user")
+                print(f"💭 {vendor_config['name']} consultant failed: {e}")
+                print("🚫 AI consultant is required - cannot proceed without working AI")
                 return None
     
-    print("✅ Project initialization complete!")
-    print()
-    return answers
+    # If we get here, LLM is not available but AI is required
+    print("\n💭 AI consultant is not available - this project requires AI capabilities")
+    return None
 
 def view_project_report(project_name: str, base_dir: Path = None) -> None:
     """View executive report for an existing project"""
