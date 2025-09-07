@@ -1,0 +1,37 @@
+{
+  "feature_metadata": {
+    "feature_name": "test-project-docs",
+    "feature_slug": "test-project-docs",
+    "creation_date": "2025-09-07T11:27:41.002321+00:00",
+    "creator": "workflow-executor"
+  },
+  "workflow_status": {
+    "current_phase": "completion",
+    "phases_completed": [],
+    "phases_remaining": [],
+    "last_updated": "2025-09-07T11:27:49.979895+00:00"
+  },
+  "document_status": {},
+  "execution_log": [
+    "Executed 01-mvp-entrypoint.md at 2025-09-07T07:27:41.002272",
+    "Executed 02-gen-prd.md at 2025-09-07T07:27:42.500575",
+    "Executed 03-gen-srs.md at 2025-09-07T07:27:44.469280",
+    "Executed 04-gen-design-decisions-lite.md at 2025-09-07T07:27:45.476002",
+    "Executed 05-gen-design.md at 2025-09-07T07:27:46.378175",
+    "Executed 06-gen-tasks-and-testing.md at 2025-09-07T07:27:47.289437",
+    "Executed 07-process-tasks.md at 2025-09-07T07:27:48.188855",
+    "Executed 08-gen-completion-summary.md at 2025-09-07T07:27:49.118018",
+    "Executed 09-gen-project-history.md at 2025-09-07T07:27:49.979799"
+  ],
+  "generated_files": [
+    "/home/jmaurelli/Projects/ai-workflow-system/ai-workflow/features/2025-09-07-test-project-docs/01-output.md",
+    "/home/jmaurelli/Projects/ai-workflow-system/ai-workflow/features/2025-09-07-test-project-docs/02-output.md",
+    "/home/jmaurelli/Projects/ai-workflow-system/ai-workflow/features/2025-09-07-test-project-docs/03-output.md",
+    "/home/jmaurelli/Projects/ai-workflow-system/ai-workflow/features/2025-09-07-test-project-docs/04-output.md",
+    "/home/jmaurelli/Projects/ai-workflow-system/ai-workflow/features/2025-09-07-test-project-docs/05-output.md",
+    "/home/jmaurelli/Projects/ai-workflow-system/ai-workflow/features/2025-09-07-test-project-docs/06-output.md",
+    "/home/jmaurelli/Projects/ai-workflow-system/ai-workflow/features/2025-09-07-test-project-docs/07-output.md",
+    "/home/jmaurelli/Projects/ai-workflow-system/ai-workflow/features/2025-09-07-test-project-docs/08-output.md",
+    "/home/jmaurelli/Projects/ai-workflow-system/ai-workflow/features/2025-09-07-test-project-docs/09-output.md"
+  ]
+}

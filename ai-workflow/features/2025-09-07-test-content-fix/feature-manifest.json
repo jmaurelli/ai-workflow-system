@@ -1,0 +1,21 @@
+{
+  "feature_metadata": {
+    "feature_name": "test-content-fix",
+    "feature_slug": "test-content-fix",
+    "creation_date": "2025-09-07T14:45:37.372700+00:00",
+    "creator": "workflow-executor"
+  },
+  "workflow_status": {
+    "current_phase": "foundation",
+    "phases_completed": [],
+    "phases_remaining": [],
+    "last_updated": "2025-09-07T14:45:37.372761+00:00"
+  },
+  "document_status": {},
+  "execution_log": [
+    "Executed 01-mvp-entrypoint.md at 2025-09-07T10:45:37.372472"
+  ],
+  "generated_files": [
+    "/home/jmaurelli/Projects/ai-workflow-system/ai-workflow/features/2025-09-07-test-content-fix/01-output.md"
+  ]
+}
