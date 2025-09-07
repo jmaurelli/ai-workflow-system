@@ -96,10 +96,12 @@ class LLMAPIIntegration:
             if not self.config.api_key:
                 raise ValueError("OpenAI API key required. Set OPENAI_API_KEY environment variable.")
             
-            openai.api_key = self.config.api_key
-            if self.config.base_url:
-                openai.api_base = self.config.base_url
-            return openai
+            # Use OpenAI v1.x client
+            from openai import OpenAI
+            return OpenAI(
+                api_key=self.config.api_key,
+                base_url=self.config.base_url
+            )
             
         elif self.config.provider == LLMProvider.ANTHROPIC:
             if not self.config.api_key:
@@ -115,11 +117,12 @@ class LLMAPIIntegration:
             if not self.config.base_url:
                 self.config.base_url = os.getenv('AZURE_OPENAI_ENDPOINT')
             
-            openai.api_type = "azure"
-            openai.api_key = self.config.api_key
-            openai.api_base = self.config.base_url
-            openai.api_version = "2023-12-01-preview"
-            return openai
+            from openai import AzureOpenAI
+            return AzureOpenAI(
+                api_key=self.config.api_key,
+                azure_endpoint=self.config.base_url,
+                api_version="2023-12-01-preview"
+            )
             
         elif self.config.provider == LLMProvider.LOCAL_OLLAMA:
             if not self.config.base_url:
@@ -132,10 +135,11 @@ class LLMAPIIntegration:
             if not self.config.base_url:
                 self.config.base_url = "https://api.groq.com/openai/v1"
             
-            import openai
-            openai.api_key = self.config.api_key
-            openai.api_base = self.config.base_url
-            return openai
+            from openai import OpenAI
+            return OpenAI(
+                api_key=self.config.api_key,
+                base_url=self.config.base_url
+            )
             
         elif self.config.provider == LLMProvider.GOOGLE:
             if not self.config.api_key:
@@ -213,7 +217,7 @@ class LLMAPIIntegration:
         
         messages.append({"role": "user", "content": user_content})
         
-        response = self.client.ChatCompletion.create(
+        response = self.client.chat.completions.create(
             model=self.config.model,
             messages=messages,
             max_tokens=self.config.max_tokens,

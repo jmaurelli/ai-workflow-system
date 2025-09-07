@@ -56,9 +56,10 @@ class ContentGenerationEngine:
             with open(config_path, 'r') as f:
                 self.llm_config_data = json.load(f)
         
-        # Initialize default LLM integration
+        # Initialize default LLM integration (defer until needed)
         default_provider = self.llm_config_data["default_provider"]
-        self.default_llm = self._create_llm_integration(default_provider)
+        self.default_provider = default_provider
+        self.default_llm = None
         
     def _setup_logging(self) -> logging.Logger:
         """Setup logging configuration"""
@@ -164,6 +165,14 @@ class ContentGenerationEngine:
             )
             
             return LLMAPIIntegration(llm_config, debug=self.debug)
+        
+        # Lazy initialization of default LLM
+        if self.default_llm is None:
+            try:
+                self.default_llm = self._create_llm_integration(self.default_provider)
+            except Exception as e:
+                self.logger.error(f"Failed to initialize LLM integration: {e}")
+                raise ValueError(f"LLM initialization failed: {e}")
         
         return self.default_llm
     
@@ -330,6 +339,8 @@ class ContentGenerationEngine:
         
         # This would aggregate usage across all LLM integrations
         # For now, return default LLM stats
+        if self.default_llm is None:
+            return {"usage": "no_llm_initialized"}
         return self.default_llm.get_usage_stats()
 
 def main():
