@@ -103,6 +103,7 @@ class WorkflowTester:
                 "--project", test_project,
                 "--mode", "guided",
                 "--dry-run",
+                "--non-interactive",
                 "--verbose"
             ]
             
@@ -137,6 +138,7 @@ class WorkflowTester:
                 "python3", str(self.script_dir / "mvp-initializer.py"),
                 "--project", test_project,
                 "--mode", "autonomous",
+                "--non-interactive",
                 "--verbose"
             ]
             
@@ -148,7 +150,7 @@ class WorkflowTester:
             
             if result.returncode == 0:
                 # Verify project was created (using normalized name)
-                project_dir = Path.cwd() / "projects" / normalized_project
+                project_dir = Path.home() / "Projects" / normalized_project
                 if project_dir.exists():
                     # Check for expected files
                     expected_files = [
@@ -227,7 +229,7 @@ class WorkflowTester:
             
             if result.returncode == 0:
                 # Verify feature was added to project
-                project_dir = Path.cwd() / "projects" / project_name
+                project_dir = Path.home() / "Projects" / project_name
                 if project_dir.exists():
                     self.log_success(f"Feature '{test_feature}' added to project '{project_name}'")
                     return True
@@ -315,7 +317,8 @@ class WorkflowTester:
                 "python3", str(self.script_dir / "mvp-initializer.py"),
                 "--project", "invalid@project#name",
                 "--mode", "autonomous",
-                "--dry-run"
+                "--dry-run",
+                "--non-interactive"
             ]
             
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
@@ -337,7 +340,8 @@ class WorkflowTester:
                 cmd = [
                     "python3", str(self.script_dir / "mvp-initializer.py"),
                     "--project", normalized_project,
-                    "--mode", "autonomous"
+                    "--mode", "autonomous",
+                    "--non-interactive"
                 ]
                 
                 result = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
@@ -370,7 +374,7 @@ class WorkflowTester:
         cleanup_count = 0
         
         # Clean up test projects (including ones that might exist from previous runs)
-        projects_dir = Path.cwd() / "projects"
+        projects_dir = Path.home() / "Projects"
         if projects_dir.exists():
             # Clean up projects from current test run
             for project_name in self.test_projects:

@@ -194,6 +194,11 @@ def main():
                        required=True,
                        help="Project name for new MVP")
     
+    parser.add_argument("--project-dir", 
+                       help="Base directory where project should be created (default: ~/Projects, interactive prompt in guided mode)")
+    parser.add_argument("--non-interactive", action="store_true",
+                       help="Disable interactive prompts (useful for automated testing)")
+    
     parser.add_argument("--mode",
                        choices=["guided", "autonomous", "learning"],
                        default="guided",
@@ -247,12 +252,17 @@ def main():
             # Default to ~/Projects for better organization
             default_base = Path.home() / "Projects"
             
-            # In guided mode, prompt for project directory
-            if args.mode == "guided":
+            # In guided mode, prompt for project directory (only if interactive)
+            if args.mode == "guided" and not args.non_interactive and sys.stdin.isatty():
                 try:
                     response = input(f"📁 Where do you want to create this project? [{default_base}]: ").strip()
                     if response:
-                        base_dir = Path(response).expanduser().resolve()
+                        response_path = Path(response).expanduser()
+                        # If it's not absolute, treat it as relative to the default base directory
+                        if not response_path.is_absolute():
+                            base_dir = (default_base / response).resolve()
+                        else:
+                            base_dir = response_path.resolve()
                     else:
                         base_dir = default_base
                 except KeyboardInterrupt:

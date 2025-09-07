@@ -464,11 +464,11 @@ def main():
         # Determine project directory and context mode
         if args.existing_project:
             # Feature addition to existing MVP project
-            project_root = Path.cwd() / "projects" / args.existing_project
+            project_root = Path.home() / "Projects" / args.existing_project
             context_mode = "FEATURE_ADDITION"
             
             if not project_root.exists():
-                print(f"❌ Error: Project '{args.existing_project}' not found in /projects/")
+                print(f"❌ Error: Project '{args.existing_project}' not found in ~/Projects/")
                 print(f"💡 Tip: Use mvp-initializer.py to create new projects")
                 sys.exit(1)
                 
