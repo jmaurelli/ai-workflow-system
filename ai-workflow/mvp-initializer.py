@@ -488,11 +488,23 @@ Return ONLY a JSON array:
             else:
                 raise Exception(f"Unsupported provider: {provider}")
         
-        # Parse JSON response
+        # Parse JSON response - strip markdown formatting if present
         try:
-            questions = json.loads(content)
+            # Clean the content - remove markdown code blocks
+            clean_content = content.strip()
+            if clean_content.startswith("```json"):
+                clean_content = clean_content[7:]  # Remove ```json
+            if clean_content.startswith("```"):
+                clean_content = clean_content[3:]   # Remove ```
+            if clean_content.endswith("```"):
+                clean_content = clean_content[:-3]  # Remove closing ```
+            clean_content = clean_content.strip()
+            
+            questions = json.loads(clean_content)
             return questions if isinstance(questions, list) else []
-        except json.JSONDecodeError:
+        except json.JSONDecodeError as e:
+            # If JSON parsing fails, log the issue for debugging but don't show to user
+            print(f"💭 Unable to parse AI response - using fallback questions")
             return []
             
     except Exception as e:
@@ -600,6 +612,8 @@ def prompt_project_questions(non_interactive: bool = False, enable_ai: bool = Tr
                         
                     print(f"🎉 Great! {vendor_config['name']} helped gather the perfect project context.")
                     return answers
+                else:
+                    print("💭 Unable to generate AI questions - using standard fallback")
                     
             except Exception as e:
                 print(f"💭 {vendor_config['name']} API call failed: {e}")
