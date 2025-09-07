@@ -226,6 +226,16 @@ class ContentGenerationEngine:
         if request.context.project_data:
             prompt_parts.append(f"\n## Project Data")
             prompt_parts.append(f"```json\n{json.dumps(request.context.project_data, indent=2)}\n```")
+            
+            # Special instructions for MVP entrypoint content
+            if request.content_type == "mvp_entrypoint":
+                prompt_parts.append(f"\n## CRITICAL: Use Real Project Data")
+                prompt_parts.append(f"**IMPORTANT**: The project data above contains REAL user answers to initialization questions.")
+                prompt_parts.append(f"- Replace ALL placeholder fields (like `project_name`, `project_goal`, etc.) with actual values from the project data")
+                prompt_parts.append(f"- Use `{request.context.project_data.get('project_name', 'Unknown Project')}` as the actual project name")
+                prompt_parts.append(f"- Use `{request.context.project_data.get('project_goal', 'Unknown Goal')}` as the actual project goal")
+                prompt_parts.append(f"- Generate comprehensive, real documentation based on the collected user data")
+                prompt_parts.append(f"- Do NOT use placeholder text or field names - use the actual collected values")
         
         # Add previous outputs for context
         if request.context.previous_outputs:

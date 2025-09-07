@@ -271,6 +271,10 @@ class WorkflowDocumentExecutor:
         self.logger.info(f"🤖 Executing with REAL LLM API: {document_path.name}")
         
         try:
+            # Special handling for Step 01: MVP Entrypoint (Interactive Data Collection)
+            if document_path.name == "01-mvp-entrypoint.md":
+                return self._execute_interactive_mvp_initialization(document_path, context)
+            
             # Import content generation engine
             from content_generation_engine import ContentGenerationEngine, ContentGenerationRequest, WorkflowContext as CGContext
             
@@ -470,6 +474,90 @@ class WorkflowDocumentExecutor:
         
         with open(output_path, 'w') as f:
             f.write(content)
+    
+    def _execute_interactive_mvp_initialization(self, document_path: Path, context: WorkflowContext) -> bool:
+        """Execute MVP initialization using interactive data collection + AI generation"""
+        
+        self.logger.info(f"🎯 Interactive MVP initialization: {document_path.name}")
+        
+        try:
+            # Import interactive data collector
+            from interactive_data_collector import InteractiveDataCollector, ProjectInitializationData
+            
+            print(f"\n🤖 STEP 01: MVP Project Initialization")
+            print(f"📄 Document: {document_path.name}")
+            print(f"🎯 Feature: {context.feature_name}")
+            print()
+            
+            # Collect data interactively
+            collector = InteractiveDataCollector()
+            project_data = collector.collect_mvp_requirements()
+            
+            self.logger.info(f"✅ Collected project data: {project_data.project_name}")
+            
+            # Now generate the document using collected data
+            from content_generation_engine import ContentGenerationEngine, ContentGenerationRequest, WorkflowContext as CGContext
+            
+            # Create content generation engine
+            engine = ContentGenerationEngine(debug=self.debug)
+            
+            # Create workflow context with collected project data
+            cg_context = CGContext(
+                feature_name=context.feature_name,
+                feature_slug=context.feature_slug,
+                feature_dir=context.feature_dir,
+                workflow_step=context.step_number,
+                phase=context.phase,
+                project_data=project_data.to_dict(),  # Pass collected data
+                previous_outputs=self._load_previous_outputs(context)
+            )
+            
+            # Generate the project-initialization.md file
+            output_file = "project-initialization.md"
+            request = ContentGenerationRequest(
+                workflow_document=str(document_path),
+                context=cg_context,
+                output_file=output_file,
+                content_type="mvp_entrypoint",
+                template_sections={},
+                ai_directives=[
+                    "Use the collected project_data to populate all fields",
+                    "Generate real content based on user answers, not placeholders",
+                    "Create comprehensive project documentation using the provided data"
+                ]
+            )
+            
+            # Generate content with collected data
+            self.logger.info(f"🤖 Generating {output_file} with collected project data...")
+            content = engine.generate_content(request)
+            
+            # Save to feature directory
+            output_path = context.feature_dir / output_file
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            
+            with open(output_path, 'w', encoding='utf-8') as f:
+                f.write(content)
+            
+            self.logger.info(f"✅ Generated: {output_path}")
+            
+            # Also save collected data as JSON for next steps
+            data_file = context.feature_dir / "collected-project-data.json"
+            with open(data_file, 'w', encoding='utf-8') as f:
+                f.write(project_data.to_json())
+            
+            self.logger.info(f"💾 Saved project data: {data_file}")
+            
+            return True
+            
+        except ImportError as e:
+            self.logger.error(f"❌ Missing dependency for interactive collection: {e}")
+            raise RuntimeError(f"Interactive data collection failed - missing dependency: {e}")
+        except KeyboardInterrupt:
+            self.logger.warning(f"❌ Interactive collection cancelled by user")
+            return False
+        except Exception as e:
+            self.logger.error(f"❌ Interactive MVP initialization failed: {e}")
+            raise RuntimeError(f"Interactive MVP initialization failed: {e}")
 
 def main():
     """Main entry point for workflow executor"""
