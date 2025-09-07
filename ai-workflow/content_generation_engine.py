@@ -236,18 +236,41 @@ class ContentGenerationEngine:
         
         # Add project data if available
         if request.context.project_data:
-            prompt_parts.append(f"\n## Project Data")
+            prompt_parts.append(f"\n## Project Data (CRITICAL CONTEXT)")
             prompt_parts.append(f"```json\n{json.dumps(request.context.project_data, indent=2)}\n```")
             
-            # Special instructions for MVP entrypoint content
+            # Instructions for ALL content types to use project data
+            prompt_parts.append(f"\n## CRITICAL: Use Real Project Data")
+            prompt_parts.append(f"**IMPORTANT**: The project data above contains REAL user answers from enhanced MVP initialization.")
+            prompt_parts.append(f"- **Project Name**: `{request.context.project_data.get('project_name', 'Unknown Project')}`")
+            prompt_parts.append(f"- **Primary User**: `{request.context.project_data.get('primary_user', 'Unknown User')}`")
+            prompt_parts.append(f"- **Pain Point**: `{request.context.project_data.get('user_pain_point', 'Unknown Pain Point')}`")
+            prompt_parts.append(f"- **Tech Stack**: `{request.context.project_data.get('recommended_tech_stack', 'Unknown Tech Stack')}`")
+            prompt_parts.append(f"- **Business Model**: `{request.context.project_data.get('business_model', 'Unknown Business Model')}`")
+            prompt_parts.append(f"- **Success Metric**: `{request.context.project_data.get('key_success_metric', 'Unknown Metric')}`")
+            
+            # Content-type specific instructions
             if request.content_type == "mvp_entrypoint":
-                prompt_parts.append(f"\n## CRITICAL: Use Real Project Data")
-                prompt_parts.append(f"**IMPORTANT**: The project data above contains REAL user answers to initialization questions.")
-                prompt_parts.append(f"- Replace ALL placeholder fields (like `project_name`, `project_goal`, etc.) with actual values from the project data")
-                prompt_parts.append(f"- Use `{request.context.project_data.get('project_name', 'Unknown Project')}` as the actual project name")
-                prompt_parts.append(f"- Use `{request.context.project_data.get('project_goal', 'Unknown Goal')}` as the actual project goal")
-                prompt_parts.append(f"- Generate comprehensive, real documentation based on the collected user data")
-                prompt_parts.append(f"- Do NOT use placeholder text or field names - use the actual collected values")
+                prompt_parts.append(f"\n**MVP ENTRYPOINT INSTRUCTIONS**:")
+                prompt_parts.append(f"- Replace ALL placeholder fields with actual values from project data")
+                prompt_parts.append(f"- Generate comprehensive, real documentation based on collected user data")
+                prompt_parts.append(f"- Do NOT use placeholder text or field names")
+            
+            elif request.content_type == "tasks":
+                prompt_parts.append(f"\n**TASKS GENERATION INSTRUCTIONS**:")
+                prompt_parts.append(f"- Use the EXACT tech stack: `{request.context.project_data.get('recommended_tech_stack', 'specified stack')}`")
+                prompt_parts.append(f"- Target the specific user type: `{request.context.project_data.get('primary_user', 'users')}`")
+                prompt_parts.append(f"- Address the specific pain point: `{request.context.project_data.get('user_pain_point', 'user needs')}`")
+                prompt_parts.append(f"- Align with business model: `{request.context.project_data.get('business_model', 'business approach')}`")
+                prompt_parts.append(f"- Target success metric: `{request.context.project_data.get('key_success_metric', 'success measures')}`")
+                prompt_parts.append(f"- Reference AI tech stack reasoning: `{request.context.project_data.get('tech_stack_reasoning', 'technical decisions')}`")
+            
+            elif request.content_type in ["prd", "srs", "design_decisions", "design_analysis"]:
+                prompt_parts.append(f"\n**DOCUMENTATION INSTRUCTIONS**:")
+                prompt_parts.append(f"- Incorporate user context: {request.context.project_data.get('primary_user', 'users')} dealing with {request.context.project_data.get('user_pain_point', 'challenges')}")
+                prompt_parts.append(f"- Use the selected tech stack: {request.context.project_data.get('recommended_tech_stack', 'technologies')}")
+                prompt_parts.append(f"- Align with business value: {request.context.project_data.get('business_model', 'value creation')}")
+                prompt_parts.append(f"- Target success criteria: {request.context.project_data.get('key_success_metric', 'success measures')}")
         
         # Add previous outputs for context
         if request.context.previous_outputs:

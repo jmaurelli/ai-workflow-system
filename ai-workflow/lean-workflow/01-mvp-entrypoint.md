@@ -54,17 +54,17 @@ See `workflow-sequence-guide.md` for complete automation details.
 ### 👥 USER CONTEXT GROUP (3-4 minutes)
 
 #### 1. Primary User Story (Multi-part)
-- **question**: "Who is your primary user?"
+- **question**: "Who will be your primary users?"
   - **field**: `primary_user`
   - **type**: `string`
   - **example**: "Small business owners managing customer data"
   - **required**: true
-  - **description**: Define the main person who will use this solution
+  - **description**: Define the target user group who will benefit from this project.
 
 - **follow_up_1**: "What's their biggest pain point you're solving?"
   - **field**: `user_pain_point`
   - **type**: `string`
-  - **example**: "Manually tracking customer information in spreadsheets is error-prone and time-consuming"
+  - **example**: "How can this project enhance the user experience?"
   - **required**: true
   - **description**: The core problem that drives user motivation
 
@@ -76,12 +76,12 @@ See `workflow-sequence-guide.md` for complete automation details.
   - **description**: End-to-end user value realization
 
 #### 2. Project Identity
-- **question**: "What's your project name?"
+- **question**: "What will be the project name?"
   - **field**: `project_name`
   - **type**: `string`
   - **example**: "CustomerHub MVP"
   - **required**: true
-  - **description**: Official project name for documentation
+  - **description**: Official project name for documentation purposes.
 
 #### 3. User Access Pattern (Conditional with Human Gate)
 - **question**: "How will users first discover/access your solution?"
