@@ -26,10 +26,10 @@
         "feature_directory_creation": "skip",
         "prd_generation": "skip",
         "srs_generation": "skip", 
-        "design_decisions": "required_for_new_tech",
+        "design_decisions": "skip",
         "design_analysis": "skip",
         "task_creation": "skip",
-        "task_implementation": "required_for_destructive",
+        "task_implementation": "skip",
         "completion_summary": "skip",
         "project_history": "skip"
       }

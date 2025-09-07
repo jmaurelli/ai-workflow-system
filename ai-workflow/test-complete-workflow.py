@@ -128,6 +128,8 @@ class WorkflowTester:
         self.log_header(f"Testing MVP Creation ({mode})")
         
         test_project = f"test-mvp-{self.test_timestamp}"
+        # Normalize project name like MVP initializer does
+        normalized_project = test_project.lower().replace('_', '-')
         self.test_projects.append(test_project)
         
         try:
@@ -142,11 +144,11 @@ class WorkflowTester:
                 cmd.extend(["--llm-api"])
             
             self.log_info(f"Executing: {' '.join(cmd)}")
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+            result = subprocess.run(cmd, text=True, timeout=300)
             
             if result.returncode == 0:
-                # Verify project was created
-                project_dir = Path.cwd() / "projects" / test_project
+                # Verify project was created (using normalized name)
+                project_dir = Path.cwd() / "projects" / normalized_project
                 if project_dir.exists():
                     # Check for expected files
                     expected_files = [
@@ -171,7 +173,7 @@ class WorkflowTester:
                         with open(manifest_path, 'r') as f:
                             manifest = json.load(f)
                         
-                        if manifest.get("project_name") != test_project:
+                        if manifest.get("project_name") != normalized_project:
                             self.log_error(f"Invalid manifest project name: {manifest.get('project_name')}")
                             return False, test_project
                         
@@ -183,16 +185,15 @@ class WorkflowTester:
                         self.log_error(f"Could not validate manifest: {e}")
                         return False, test_project
                     
-                    self.log_success(f"MVP project '{test_project}' created successfully")
+                    self.log_success(f"MVP project '{normalized_project}' created successfully")
                     self.log_info(f"Project location: {project_dir}")
-                    return True, test_project
+                    return True, normalized_project
                 else:
                     self.log_error(f"Project directory not created: {project_dir}")
                     return False, test_project
             else:
-                self.log_error(f"MVP creation failed: {result.stderr}")
-                if self.debug:
-                    self.log_info(f"Command output: {result.stdout}")
+                self.log_error(f"MVP creation failed with return code: {result.returncode}")
+                self.log_error("Check output above for details")
                 return False, test_project
                 
         except subprocess.TimeoutExpired:
@@ -222,7 +223,7 @@ class WorkflowTester:
                 cmd.extend(["--llm-api"])
             
             self.log_info(f"Executing: {' '.join(cmd)}")
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+            result = subprocess.run(cmd, text=True, timeout=300)
             
             if result.returncode == 0:
                 # Verify feature was added to project
@@ -234,9 +235,8 @@ class WorkflowTester:
                     self.log_error(f"Project directory not found: {project_dir}")
                     return False
             else:
-                self.log_error(f"Feature addition failed: {result.stderr}")
-                if self.debug:
-                    self.log_info(f"Command output: {result.stdout}")
+                self.log_error(f"Feature addition failed with return code: {result.returncode}")
+                self.log_error("Check output above for details")
                 return False
                 
         except subprocess.TimeoutExpired:
@@ -265,15 +265,14 @@ class WorkflowTester:
                 cmd.extend(["--llm-api"])
             
             self.log_info(f"Executing: {' '.join(cmd)}")
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)
+            result = subprocess.run(cmd, text=True, timeout=300)
             
             if result.returncode == 0:
                 self.log_success(f"Standalone feature '{test_feature}' created successfully")
                 return True
             else:
-                self.log_error(f"Standalone feature creation failed: {result.stderr}")
-                if self.debug:
-                    self.log_info(f"Command output: {result.stdout}")
+                self.log_error(f"Standalone feature creation failed with return code: {result.returncode}")
+                self.log_error("Check output above for details")
                 return False
                 
         except subprocess.TimeoutExpired:
