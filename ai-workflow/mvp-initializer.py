@@ -102,7 +102,7 @@ def prompt_project_questions(non_interactive: bool = False) -> Dict[str, str]:
                 
             except KeyboardInterrupt:
                 print("\n❌ Setup cancelled by user")
-                return {}
+                return None
     
     print("✅ Project initialization complete!")
     print()
@@ -458,7 +458,8 @@ def main():
             # Prompt for project directory (unless non-interactive or not a tty)
             if not args.non_interactive and sys.stdin.isatty():
                 try:
-                    response = input(f"📁 Where do you want to create this project? [{default_base}]: ").strip()
+                    print(f"💡 This will create: PARENT_DIRECTORY/{project_name}/")
+                    response = input(f"📁 What parent directory should contain '{project_name}'? [{default_base}]: ").strip()
                     if response:
                         response_path = Path(response).expanduser()
                         # If it's not absolute, treat it as relative to the default base directory
@@ -476,6 +477,11 @@ def main():
         
         # Prompt for project questions (interactive only)
         project_context = prompt_project_questions(args.non_interactive)
+        
+        # If user cancelled during questions, exit completely
+        if project_context is None:
+            logger.info("❌ Project initialization cancelled by user")
+            return
         
         # Handle dry-run mode
         if args.dry_run:
