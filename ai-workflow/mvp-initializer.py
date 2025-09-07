@@ -39,15 +39,15 @@ except Exception:
         LLM_AVAILABLE = False
 
 def prompt_ai_vendor_setup() -> tuple:
-    """Interactive prompt for AI vendor and API key"""
+    """Interactive prompt for AI vendor, model selection, and API key"""
     print("\n🤖 AI CONSULTANT SETUP")
     print("=" * 40)
     
-    # Always show all big 3 providers
-    vendors = {
-        "1": {"name": "OpenAI", "provider": "openai", "model": "gpt-3.5-turbo", "env_var": "OPENAI_API_KEY"},
-        "2": {"name": "Claude (Anthropic)", "provider": "anthropic", "model": "claude-3-5-sonnet-20241022", "env_var": "ANTHROPIC_API_KEY"},
-        "3": {"name": "Google Gemini", "provider": "google", "model": "gemini-1.5-flash", "env_var": "GOOGLE_API_KEY"},
+    # Step 1: Choose provider
+    providers = {
+        "1": {"name": "OpenAI", "provider": "openai", "env_var": "OPENAI_API_KEY"},
+        "2": {"name": "Claude (Anthropic)", "provider": "anthropic", "env_var": "ANTHROPIC_API_KEY"},
+        "3": {"name": "Google Gemini", "provider": "google", "env_var": "GOOGLE_API_KEY"},
         "4": {"name": "Exit (AI consultant required)", "provider": None}
     }
     
@@ -57,78 +57,122 @@ def prompt_ai_vendor_setup() -> tuple:
     else:
         print("⚡ Basic integration - all providers supported with core features!")
     
-    print("\nChoose your AI assistant:")
-    for key, vendor in vendors.items():
-        if vendor["provider"]:
-            print(f"   {key}. {vendor['name']} ({vendor['model']})")
+    print("\nChoose your AI provider:")
+    for key, provider in providers.items():
+        if provider["provider"]:
+            print(f"   {key}. {provider['name']}")
         else:
-            print(f"   {key}. {vendor['name']}")
+            print(f"   {key}. {provider['name']}")
     print()
     
     while True:
         try:
-            max_choice = len(vendors)
-            choice = input(f"Select AI vendor (1-{max_choice}): ").strip()
-            if choice in vendors:
-                selected = vendors[choice]
-                if not selected["provider"]:
+            max_choice = len(providers)
+            choice = input(f"Select AI provider (1-{max_choice}): ").strip()
+            if choice in providers:
+                selected_provider = providers[choice]
+                if not selected_provider["provider"]:
                     print("\n🚫 AI consultant is required for this project")
                     return "skip", None  # User chose to exit
                 
-                # Check if API key is already in environment
-                existing_key = os.getenv(selected["env_var"])
-                if existing_key:
-                    print(f"✅ Found existing {selected['name']} API key")
-                    return selected, existing_key
+                # Step 2: Get API key
+                existing_key = os.getenv(selected_provider["env_var"])
+                api_key = None
                 
-                # Prompt for API key with 3 attempt limit
-                max_attempts = 3
-                for attempt in range(max_attempts):
-                    print(f"\n🔑 {selected['name']} API Key (Attempt {attempt + 1}/{max_attempts})")
-                    if selected['provider'] == 'openai':
-                        print("💡 Get your key from: https://platform.openai.com/api-keys")
-                    elif selected['provider'] == 'anthropic':
-                        print("💡 Get your key from: https://console.anthropic.com/settings/keys")
-                    elif selected['provider'] == 'google':
-                        print("💡 Get your key from: https://aistudio.google.com/app/apikey")
-                    print("🔒 Your API key will be hidden for security")
+                if existing_key:
+                    print(f"✅ Found existing {selected_provider['name']} API key")
+                    api_key = existing_key
+                else:
+                    # Prompt for API key with 3 attempt limit
+                    max_attempts = 3
+                    for attempt in range(max_attempts):
+                        print(f"\n🔑 {selected_provider['name']} API Key (Attempt {attempt + 1}/{max_attempts})")
+                        if selected_provider['provider'] == 'openai':
+                            print("💡 Get your key from: https://platform.openai.com/api-keys")
+                        elif selected_provider['provider'] == 'anthropic':
+                            print("💡 Get your key from: https://console.anthropic.com/settings/keys")
+                        elif selected_provider['provider'] == 'google':
+                            print("💡 Get your key from: https://aistudio.google.com/app/apikey")
+                        print("🔒 Your API key will be hidden for security")
+                        
+                        try:
+                            api_key = getpass.getpass(f"Enter your {selected_provider['name']} API key: ").strip()
+                        except (KeyboardInterrupt, EOFError):
+                            print("\n❌ API key input cancelled")
+                            return "cancelled", None
+                            
+                        if not api_key:
+                            print("❌ API key required for AI consultant")
+                            if attempt < max_attempts - 1:
+                                continue
+                            else:
+                                break
+                        
+                        # Validate API key format
+                        if not _validate_api_key(selected_provider["provider"], api_key):
+                            print(f"❌ Invalid {selected_provider['name']} API key format")
+                            if selected_provider['provider'] == 'openai':
+                                print("💡 OpenAI keys start with 'sk-' and are ~51 characters long")
+                            elif selected_provider['provider'] == 'anthropic':
+                                print("💡 Claude keys start with 'sk-ant-' and are longer")
+                            elif selected_provider['provider'] == 'google':
+                                print("💡 Google keys are typically 39 characters, mix of letters/numbers")
+                            
+                            if attempt < max_attempts - 1:
+                                print("🔄 Please try again with a valid API key")
+                                continue
+                            else:
+                                break
+                        else:
+                            print(f"✅ API key format looks valid for {selected_provider['name']}")
+                            break
                     
+                    if not api_key or not _validate_api_key(selected_provider["provider"], api_key):
+                        print(f"\n❌ Failed to get valid {selected_provider['name']} API key after {max_attempts} attempts")
+                        print("🚫 AI consultant is required for this project - cannot proceed")
+                        return "failed", None
+
+                # Step 3: Dynamic model selection
+                print(f"\n🤖 Loading available {selected_provider['name']} models...")
+                available_models = _get_available_models(selected_provider["provider"], api_key)
+                
+                if not available_models:
+                    print(f"❌ Could not load models for {selected_provider['name']}")
+                    return "failed", None
+                
+                print(f"\nChoose your {selected_provider['name']} model:")
+                for i, model in enumerate(available_models, 1):
+                    print(f"   {i}. {model['name']} - {model['description']}")
+                print()
+                
+                # Model selection loop
+                while True:
                     try:
-                        api_key = getpass.getpass(f"Enter your {selected['name']} API key: ").strip()
-                    except (KeyboardInterrupt, EOFError):
-                        print("\n❌ API key input cancelled")
+                        model_choice = input(f"Select model (1-{len(available_models)}): ").strip()
+                        if model_choice.isdigit():
+                            model_idx = int(model_choice) - 1
+                            if 0 <= model_idx < len(available_models):
+                                selected_model = available_models[model_idx]
+                                
+                                # Create final vendor config
+                                vendor_config = {
+                                    "name": selected_provider["name"],
+                                    "provider": selected_provider["provider"], 
+                                    "model": selected_model["id"],
+                                    "env_var": selected_provider["env_var"]
+                                }
+                                
+                                print(f"✅ Selected: {selected_model['name']} ({selected_model['id']})")
+                                return vendor_config, api_key
+                            else:
+                                print(f"❌ Please enter a number from 1 to {len(available_models)}")
+                        else:
+                            print(f"❌ Please enter a number from 1 to {len(available_models)}")
+                            
+                    except KeyboardInterrupt:
+                        print("\n❌ Model selection cancelled")
                         return "cancelled", None
                         
-                    if not api_key:
-                        print("❌ API key required for AI consultant")
-                        if attempt < max_attempts - 1:
-                            continue
-                        else:
-                            break
-                    
-                    # Validate API key format
-                    if not _validate_api_key(selected["provider"], api_key):
-                        print(f"❌ Invalid {selected['name']} API key format")
-                        if selected['provider'] == 'openai':
-                            print("💡 OpenAI keys start with 'sk-' and are ~51 characters long")
-                        elif selected['provider'] == 'anthropic':
-                            print("💡 Claude keys start with 'sk-ant-' and are longer")
-                        elif selected['provider'] == 'google':
-                            print("💡 Google keys are typically 39 characters, mix of letters/numbers")
-                        
-                        if attempt < max_attempts - 1:
-                            print("🔄 Please try again with a valid API key")
-                            continue
-                        else:
-                            break
-                    else:
-                        print(f"✅ API key format looks valid for {selected['name']}")
-                        return selected, api_key
-                
-                # If we get here, all 3 attempts failed
-                print(f"\n❌ Failed to get valid {selected['name']} API key after {max_attempts} attempts")
-                print("🚫 AI consultant is required for this project - cannot proceed")
-                return "failed", None
             else:
                 print(f"❌ Please enter a number from 1 to {max_choice}")
                 
@@ -136,12 +180,106 @@ def prompt_ai_vendor_setup() -> tuple:
             print("\n❌ AI setup cancelled")
             return "cancelled", None
 
+def _get_available_models(provider: str, api_key: str) -> List[Dict[str, str]]:
+    """Get available models for a provider (dynamic where possible)"""
+    
+    try:
+        import requests
+        
+        if provider == "openai":
+            # Query OpenAI models API
+            response = requests.get(
+                "https://api.openai.com/v1/models",
+                headers={"Authorization": f"Bearer {api_key}"},
+                timeout=10
+            )
+            if response.status_code == 200:
+                models_data = response.json()["data"]
+                # Filter to chat models and sort by popularity/recency
+                chat_models = []
+                preferred_order = ["gpt-4o", "gpt-4o-mini", "gpt-4-turbo", "gpt-4", "gpt-3.5-turbo"]
+                
+                for model in models_data:
+                    model_id = model["id"]
+                    if any(prefix in model_id for prefix in ["gpt-4", "gpt-3.5-turbo"]):
+                        chat_models.append({
+                            "id": model_id,
+                            "name": model_id.replace("-", " ").title(),
+                            "description": f"OpenAI {model_id}"
+                        })
+                
+                # Sort by preferred order
+                def sort_key(model):
+                    try:
+                        return preferred_order.index(model["id"])
+                    except ValueError:
+                        return 999
+                        
+                return sorted(chat_models, key=sort_key)[:5]  # Top 5 models
+                
+        elif provider == "google":
+            # Query Gemini models API
+            response = requests.get(
+                f"https://generativelanguage.googleapis.com/v1beta/models?key={api_key}",
+                timeout=10
+            )
+            if response.status_code == 200:
+                models_data = response.json().get("models", [])
+                gemini_models = []
+                
+                for model in models_data:
+                    model_name = model.get("name", "").replace("models/", "")
+                    if "gemini" in model_name.lower():
+                        gemini_models.append({
+                            "id": model_name,
+                            "name": model_name.replace("-", " ").title(),
+                            "description": f"Google {model_name}"
+                        })
+                
+                return gemini_models[:5]  # Top 5 models
+                
+        elif provider == "anthropic":
+            # Anthropic doesn't have a public models API, use curated list
+            return [
+                {"id": "claude-3-5-sonnet-20241022", "name": "Claude 3.5 Sonnet", "description": "Latest Sonnet - Balanced intelligence & speed"},
+                {"id": "claude-3-5-haiku-20241022", "name": "Claude 3.5 Haiku", "description": "Fastest - Optimized for speed"},
+                {"id": "claude-3-opus-20240229", "name": "Claude 3 Opus", "description": "Most intelligent - Complex reasoning"},
+                {"id": "claude-3-sonnet-20240229", "name": "Claude 3 Sonnet", "description": "Previous generation Sonnet"},
+                {"id": "claude-3-haiku-20240307", "name": "Claude 3 Haiku", "description": "Previous generation Haiku"}
+            ]
+            
+    except Exception as e:
+        print(f"💭 Could not fetch models for {provider}: {e}")
+    
+    # Fallback to hardcoded models
+    fallback_models = {
+        "openai": [
+            {"id": "gpt-4o", "name": "GPT-4o", "description": "Latest multimodal model"},
+            {"id": "gpt-4o-mini", "name": "GPT-4o Mini", "description": "Efficient & fast"},
+            {"id": "gpt-4-turbo", "name": "GPT-4 Turbo", "description": "Advanced reasoning"},
+            {"id": "gpt-3.5-turbo", "name": "GPT-3.5 Turbo", "description": "Fast & cost-effective"}
+        ],
+        "anthropic": [
+            {"id": "claude-3-5-sonnet-20241022", "name": "Claude 3.5 Sonnet", "description": "Latest Sonnet"},
+            {"id": "claude-3-5-haiku-20241022", "name": "Claude 3.5 Haiku", "description": "Fastest Claude"},
+            {"id": "claude-3-opus-20240229", "name": "Claude 3 Opus", "description": "Most intelligent"}
+        ],
+        "google": [
+            {"id": "gemini-2.0-flash-exp", "name": "Gemini 2.0 Flash", "description": "Latest experimental"},
+            {"id": "gemini-1.5-pro", "name": "Gemini 1.5 Pro", "description": "Advanced reasoning"},
+            {"id": "gemini-1.5-flash", "name": "Gemini 1.5 Flash", "description": "Fast & efficient"}
+        ]
+    }
+    
+    return fallback_models.get(provider, [])
+
 def _validate_api_key(provider: str, api_key: str) -> bool:
     """Validate API key format for different providers"""
     if not api_key or not api_key.strip():
         return False
     
     api_key = api_key.strip()
+    
     
     if provider == "openai":
         # OpenAI keys start with 'sk-' and are typically 51 characters
