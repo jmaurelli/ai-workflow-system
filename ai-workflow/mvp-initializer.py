@@ -12,69 +12,241 @@ import sys
 import logging
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 import subprocess
 
-def prompt_project_questions(non_interactive: bool = False) -> Dict[str, str]:
-    """Prompt user for project initialization questions"""
+# Import LLM integration for AI-powered dynamic questioning
+try:
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("llm_api_integration", 
+                                                  Path(__file__).parent / "llm-api-integration.py")
+    llm_api_module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(llm_api_module)
+    
+    LLMAPIIntegration = llm_api_module.LLMAPIIntegration
+    LLMConfig = llm_api_module.LLMConfig
+    LLMRequest = llm_api_module.LLMRequest
+    LLMProvider = llm_api_module.LLMProvider
+    LLM_AVAILABLE = True
+except Exception:
+    LLM_AVAILABLE = False
+
+def generate_dynamic_questions(project_goal: str, previous_answers: Dict[str, str] = None) -> List[Dict[str, Any]]:
+    """Generate personalized follow-up questions using AI"""
+    if not LLM_AVAILABLE:
+        return []
+    
+    try:
+        # Load LLM config
+        config_path = Path(__file__).parent / "llm-config.json"
+        if not config_path.exists():
+            return []
+            
+        with open(config_path, 'r') as f:
+            llm_config_data = json.load(f)
+        
+        # Use the first available provider 
+        if not llm_config_data.get("providers"):
+            return []
+            
+        provider_name = list(llm_config_data["providers"].keys())[0]
+        provider_config = llm_config_data["providers"][provider_name]
+        
+        # Map providers to environment variable names
+        api_key_map = {
+            "openai": "OPENAI_API_KEY",
+            "anthropic": "ANTHROPIC_API_KEY", 
+            "google": "GOOGLE_API_KEY"
+        }
+        
+        provider_type = provider_config["provider"]
+        api_key_env = api_key_map.get(provider_type, f"{provider_type.upper()}_API_KEY")
+        api_key = os.getenv(api_key_env)
+        
+        # Create LLM config
+        config = LLMConfig(
+            provider=LLMProvider(provider_config["provider"]),
+            model=provider_config["model"],
+            api_key=api_key,
+            max_tokens=200,
+            temperature=0.7,
+            timeout=30,
+            max_retries=2,
+            cost_limit_usd=0.10
+        )
+        
+        if not config.api_key:
+            return []
+        
+        llm = LLMAPIIntegration(config, debug=False)
+        
+        # Create dynamic prompt
+        previous_context = ""
+        if previous_answers:
+            previous_context = f"Previous answers: {json.dumps(previous_answers, indent=2)}"
+        
+        prompt = f"""You are an expert project consultant. Based on this project goal: "{project_goal}"
+        
+{previous_context}
+
+Generate 2-3 highly specific, personalized follow-up questions that would help understand their exact needs. 
+
+Make each question:
+1. Conversational and friendly
+2. Include intelligent suggestions based on the project type
+3. Focused on ONE specific aspect
+4. Practical and actionable
+
+Format as JSON:
+[
+  {{"prompt": "🔨 Based on your weather tracker idea, are you thinking more about:", "options": ["Personal daily forecasts", "Severe weather alerts", "Historical analysis"], "help": "This helps me suggest the right features"}},
+  {{"prompt": "👤 Who would use this most?", "example": "Commuters planning their route, outdoor workers, event planners"}}
+]
+
+Return ONLY the JSON array, no other text."""
+
+        request = LLMRequest(
+            prompt=prompt,
+            system_message="You are a helpful project consultant who asks great questions."
+        )
+        
+        response = llm.generate_content(request)
+        
+        # Parse JSON response
+        try:
+            questions = json.loads(response.content.strip())
+            return questions if isinstance(questions, list) else []
+        except json.JSONDecodeError:
+            return []
+            
+    except Exception as e:
+        print(f"💭 AI question generation not available: {e}")
+        return []
+
+def _ask_dynamic_question(key: str, question_config: Dict[str, Any], answers: Dict[str, str]) -> bool:
+    """Ask a single AI-generated dynamic question"""
+    try:
+        # Show help text if available
+        if "help" in question_config:
+            print(f"💡 {question_config['help']}")
+        elif "example" in question_config:
+            print(f"💡 Example: {question_config['example']}")
+        
+        # Show options if available
+        if "options" in question_config:
+            print("Options:")
+            for i, option in enumerate(question_config["options"], 1):
+                print(f"   {i}. {option}")
+            print()
+        
+        # Get user response
+        response = input(f"{question_config['prompt']} ").strip()
+        
+        # Handle options selection
+        if "options" in question_config and response.isdigit():
+            option_index = int(response) - 1
+            if 0 <= option_index < len(question_config["options"]):
+                response = question_config["options"][option_index]
+        
+        answers[key] = response
+        print()
+        return True
+        
+    except KeyboardInterrupt:
+        print("\n❌ Setup cancelled by user")
+        return False
+
+def prompt_project_questions(non_interactive: bool = False, enable_ai: bool = True) -> Dict[str, str]:
+    """Prompt user for project initialization questions with AI-powered dynamic follow-ups"""
     if non_interactive or not sys.stdin.isatty():
         return {}
     
-    print("\n🎯 PROJECT INITIALIZATION QUESTIONS")
+    print("\n🎯 PROJECT SETUP WITH AI CONSULTANT")
     print("=" * 50)
     
-    questions = {
-        "project_goal": {
-            "prompt": "🎯 What is the one-liner goal of this project?",
-            "example": "Create a modern web application for task management and team collaboration",
+    answers = {}
+    
+    # Start with the core question
+    try:
+        print("💡 Example: Create a web tool that helps engineers analyze log files and find issues faster")
+        project_goal = input("🎯 What does this project do? (one sentence): ").strip()
+        if not project_goal:
+            print("❌ Project description is required")
+            return None
+        answers["project_goal"] = project_goal
+        print()
+    except KeyboardInterrupt:
+        print("\n❌ Setup cancelled by user")
+        return None
+    
+    # Try to get AI-powered dynamic questions
+    if enable_ai and LLM_AVAILABLE:
+        print("🤖 Let me ask some personalized questions based on your project...")
+        try:
+            ai_questions = generate_dynamic_questions(project_goal, answers)
+            if ai_questions:
+                print("✨ Here are some tailored questions for you:")
+                print()
+                
+                # Ask AI-generated questions
+                for i, question_config in enumerate(ai_questions, 1):
+                    if not _ask_dynamic_question(f"ai_question_{i}", question_config, answers):
+                        return None
+                    
+                print("🎉 Great! I have enough information to get started.")
+                return answers
+                
+        except Exception as e:
+            print(f"💭 AI consultant unavailable ({e}), using standard questions...")
+    
+    # Fallback to static questions
+    static_questions = {
+        "what_to_build": {
+            "prompt": "🔨 What are the main things users will be able to do? (2-3 key features)",
+            "example": "Upload log files, search for errors, generate summary reports",
             "required": True
         },
-        "mvp_scope": {
-            "prompt": "📋 What is the MVP scope in 2-3 sentences?",
-            "example": "Core functionality with essential features and basic user interface. Focus on primary user workflows without advanced customization or integrations.",
-            "required": True
-        },
-        "mvp_constraints": {
-            "prompt": "⚠️ What are the primary constraints for this MVP?",
-            "example": "Limited development time, budget constraints, must use familiar technology stack",
-            "required": False
-        },
-        "tech_stack": {
-            "prompt": "🔧 What is your preferred technology stack?",
-            "example": "Node.js + Express + PostgreSQL + React",
-            "default": "Node.js + Express + SQLite + HTML/CSS/JS",
-            "required": False
-        },
-        "external_services": {
-            "prompt": "🔌 Do you need external services or integrations? (y/N)",
-            "type": "boolean",
-            "required": False
-        },
-        "deployment_target": {
-            "prompt": "🚀 What is your deployment target?",
+        "where_to_run": {
+            "prompt": "🌐 Where will this run?",
             "options": ["local", "cloud", "container", "serverless"],
+            "option_help": {
+                "local": "On my computer only",
+                "cloud": "Online for others to use", 
+                "container": "In Docker/containers",
+                "serverless": "Cloud functions (AWS Lambda, etc.)"
+            },
             "default": "local",
             "required": False
         },
-        "success_criteria": {
-            "prompt": "✅ What defines MVP success? (list 2-3 key criteria)",
-            "example": "Core features work reliably, users can complete primary workflows, application loads quickly and handles expected traffic",
+        "user_success": {
+            "prompt": "👤 How will users know this is working well for them?",
+            "example": "Tasks complete quickly, easy to find what they need, saves them time",
             "required": True
         }
     }
     
-    answers = {}
-    print()
+    print("\n📝 A few more questions to understand your needs:")
     
-    for key, config in questions.items():
+    for key, config in static_questions.items():
         while True:
             try:
                 # Build prompt text
                 prompt_text = config["prompt"]
                 if "default" in config:
                     prompt_text += f" [{config['default']}]"
+                    
+                # Show example for required fields or help text  
                 if "example" in config and config.get("required", False):
                     print(f"💡 Example: {config['example']}")
+                elif "help" in config:
+                    print(f"💡 {config['help']}")
+                
+                # Show options with help text (only once)
+                if "options" in config and "option_help" in config:
+                    print("Options:")
+                    for option in config["options"]:
+                        help_text = config["option_help"].get(option, "")
+                        print(f"   {option} - {help_text}")
                 
                 response = input(f"{prompt_text}: ").strip()
                 
@@ -93,7 +265,7 @@ def prompt_project_questions(non_interactive: bool = False) -> Dict[str, str]:
                 
                 # Handle options validation
                 if "options" in config and response and response not in config["options"]:
-                    print(f"❌ Please choose from: {', '.join(config['options'])}")
+                    print(f"❌ Please enter one of: {', '.join(config['options'])}")
                     continue
                 
                 answers[key] = response if response else ""
@@ -422,6 +594,9 @@ def main():
                        metavar="PROJECT_NAME",
                        help="View executive report for existing project")
     
+    parser.add_argument("--enable-ai-questions", action="store_true",
+                       help="Enable AI-powered dynamic questioning (experimental)")
+    
     args = parser.parse_args()
     
     # Setup logging
@@ -435,9 +610,22 @@ def main():
         view_project_report(args.view_report, base_dir)
         return
     
-    # Validate required arguments for project creation
-    if not args.project:
-        parser.error("--project is required when not using --view-report")
+    # Handle project name - prompt if not provided and in interactive mode
+    if not args.project and not args.view_report:
+        if not args.non_interactive and sys.stdin.isatty():
+            print("\n🚀 NEW PROJECT SETUP")
+            print("=" * 40)
+            try:
+                project_input = input("📝 What do you want to name this project? ").strip()
+                if not project_input:
+                    print("❌ Project name is required")
+                    return
+                args.project = project_input
+            except KeyboardInterrupt:
+                print("\n❌ Project setup cancelled")
+                return
+        else:
+            parser.error("--project is required when not using --view-report or in non-interactive mode")
     
     try:
         # Validate and normalize project name
@@ -458,8 +646,12 @@ def main():
             # Prompt for project directory (unless non-interactive or not a tty)
             if not args.non_interactive and sys.stdin.isatty():
                 try:
-                    print(f"💡 This will create: PARENT_DIRECTORY/{project_name}/")
-                    response = input(f"📁 What parent directory should contain '{project_name}'? [{default_base}]: ").strip()
+                    print(f"\n📁 PROJECT LOCATION")
+                    print(f"Creating project: {project_name}")
+                    print(f"Default location: {default_base}/{project_name}/")
+                    print()
+                    print("💡 Press Enter for default, or specify a different parent directory")
+                    response = input(f"📂 Parent directory [{default_base}]: ").strip()
                     if response:
                         response_path = Path(response).expanduser()
                         # If it's not absolute, treat it as relative to the default base directory
@@ -469,6 +661,9 @@ def main():
                             base_dir = response_path.resolve()
                     else:
                         base_dir = default_base
+                        
+                    print(f"✅ Project will be created at: {base_dir}/{project_name}/")
+                    print()
                 except KeyboardInterrupt:
                     logger.info("❌ Operation cancelled by user")
                     return
@@ -476,7 +671,7 @@ def main():
                 base_dir = default_base
         
         # Prompt for project questions (interactive only)
-        project_context = prompt_project_questions(args.non_interactive)
+        project_context = prompt_project_questions(args.non_interactive, args.enable_ai_questions)
         
         # If user cancelled during questions, exit completely
         if project_context is None:
@@ -538,3 +733,4 @@ def main():
 if __name__ == "__main__":
     import os
     main()
+
