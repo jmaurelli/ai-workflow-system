@@ -202,10 +202,26 @@ def _get_available_models(provider: str, api_key: str) -> List[Dict[str, str]]:
                 for model in models_data:
                     model_id = model["id"]
                     if any(prefix in model_id for prefix in ["gpt-4", "gpt-3.5-turbo"]):
+                        # Create cleaner model descriptions
+                        display_name = model_id.replace("-", " ").title()
+                        if "gpt-4o" in model_id:
+                            if "mini" in model_id:
+                                description = "Efficient & fast multimodal model"
+                            else:
+                                description = "Latest multimodal model - text, images, audio"
+                        elif "gpt-4-turbo" in model_id:
+                            description = "Advanced reasoning with large context"
+                        elif "gpt-4" in model_id:
+                            description = "Powerful reasoning model"
+                        elif "gpt-3.5-turbo" in model_id:
+                            description = "Fast & cost-effective"
+                        else:
+                            description = f"OpenAI {model_id}"
+                            
                         chat_models.append({
                             "id": model_id,
-                            "name": model_id.replace("-", " ").title(),
-                            "description": f"OpenAI {model_id}"
+                            "name": display_name,
+                            "description": description
                         })
                 
                 # Sort by preferred order
@@ -230,10 +246,24 @@ def _get_available_models(provider: str, api_key: str) -> List[Dict[str, str]]:
                 for model in models_data:
                     model_name = model.get("name", "").replace("models/", "")
                     if "gemini" in model_name.lower():
+                        # Create cleaner descriptions for Gemini models
+                        display_name = model_name.replace("-", " ").title()
+                        if "2.0" in model_name:
+                            if "flash" in model_name:
+                                description = "Latest experimental - fast & efficient"
+                            else:
+                                description = "Latest generation model"
+                        elif "1.5-pro" in model_name:
+                            description = "Advanced reasoning & large context"
+                        elif "1.5-flash" in model_name:
+                            description = "Fast & efficient processing"
+                        else:
+                            description = f"Google {model_name}"
+                            
                         gemini_models.append({
                             "id": model_name,
-                            "name": model_name.replace("-", " ").title(),
-                            "description": f"Google {model_name}"
+                            "name": display_name,
+                            "description": description
                         })
                 
                 return gemini_models[:5]  # Top 5 models
@@ -251,23 +281,23 @@ def _get_available_models(provider: str, api_key: str) -> List[Dict[str, str]]:
     except Exception as e:
         print(f"💭 Could not fetch models for {provider}: {e}")
     
-    # Fallback to hardcoded models
+    # Fallback to hardcoded models  
     fallback_models = {
         "openai": [
-            {"id": "gpt-4o", "name": "GPT-4o", "description": "Latest multimodal model"},
-            {"id": "gpt-4o-mini", "name": "GPT-4o Mini", "description": "Efficient & fast"},
-            {"id": "gpt-4-turbo", "name": "GPT-4 Turbo", "description": "Advanced reasoning"},
-            {"id": "gpt-3.5-turbo", "name": "GPT-3.5 Turbo", "description": "Fast & cost-effective"}
+            {"id": "gpt-4o", "name": "Gpt 4O", "description": "Latest multimodal model - text, images, audio"},
+            {"id": "gpt-4o-mini", "name": "Gpt 4O Mini", "description": "Efficient & fast multimodal model"},
+            {"id": "gpt-4-turbo", "name": "Gpt 4 Turbo", "description": "Advanced reasoning with large context"},
+            {"id": "gpt-3.5-turbo", "name": "Gpt 3.5 Turbo", "description": "Fast & cost-effective"}
         ],
         "anthropic": [
-            {"id": "claude-3-5-sonnet-20241022", "name": "Claude 3.5 Sonnet", "description": "Latest Sonnet"},
-            {"id": "claude-3-5-haiku-20241022", "name": "Claude 3.5 Haiku", "description": "Fastest Claude"},
-            {"id": "claude-3-opus-20240229", "name": "Claude 3 Opus", "description": "Most intelligent"}
+            {"id": "claude-3-5-sonnet-20241022", "name": "Claude 3.5 Sonnet", "description": "Latest Sonnet - Balanced intelligence & speed"},
+            {"id": "claude-3-5-haiku-20241022", "name": "Claude 3.5 Haiku", "description": "Fastest - Optimized for speed"},
+            {"id": "claude-3-opus-20240229", "name": "Claude 3 Opus", "description": "Most intelligent - Complex reasoning"}
         ],
         "google": [
-            {"id": "gemini-2.0-flash-exp", "name": "Gemini 2.0 Flash", "description": "Latest experimental"},
-            {"id": "gemini-1.5-pro", "name": "Gemini 1.5 Pro", "description": "Advanced reasoning"},
-            {"id": "gemini-1.5-flash", "name": "Gemini 1.5 Flash", "description": "Fast & efficient"}
+            {"id": "gemini-2.0-flash-exp", "name": "Gemini 2.0 Flash", "description": "Latest experimental - fast & efficient"},
+            {"id": "gemini-1.5-pro", "name": "Gemini 1.5 Pro", "description": "Advanced reasoning & large context"},
+            {"id": "gemini-1.5-flash", "name": "Gemini 1.5 Flash", "description": "Fast & efficient processing"}
         ]
     }
     
@@ -415,19 +445,21 @@ def generate_dynamic_questions(project_goal: str, vendor_config: Dict, api_key: 
 Their project goal: "{project_goal}"
 {previous_context}
 
-Generate 2-4 specific, insightful follow-up questions that would help you understand their needs better. Focus on:
-- WHO will use this (target users)
-- WHAT specific features they need most  
-- HOW they'll measure success
-- WHERE/HOW they want to deploy it
+Generate 3-4 specific, insightful follow-up questions that avoid overlap and gather diverse information:
 
-Make questions conversational and include helpful suggestions when possible.
+1. WHO (target users) - be specific to the domain
+2. WHAT (key capability/outcome) - focus on user value, not features  
+3. HOW (success metrics) - measurable outcomes different from #2
+4. WHERE/WHEN (context/deployment) - how they'll use it
 
-Return ONLY a JSON array, no other text:
+Make each question unique and avoid similar answers. Include helpful options when relevant.
+
+Return ONLY a JSON array:
 [
-  {{"prompt": "👤 Who is your main target user?", "example": "Small business owners, students, developers, etc."}},
-  {{"prompt": "🎯 What's the #1 thing users should accomplish?", "options": ["Save time on X", "Solve problem Y", "Learn about Z"], "help": "This helps prioritize features"}},
-  {{"prompt": "📱 How will people access this?", "options": ["Web browser", "Mobile app", "Desktop app", "Command line"], "default": "Web browser"}}
+  {{"prompt": "👥 Who specifically would benefit most from this?", "example": "DevOps engineers troubleshooting production, junior developers learning CLI tools, system administrators managing servers"}},
+  {{"prompt": "🎯 What's the main outcome users want?", "example": "Find the right command quickly, understand complex syntax, avoid common mistakes"}},
+  {{"prompt": "📊 How will you know users find it valuable?", "options": ["Time saved per task", "Reduced support tickets", "User engagement metrics", "Error reduction"], "help": "Pick measurable success indicators"}},
+  {{"prompt": "💻 What's the ideal user experience?", "options": ["Quick web lookup", "Interactive terminal tool", "Mobile reference app", "IDE integration"], "help": "Consider when/where they'd use it"}}
 ]"""
 
         # Generate response based on available integration
@@ -478,19 +510,32 @@ def _ask_dynamic_question(key: str, question_config: Dict[str, Any], answers: Di
         
         # Show options if available
         if "options" in question_config:
-            print("Options:")
+            print("💡 Choose from options or enter your own:")
             for i, option in enumerate(question_config["options"], 1):
                 print(f"   {i}. {option}")
             print()
         
+        # Build prompt with guidance
+        prompt_text = question_config['prompt']
+        if "options" in question_config:
+            prompt_text += f" (1-{len(question_config['options'])} or your own answer)"
+        
         # Get user response
-        response = input(f"{question_config['prompt']} ").strip()
+        response = input(f"{prompt_text}: ").strip()
         
         # Handle options selection
         if "options" in question_config and response.isdigit():
             option_index = int(response) - 1
             if 0 <= option_index < len(question_config["options"]):
-                response = question_config["options"][option_index]
+                selected_option = question_config["options"][option_index]
+                print(f"✅ Selected: {selected_option}")
+                response = selected_option
+            else:
+                print(f"💡 Using custom answer: {response}")
+        
+        if not response:
+            print("❌ This question needs an answer to continue")
+            return _ask_dynamic_question(key, question_config, answers)  # Retry
         
         answers[key] = response
         print()
@@ -557,8 +602,16 @@ def prompt_project_questions(non_interactive: bool = False, enable_ai: bool = Tr
                     return answers
                     
             except Exception as e:
-                print(f"💭 {vendor_config['name']} consultant failed: {e}")
-                print("🚫 AI consultant is required - cannot proceed without working AI")
+                print(f"💭 {vendor_config['name']} API call failed: {e}")
+                if "401" in str(e):
+                    print("🔑 This usually means the API key is invalid or expired")
+                elif "429" in str(e):
+                    print("⚠️ Rate limit exceeded - try again in a moment")
+                elif "timeout" in str(e).lower():
+                    print("🌐 Network timeout - check your connection")
+                else:
+                    print("🔧 Check your API key and network connection")
+                print("🚫 AI consultant is required for this project - cannot proceed without working AI")
                 return None
     
     # If we get here, LLM is not available but AI is required
@@ -939,12 +992,18 @@ def main():
                     print(f"Default location: {default_base}/{project_name}/")
                     print()
                     print("💡 Press Enter for default, or specify a different parent directory")
+                    print("💡 Examples: '/home/user/my-projects' or '~/projects' or '../other-projects'")
                     response = input(f"📂 Parent directory [{default_base}]: ").strip()
                     if response:
                         response_path = Path(response).expanduser()
-                        # If it's not absolute, treat it as relative to the default base directory
                         if not response_path.is_absolute():
-                            base_dir = (default_base / response).resolve()
+                            # If it's just the project name (like "clicc"), use default parent
+                            if '/' not in response and not response.startswith('.') and response == project_name:
+                                print(f"💡 '{response}' matches project name - using default parent directory")
+                                base_dir = default_base
+                            else:
+                                # It's a relative path like ../projects
+                                base_dir = (default_base / response).resolve()
                         else:
                             base_dir = response_path.resolve()
                     else:
