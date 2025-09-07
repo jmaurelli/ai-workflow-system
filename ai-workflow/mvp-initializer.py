@@ -26,17 +26,17 @@ def prompt_project_questions(non_interactive: bool = False) -> Dict[str, str]:
     questions = {
         "project_goal": {
             "prompt": "🎯 What is the one-liner goal of this project?",
-            "example": "Enable secure user authentication for web applications",
+            "example": "Create a modern web application for task management and team collaboration",
             "required": True
         },
         "mvp_scope": {
             "prompt": "📋 What is the MVP scope in 2-3 sentences?",
-            "example": "User registration, login, password reset, and basic profile management. No social login or advanced security features in MVP.",
+            "example": "Core functionality with essential features and basic user interface. Focus on primary user workflows without advanced customization or integrations.",
             "required": True
         },
         "mvp_constraints": {
             "prompt": "⚠️ What are the primary constraints for this MVP?",
-            "example": "Must be deployable to standard cloud hosting, complete within 2 weeks, use existing tech stack",
+            "example": "Limited development time, budget constraints, must use familiar technology stack",
             "required": False
         },
         "tech_stack": {
@@ -58,7 +58,7 @@ def prompt_project_questions(non_interactive: bool = False) -> Dict[str, str]:
         },
         "success_criteria": {
             "prompt": "✅ What defines MVP success? (list 2-3 key criteria)",
-            "example": "Users can register and login successfully, basic profile management works, system handles 100 concurrent users",
+            "example": "Core features work reliably, users can complete primary workflows, application loads quickly and handles expected traffic",
             "required": True
         }
     }
