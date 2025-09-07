@@ -296,7 +296,7 @@ class WorkflowDocumentExecutor:
             
             if primary_output:
                 request = ContentGenerationRequest(
-                    workflow_document=document_path.name,
+                    workflow_document=str(document_path),  # Pass full path instead of just name
                     context=cg_context,
                     output_file=primary_output,
                     content_type=content_type,

@@ -199,9 +199,20 @@ class ContentGenerationEngine:
         # Build comprehensive prompt
         prompt_parts = []
         
-        # Add workflow document reference
-        prompt_parts.append(f"# Workflow Document: {request.workflow_document}")
-        prompt_parts.append(f"Please execute the instructions in the workflow document: {request.workflow_document}")
+        # Add workflow document content (CRITICAL FIX!)
+        workflow_doc_path = Path(request.workflow_document)
+        if workflow_doc_path.exists():
+            with open(workflow_doc_path, 'r', encoding='utf-8') as f:
+                workflow_content = f.read()
+            
+            prompt_parts.append(f"# Workflow Document: {workflow_doc_path.name}")
+            prompt_parts.append(f"## Complete Workflow Document Content:")
+            prompt_parts.append(f"```markdown\n{workflow_content}\n```")
+            prompt_parts.append(f"\n**INSTRUCTION**: Follow the specific instructions, questions, and guidelines provided in the workflow document above.")
+        else:
+            # Fallback to filename only if file not found
+            prompt_parts.append(f"# Workflow Document: {request.workflow_document}")
+            prompt_parts.append(f"Please execute the instructions in the workflow document: {request.workflow_document}")
         
         # Add context information
         prompt_parts.append(f"\n## Project Context")
