@@ -887,43 +887,88 @@ class WorkflowOrchestrator:
 def main():
     """Main entry point with subcommand support"""
     parser = argparse.ArgumentParser(
-        description="🤖 AI Workflow Runner - Intelligent Project & Feature Management",
-        prog="workflow-runner.py"
+        description="""
+🤖 AI Workflow Runner - Intelligent Project & Feature Management
+
+This tool automates MVP development with AI-generated documentation including:
+• Product Requirements Document (PRD)
+• Software Requirements Specification (SRS)  
+• Design decisions and architecture
+• Implementation tasks with TDD guidance
+• Project completion summaries
+
+EXAMPLES:
+  ./workflow-runner.py create-mvp my-awesome-app
+  ./workflow-runner.py add-feature user-auth my-awesome-app
+  ./workflow-runner.py status my-awesome-app
+  ./workflow-runner.py list-projects
+        """,
+        prog="workflow-runner.py",
+        formatter_class=argparse.RawDescriptionHelpFormatter
     )
     
-    # Global flags
+    # Global flags with enhanced descriptions
     parser.add_argument("--mode", 
                        choices=[mode.value for mode in AutomationMode],
                        default="guided",
-                       help="Automation mode (default: guided)")
+                       help="""
+                       Automation mode - controls how much human interaction is required:
+                       • guided: Maximum oversight with approval gates at each step (RECOMMENDED)
+                       • autonomous: Minimal oversight with automatic progression
+                       • learning: Adaptive oversight based on your approval patterns
+                       (default: guided)
+                       """)
     
     parser.add_argument("--dry-run", 
                        action="store_true",
-                       help="Show execution plan without running")
+                       help="""
+                       Show what would be executed without actually running the workflow.
+                       Perfect for reviewing the 9-step execution plan before committing.
+                       """)
     
     parser.add_argument("--config",
                        type=Path,
                        default=Path(__file__).parent / "automation-config.json",
-                       help="Path to automation configuration file")
+                       help="""
+                       Path to workflow configuration file that defines the 9 workflow steps.
+                       Only change this if you have a custom workflow sequence.
+                       """)
     
     parser.add_argument("--verbose",
                        action="store_true", 
-                       help="Enable verbose logging")
+                       help="""
+                       Enable detailed logging for debugging workflow issues.
+                       Shows full execution details and API interactions.
+                       """)
     
     # Advanced LLM configuration (LLM API is always enabled)
     parser.add_argument("--llm-provider",
-                       help="LLM provider (openai, anthropic, google) - will prompt if not specified")
+                       help="""
+                       Override LLM provider (openai, anthropic, google).
+                       If not specified, you'll be prompted to choose interactively.
+                       Useful for automation scripts where you want to skip the prompt.
+                       """)
     
     parser.add_argument("--llm-model",
-                       help="LLM model to use - will prompt if not specified")
+                       help="""
+                       Override LLM model (e.g., gpt-4o, gpt-3.5-turbo, claude-3-5-sonnet).
+                       If not specified, you'll be prompted to choose from available models.
+                       The selected model will be used consistently across all workflow steps.
+                       """)
     
     parser.add_argument("--llm-config",
                        type=Path,
-                       help="Path to LLM configuration file")
+                       help="""
+                       Path to custom LLM configuration file with provider settings.
+                       Only needed if you want to override default API endpoints or parameters.
+                       """)
     
     parser.add_argument("--cost-limit",
                        type=float,
-                       help="Override cost limit for LLM usage")
+                       help="""
+                       Override cost limit for LLM usage in USD (e.g., --cost-limit 5.0).
+                       Workflow will stop if this limit is exceeded. Useful for budget control.
+                       """)
     
     # Create subparsers for commands
     subparsers = parser.add_subparsers(
@@ -935,47 +980,131 @@ def main():
     # create-mvp subcommand
     create_mvp_parser = subparsers.add_parser(
         "create-mvp",
-        help="Create a new MVP project with standard structure",
-        description="🚀 Create a new MVP project in ~/Projects/ with AI-generated documentation"
+        help="Create a new MVP project with AI-guided documentation",
+        description="""
+🚀 CREATE NEW MVP PROJECT
+
+Creates a complete MVP project structure in ~/Projects/ with AI-generated documentation.
+This runs the full 9-step workflow including interactive questions, PRD, SRS, design
+decisions, implementation tasks, and completion summary.
+
+WHAT IT CREATES:
+• Standard project structure (src/, docs/, tests/, features/)
+• Interactive MVP initialization (9 structured questions)
+• AI-generated Product Requirements Document (PRD)
+• Software Requirements Specification (SRS)
+• Technology stack and design decisions
+• Detailed implementation roadmap with TDD guidance
+• Project completion summary
+
+EXAMPLES:
+  ./workflow-runner.py create-mvp my-awesome-app
+  ./workflow-runner.py create-mvp user-dashboard --mode autonomous
+  ./workflow-runner.py create-mvp api-service --dry-run
+        """,
+        formatter_class=argparse.RawDescriptionHelpFormatter
     )
     create_mvp_parser.add_argument(
         "project_name",
-        help="Name of the new MVP project"
+        help="""
+        Name of the new MVP project. Will be created in ~/Projects/PROJECT_NAME.
+        Use lowercase with hyphens (e.g., 'user-auth-service', 'task-manager').
+        Must not already exist.
+        """
     )
     
     # add-feature subcommand  
     add_feature_parser = subparsers.add_parser(
         "add-feature", 
         help="Add a feature to an existing MVP project",
-        description="➕ Add a new feature to an existing MVP project with AI-generated documentation"
+        description="""
+➕ ADD FEATURE TO EXISTING PROJECT
+
+Extends an existing MVP project with a new feature using the same AI-guided workflow.
+This creates a new feature branch in the project's features/ directory with complete
+documentation for the additional functionality.
+
+WHAT IT CREATES:
+• Feature-specific documentation in features/YYYY-MM-DD-FEATURE-NAME/
+• Updated PRD with new feature requirements
+• Additional design decisions for the feature
+• Implementation tasks specific to the feature
+• Integration guidance with existing codebase
+
+EXAMPLES:
+  ./workflow-runner.py add-feature user-auth my-awesome-app
+  ./workflow-runner.py add-feature payment-system ecommerce-app
+  ./workflow-runner.py add-feature admin-dashboard task-manager
+        """,
+        formatter_class=argparse.RawDescriptionHelpFormatter
     )
     add_feature_parser.add_argument(
         "feature_name",
-        help="Name of the feature to add"
+        help="""
+        Name of the feature to add (e.g., 'user-auth', 'payment-system').
+        Use lowercase with hyphens. Will create features/YYYY-MM-DD-FEATURE-NAME/.
+        """
     )
     add_feature_parser.add_argument(
-        "--to",
-        dest="project_name",
-        required=True,
-        help="Target project name (must exist in ~/Projects/)"
+        "project_name",
+        help="""
+        Target project name that already exists in ~/Projects/.
+        Must be a valid MVP project with project-manifest.json.
+        """
     )
     
     # list-projects subcommand
     list_projects_parser = subparsers.add_parser(
         "list-projects",
-        help="List all MVP projects",
-        description="📋 List all MVP projects in ~/Projects/"
+        help="List all MVP projects in ~/Projects/",
+        description="""
+📋 LIST ALL MVP PROJECTS
+
+Shows all MVP projects found in ~/Projects/ with their current status, creation date,
+and number of features. Helps you keep track of all your AI-generated projects.
+
+WHAT IT SHOWS:
+• Project name and location
+• Current status (initializing, initialized, in-development)
+• Creation date
+• Number of features added
+• Whether it's a valid MVP project (has project-manifest.json)
+
+EXAMPLES:
+  ./workflow-runner.py list-projects
+        """,
+        formatter_class=argparse.RawDescriptionHelpFormatter
     )
     
     # status subcommand
     status_parser = subparsers.add_parser(
         "status",
-        help="Show project status and recent activity", 
-        description="📊 Show detailed status for an MVP project"
+        help="Show detailed status for a specific MVP project", 
+        description="""
+📊 SHOW PROJECT STATUS
+
+Displays comprehensive status information for a specific MVP project including
+workflow progress, generated documentation, and next steps.
+
+WHAT IT SHOWS:
+• Project metadata (creation date, workflow version, automation mode)
+• List of all features and their status
+• Generated documentation files in each feature directory
+• Suggested next steps for development
+• Project health and validation status
+
+EXAMPLES:
+  ./workflow-runner.py status my-awesome-app
+  ./workflow-runner.py status task-manager
+        """,
+        formatter_class=argparse.RawDescriptionHelpFormatter
     )
     status_parser.add_argument(
         "project_name", 
-        help="Project name to show status for"
+        help="""
+        Name of the project to show status for. Must exist in ~/Projects/.
+        Use the exact project directory name.
+        """
     )
     
     args = parser.parse_args()
@@ -1071,8 +1200,8 @@ def main():
             
         # Handle add-feature command
         elif args.command == "add-feature":
-            project_name = args.project_name
             feature_name = args.feature_name
+            project_name = args.project_name
             project_root = Path.home() / "Projects" / project_name
             
             # Check if project exists
