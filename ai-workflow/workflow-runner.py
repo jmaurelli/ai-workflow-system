@@ -258,11 +258,14 @@ class WorkflowOrchestrator:
             print("\n✅ DRY RUN COMPLETE - No actions executed")
             return True
         
-        # Confirm execution
-        response = input("\nStart workflow execution? (y/N): ")
-        if response.lower() != 'y':
-            print("Workflow execution cancelled")
-            return False
+        # Confirm execution (skip prompt in autonomous mode)
+        if context.mode.value == "autonomous":
+            print("\n🚀 Starting autonomous workflow execution...")
+        else:
+            response = input("\nStart workflow execution? (y/N): ")
+            if response.lower() != 'y':
+                print("Workflow execution cancelled")
+                return False
         
         # Execute each step
         success = True

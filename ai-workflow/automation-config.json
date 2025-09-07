@@ -23,12 +23,12 @@
       "risk_tolerance": "moderate",
       "auto_proceed": true,
       "gates": {
-        "feature_directory_creation": "optional",
-        "prd_generation": "optional",
-        "srs_generation": "optional", 
+        "feature_directory_creation": "skip",
+        "prd_generation": "skip",
+        "srs_generation": "skip", 
         "design_decisions": "required_for_new_tech",
         "design_analysis": "skip",
-        "task_creation": "optional",
+        "task_creation": "skip",
         "task_implementation": "required_for_destructive",
         "completion_summary": "skip",
         "project_history": "skip"

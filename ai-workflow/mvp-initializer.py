@@ -7,6 +7,7 @@ Creates new MVP projects in organized /projects/ directory structure
 
 import argparse
 import json
+import os
 import sys
 import logging
 from pathlib import Path
@@ -137,8 +138,8 @@ def run_workflow_for_mvp(project_dir: Path, project_name: str, args: argparse.Na
         logger.info(f"📁 Changed to project directory: {project_dir}")
         logger.info(f"🤖 Executing workflow command: {' '.join(cmd)}")
         
-        # Execute workflow
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=600)
+        # Execute workflow (allow interactive prompts by not capturing output)
+        result = subprocess.run(cmd, text=True, timeout=600)
         
         # Change back to original directory
         os.chdir(original_cwd)
@@ -147,8 +148,8 @@ def run_workflow_for_mvp(project_dir: Path, project_name: str, args: argparse.Na
             logger.info("✅ MVP workflow completed successfully")
             return True
         else:
-            logger.error(f"❌ MVP workflow failed: {result.stderr}")
-            logger.error(f"Command output: {result.stdout}")
+            logger.error(f"❌ MVP workflow failed with return code: {result.returncode}")
+            logger.error("Check workflow output above for details")
             return False
             
     except subprocess.TimeoutExpired:
@@ -236,16 +237,20 @@ def main():
         
         logger.info(f"🚀 Initializing new MVP project: {project_name}")
         
-        # Create project directory
+        # Handle dry-run mode
+        if args.dry_run:
+            base_dir = Path.cwd()
+            project_dir = base_dir / "projects" / project_name
+            logger.info(f"🧪 [DRY RUN] Would create project directory: {project_dir}")
+            logger.info("🧪 [DRY RUN] Would create project structure (features/, docs/, artifacts/)")
+            logger.info("🧪 [DRY RUN] Would run complete MVP workflow")
+            return
+        
+        # Create project directory (only in non-dry-run mode)
         base_dir = Path.cwd()
         project_dir = create_project_directory(project_name, base_dir)
         
         logger.info(f"📁 Created project directory: {project_dir}")
-        
-        if args.dry_run:
-            logger.info("🧪 [DRY RUN] Project directory structure created (simulated)")
-            logger.info("🧪 [DRY RUN] Would run complete MVP workflow")
-            return
         
         # Create project manifest
         create_project_manifest(project_dir, project_name, args)
