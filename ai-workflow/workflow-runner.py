@@ -816,59 +816,72 @@ class WorkflowOrchestrator:
             self.logger.error(f"Workflow document not found: {doc_path}")
             return False
         
-        # Execute using workflow executor
+        # Execute using workflow executor (direct module import - no subprocess)
         try:
-            import subprocess
+            # Import workflow executor using importlib to handle hyphenated filename
+            import sys
+            import importlib.util
             
-            cmd = [
-                "python3", 
-                str(Path(__file__).parent / "workflow-executor.py"),
-                str(doc_path),
-                "--feature", context.feature_name,
-                "--feature-dir", str(feature_dir),
-                "--mode", context.mode.value,
-                "--step", step.number,
-                "--phase", step.phase
-            ]
+            # Load workflow-executor.py as a module
+            workflow_executor_path = Path(__file__).parent / "workflow-executor.py"
+            spec = importlib.util.spec_from_file_location("workflow_executor", workflow_executor_path)
+            workflow_executor_module = importlib.util.module_from_spec(spec)
+            sys.modules["workflow_executor"] = workflow_executor_module
+            spec.loader.exec_module(workflow_executor_module)
             
-            # Add LLM API configuration if enabled
+            # Import the classes we need
+            WorkflowDocumentExecutor = workflow_executor_module.WorkflowDocumentExecutor
+            WorkflowContext = workflow_executor_module.WorkflowContext
+            
+            # Create workflow executor instance
+            executor = WorkflowDocumentExecutor(debug=False)
+            
+            # Configure LLM API settings if enabled
             if self.llm_api_enabled:
-                cmd.append("--llm-api")
-                
-                if self.llm_provider:
-                    cmd.extend(["--llm-provider", self.llm_provider])
-                
-                if self.llm_model:
-                    cmd.extend(["--llm-model", self.llm_model])
-                
-                if self.llm_config_file:
-                    cmd.extend(["--llm-config", str(self.llm_config_file)])
-                
-                if self.cost_limit:
-                    cmd.extend(["--cost-limit", str(self.cost_limit)])
-                
+                executor.llm_api_enabled = True
+                executor.llm_provider = self.llm_provider
+                executor.llm_model = self.llm_model
+                executor.llm_config_file = self.llm_config_file
+                executor.cost_limit = self.cost_limit
                 self.logger.info(f"🤖 LLM API enabled: Real content generation mode!")
             
-            # Ensure environment variables (including API keys) are passed to subprocess
-            import os
-            env = os.environ.copy()
-            result = subprocess.run(cmd, capture_output=True, text=True, timeout=300, env=env)
+            # Create workflow context for executor
+            workflow_context = WorkflowContext(
+                feature_name=context.feature_name,
+                feature_slug=context.feature_name.lower().replace(' ', '-').replace('_', '-'),
+                feature_dir=feature_dir,
+                mode=context.mode.value,
+                phase=step.phase,
+                step_number=step.number,
+                project_data={},  # Will be populated by interactive collection in Step 01
+                generated_files=[],
+                execution_log=[]
+            )
             
-            if result.returncode == 0:
+            # Execute the workflow document directly
+            success = executor.execute_workflow_document(
+                doc_path,
+                workflow_context,
+                ai_agent_available=True
+            )
+            
+            if success:
                 print(f"  ✅ Completed: {step.doc_name}")
                 print(f"  📁 Output saved to: {feature_dir}")
                 self.logger.info(f"Workflow step {step.number} completed successfully")
                 return True
             else:
                 print(f"  ❌ Failed: {step.doc_name}")
-                self.logger.error(f"Workflow step {step.number} failed: {result.stderr}")
+                self.logger.error(f"Workflow step {step.number} failed")
                 return False
                 
-        except subprocess.TimeoutExpired:
-            self.logger.error(f"Workflow step {step.number} timed out")
+        except ImportError as e:
+            self.logger.error(f"Error importing workflow executor: {e}")
+            print(f"  ❌ Failed: Missing workflow executor module")
             return False
         except Exception as e:
             self.logger.error(f"Error executing workflow step {step.number}: {e}")
+            print(f"  ❌ Failed: {step.doc_name} - {e}")
             return False
 
 def main():
