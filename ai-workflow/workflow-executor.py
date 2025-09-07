@@ -485,19 +485,33 @@ class WorkflowDocumentExecutor:
         self.logger.info(f"🎯 Interactive MVP initialization: {document_path.name}")
         
         try:
-            # Import interactive data collector
-            from interactive_data_collector import InteractiveDataCollector, ProjectInitializationData
+            # Import enhanced interactive data collector
+            from enhanced_interactive_data_collector import EnhancedInteractiveDataCollector, EnhancedProjectData
             
-            print(f"\n🤖 STEP 01: MVP Project Initialization")
+            print(f"\n🤖 STEP 01: Enhanced MVP Project Initialization")
             print(f"📄 Document: {document_path.name}")
             print(f"🎯 Feature: {context.feature_name}")
             print()
             
-            # Collect data interactively
-            collector = InteractiveDataCollector()
+            # Create AI engine for tech stack guidance (if available)
+            ai_engine = None
+            if self.llm_api_enabled:
+                try:
+                    from content_generation_engine import ContentGenerationEngine
+                    ai_engine = ContentGenerationEngine(
+                        debug=self.debug,
+                        user_provider=self.llm_provider,
+                        user_model=self.llm_model
+                    )
+                    self.logger.info("✅ AI engine available for tech stack guidance")
+                except Exception as e:
+                    self.logger.warning(f"Could not create AI engine for tech stack guidance: {e}")
+            
+            # Collect data interactively with enhanced framework
+            collector = EnhancedInteractiveDataCollector(ai_engine=ai_engine)
             project_data = collector.collect_mvp_requirements()
             
-            self.logger.info(f"✅ Collected project data: {project_data.project_name}")
+            self.logger.info(f"✅ Collected enhanced project data: {project_data.project_name}")
             
             # Now generate the document using collected data
             from content_generation_engine import ContentGenerationEngine, ContentGenerationRequest, WorkflowContext as CGContext

@@ -47,78 +47,152 @@ See `workflow-sequence-guide.md` for complete automation details.
 - Confirm user's answers before proceeding
 - Allow user to revise previous answers if needed
 
-## Project Initialization Questions
+## Enhanced MVP Initialization Questions
 
-### Project Foundation
-1. **question**: What is the project name?
-   - **field**: `project_name`
-   - **type**: `string`
-   - **example**: "User Authentication Service"
-   - **required**: true
-   - **description**: The official name for the project, used in documentation and artifacts
+**Target Time: 10 minutes | Grouped by concern for optimal mental flow**
 
-2. **question**: What is the one-liner goal of this project?
-   - **field**: `project_goal`
-   - **type**: `string`
-   - **example**: "Enable secure user authentication for web applications"
-   - **required**: true
-   - **description**: Concise statement of why this project exists and what problem it solves
+### 👥 USER CONTEXT GROUP (3-4 minutes)
 
-### Scope and Constraints
-3. **question**: What is the MVP scope in 2-3 sentences?
-   - **field**: `mvp_scope`
-   - **type**: `string`
-   - **example**: "User registration, login, password reset, and basic profile management. No social login or advanced security features in MVP."
-   - **required**: true
-   - **description**: Clear definition of what is and isn't included in the MVP phase
+#### 1. Primary User Story (Multi-part)
+- **question**: "Who is your primary user?"
+  - **field**: `primary_user`
+  - **type**: `string`
+  - **example**: "Small business owners managing customer data"
+  - **required**: true
+  - **description**: Define the main person who will use this solution
 
-4. **question**: What are the primary constraints for this MVP?
-   - **field**: `mvp_constraints`
-   - **type**: `string`
-   - **example**: "Must be deployable to standard cloud hosting, complete within 2 weeks, use existing tech stack"
-   - **required**: false
-   - **description**: Time, budget, technical, or business constraints that limit MVP scope
+- **follow_up_1**: "What's their biggest pain point you're solving?"
+  - **field**: `user_pain_point`
+  - **type**: `string`
+  - **example**: "Manually tracking customer information in spreadsheets is error-prone and time-consuming"
+  - **required**: true
+  - **description**: The core problem that drives user motivation
 
-### Technical Foundation
-5. **question**: What is your preferred technology stack?
-   - **field**: `tech_stack`
-   - **type**: `string`
-   - **example**: "Node.js + Express + PostgreSQL + React"
-   - **required**: false
-   - **default**: "Node.js + Express + SQLite + HTML/CSS/JS"
-   - **description**: Technology choices for backend, frontend, and data storage
+- **follow_up_2**: "Walk me through their ideal success scenario in 2-3 steps"
+  - **field**: `user_success_journey`
+  - **type**: `string`
+  - **example**: "1. User quickly adds new customer, 2. System auto-organizes contact info, 3. User easily finds customer details when needed"
+  - **required**: true
+  - **description**: End-to-end user value realization
 
-6. **question**: Do you need external services or integrations?
-   - **field**: `external_services`
-   - **type**: `boolean`
-   - **example**: false
-   - **required**: false
-   - **default**: false
-   - **description**: Whether the MVP requires third-party APIs, authentication providers, or external services
+#### 2. Project Identity
+- **question**: "What's your project name?"
+  - **field**: `project_name`
+  - **type**: `string`
+  - **example**: "CustomerHub MVP"
+  - **required**: true
+  - **description**: Official project name for documentation
 
-7. **question**: What is your deployment target?
-   - **field**: `deployment_target`
-   - **type**: `enum`
-   - **example**: "local"
-   - **required**: false
-   - **default**: "local"
-   - **description**: Where the MVP will be deployed (local, cloud, container, etc.)
+#### 3. User Access Pattern (Conditional with Human Gate)
+- **question**: "How will users first discover/access your solution?"
+  - **field**: `user_access_method`
+  - **type**: `enum`
+  - **options**: ["web_browser", "mobile_app", "desktop_app", "api_integration", "other"]
+  - **example**: "web_browser"
+  - **required**: true
+  - **description**: Primary access method determines technical architecture
 
-### Success Criteria
-8. **question**: What defines MVP success? (list 2-3 key criteria)
-   - **field**: `success_criteria`
-   - **type**: `string`
-   - **example**: "Users can register and login successfully, basic profile management works, system handles 100 concurrent users"
-   - **required**: true
-   - **description**: Measurable outcomes that indicate the MVP is complete and functional
+- **conditional_gate**: If user selects web_browser or mobile_app:
+  - **prompt**: "You mentioned [web/mobile]. Should I ask specific questions about [platform] considerations? (y/n)"
+  - **if_yes**: Trigger conditional questions
 
-9. **question**: What is your timeline for MVP completion?
-   - **field**: `mvp_timeline`
-   - **type**: `string`
-   - **example**: "2 weeks"
-   - **required**: false
-   - **default**: "4 weeks"
-   - **description**: Expected timeframe to complete the MVP phase
+- **conditional_web**: If web_browser selected and user approves:
+  - **question**: "Desktop or mobile browser primary?"
+  - **field**: `web_primary_device`
+  - **type**: `enum`
+  - **options**: ["desktop", "mobile", "both_equal"]
+
+- **conditional_mobile**: If mobile_app selected and user approves:
+  - **question**: "Native app or web app?"
+  - **field**: `mobile_app_type`
+  - **type**: `enum`
+  - **options**: ["native_ios", "native_android", "cross_platform", "web_app"]
+
+### 💼 BUSINESS CONTEXT GROUP (2-3 minutes)
+
+#### 4. Business Model (Multi-part)
+- **question**: "How does this project create value?"
+  - **field**: `business_model`
+  - **type**: `enum`
+  - **options**: ["free_tool", "paid_service", "internal_efficiency", "cost_reduction", "revenue_generation", "other"]
+  - **example**: "internal_efficiency"
+  - **required**: true
+  - **description**: Core value proposition
+
+- **follow_up**: "What's the key metric that shows it's working?"
+  - **field**: `key_success_metric`
+  - **type**: `string`
+  - **example**: "Reduces customer lookup time from 5 minutes to 30 seconds"
+  - **required**: true
+  - **description**: Measurable success indicator
+
+#### 5. MVP Success Definition (Enhanced)
+- **question**: "In 3 months, how will you know this MVP succeeded?"
+  - **field**: `three_month_success`
+  - **type**: `string`
+  - **example**: "5 team members using it daily, 200+ customers tracked, zero data loss incidents"
+  - **required**: true
+  - **description**: Concrete success criteria for MVP validation
+
+### 🏗️ TECHNICAL GUIDANCE GROUP (4-5 minutes)
+
+#### 6. Project Complexity Assessment (AI Guidance Trigger)
+- **question**: "Rate your project complexity:"
+  - **field**: `project_complexity`
+  - **type**: `enum`
+  - **options**: ["simple", "medium", "complex"]
+  - **option_descriptions**: {
+    "simple": "Basic CRUD operations, simple forms, read/write data",
+    "medium": "Real-time features, user authentication, file uploads, integrations",
+    "complex": "ML/AI features, complex workflows, high-performance requirements"
+  }
+  - **required**: true
+  - **description**: Complexity determines architecture recommendations
+
+- **ai_guidance_trigger**: After selection, AI provides immediate guidance:
+  - "Based on your complexity choice, I recommend considering..."
+
+#### 7. Team & Constraints (Multi-part)
+- **question**: "What's your team size and skill level?"
+  - **field**: `team_context`
+  - **type**: `string`
+  - **example**: "Solo developer, intermediate JavaScript, learning backend"
+  - **required**: true
+  - **description**: Team capabilities inform technology choices
+
+- **follow_up_1**: "Any existing systems this needs to integrate with?"
+  - **field**: `existing_integrations`
+  - **type**: `string`
+  - **example**: "Must connect to existing Google Workspace, export to Excel"
+  - **required**: false
+  - **description**: Integration requirements affect architecture
+
+- **follow_up_2**: "Hard constraints? (timeline, budget, compliance, etc.)"
+  - **field**: `hard_constraints`
+  - **type**: `string`
+  - **example**: "Must launch in 4 weeks, $0 hosting budget for first 3 months"
+  - **required**: false
+  - **description**: Non-negotiable limitations
+
+#### 8. Interactive Tech Stack Guidance (Conversational AI Session)
+- **process**: "AI_TECH_STACK_CONSULTATION"
+- **description**: AI analyzes all previous answers and conducts interactive tech stack selection
+- **ai_behavior**: 
+  - Consultative approach with 2-3 recommendations
+  - Explains pros/cons for each option
+  - Challenges assumptions when appropriate
+  - Captures reasoning for documentation
+- **fields_generated**:
+  - `recommended_tech_stack`: Final technology choices
+  - `tech_stack_reasoning`: AI's explanation and trade-offs considered
+  - `alternative_options`: Other options discussed
+  - `challenged_assumptions`: Any user assumptions the AI questioned
+
+#### 9. Final Confirmation & Summary
+- **process**: "DECISION_SUMMARY"
+- **description**: AI presents complete summary of all decisions for user confirmation
+- **includes**: All collected data, tech stack choice, key assumptions
+- **user_action**: Confirm or request changes before proceeding to document generation
 
 ## Auto-Generated Documentation Sections
 
