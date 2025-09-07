@@ -10,14 +10,16 @@ import json
 import os
 import sys
 import logging
+import getpass
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, Any, Optional, List
 import subprocess
 
-# Import LLM integration for AI-powered dynamic questioning
+# Import LLM integration for AI-powered dynamic questioning  
 try:
     import importlib.util
+    import requests
     spec = importlib.util.spec_from_file_location("llm_api_integration", 
                                                   Path(__file__).parent / "llm-api-integration.py")
     llm_api_module = importlib.util.module_from_spec(spec)
@@ -29,92 +31,247 @@ try:
     LLMProvider = llm_api_module.LLMProvider
     LLM_AVAILABLE = True
 except Exception:
-    LLM_AVAILABLE = False
+    # Fallback: basic AI integration available if we have requests
+    try:
+        import requests
+        LLM_AVAILABLE = "basic"
+    except ImportError:
+        LLM_AVAILABLE = False
 
-def generate_dynamic_questions(project_goal: str, previous_answers: Dict[str, str] = None) -> List[Dict[str, Any]]:
+def prompt_ai_vendor_setup() -> tuple:
+    """Interactive prompt for AI vendor and API key"""
+    print("\n🤖 AI CONSULTANT SETUP")
+    print("=" * 40)
+    
+    # Always show all big 3 providers
+    vendors = {
+        "1": {"name": "OpenAI", "provider": "openai", "model": "gpt-3.5-turbo", "env_var": "OPENAI_API_KEY"},
+        "2": {"name": "Claude (Anthropic)", "provider": "anthropic", "model": "claude-3-5-sonnet-20241022", "env_var": "ANTHROPIC_API_KEY"},
+        "3": {"name": "Google Gemini", "provider": "google", "model": "gemini-1.5-flash", "env_var": "GOOGLE_API_KEY"},
+        "4": {"name": "Skip AI questions", "provider": None}
+    }
+    
+    # Show integration status
+    if LLM_AVAILABLE == True:
+        print("✨ Full AI integration available - all providers with advanced features!")
+    else:
+        print("⚡ Basic integration - all providers supported with core features!")
+    
+    print("\nChoose your AI assistant:")
+    for key, vendor in vendors.items():
+        if vendor["provider"]:
+            print(f"   {key}. {vendor['name']} ({vendor['model']})")
+        else:
+            print(f"   {key}. {vendor['name']}")
+    print()
+    
+    while True:
+        try:
+            max_choice = len(vendors)
+            choice = input(f"Select AI vendor (1-{max_choice}): ").strip()
+            if choice in vendors:
+                selected = vendors[choice]
+                if not selected["provider"]:
+                    return "skip", None  # User chose to skip AI questions
+                
+                # Check if API key is already in environment
+                existing_key = os.getenv(selected["env_var"])
+                if existing_key:
+                    print(f"✅ Found existing {selected['name']} API key")
+                    return selected, existing_key
+                
+                # Prompt for API key
+                print(f"\n🔑 {selected['name']} API Key")
+                if selected['provider'] == 'openai':
+                    print("💡 Get your key from: https://platform.openai.com/api-keys")
+                elif selected['provider'] == 'anthropic':
+                    print("💡 Get your key from: https://console.anthropic.com/settings/keys")
+                elif selected['provider'] == 'google':
+                    print("💡 Get your key from: https://aistudio.google.com/app/apikey")
+                print("🔒 Your API key will be hidden for security")
+                
+                try:
+                    api_key = getpass.getpass(f"Enter your {selected['name']} API key: ").strip()
+                except (KeyboardInterrupt, EOFError):
+                    print("\n❌ API key input cancelled")
+                    continue
+                    
+                if not api_key:
+                    print("❌ API key required for AI questions")
+                    continue
+                    
+                return selected, api_key
+            else:
+                print(f"❌ Please enter a number from 1 to {max_choice}")
+                
+        except KeyboardInterrupt:
+            print("\n❌ AI setup cancelled")
+            return "cancelled", None
+
+def _call_openai_api(api_key: str, messages: List[Dict], model: str = "gpt-3.5-turbo") -> str:
+    """Simple OpenAI API call using requests"""
+    import requests
+    
+    response = requests.post(
+        "https://api.openai.com/v1/chat/completions",
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        },
+        json={
+            "model": model,
+            "messages": messages,
+            "max_tokens": 300,
+            "temperature": 0.7
+        },
+        timeout=30
+    )
+    
+    if response.status_code != 200:
+        raise Exception(f"OpenAI API call failed: {response.status_code}")
+    
+    return response.json()["choices"][0]["message"]["content"]
+
+def _call_anthropic_api(api_key: str, messages: List[Dict], model: str = "claude-3-5-sonnet-20241022") -> str:
+    """Simple Anthropic API call using requests"""
+    import requests
+    
+    # Convert messages format for Claude
+    system_msg = next((msg["content"] for msg in messages if msg["role"] == "system"), "")
+    user_msg = next((msg["content"] for msg in messages if msg["role"] == "user"), "")
+    
+    response = requests.post(
+        "https://api.anthropic.com/v1/messages",
+        headers={
+            "x-api-key": api_key,
+            "Content-Type": "application/json",
+            "anthropic-version": "2023-06-01"
+        },
+        json={
+            "model": model,
+            "max_tokens": 300,
+            "system": system_msg,
+            "messages": [{"role": "user", "content": user_msg}]
+        },
+        timeout=30
+    )
+    
+    if response.status_code != 200:
+        raise Exception(f"Claude API call failed: {response.status_code}")
+    
+    return response.json()["content"][0]["text"]
+
+def _call_google_api(api_key: str, messages: List[Dict], model: str = "gemini-1.5-flash") -> str:
+    """Simple Google Gemini API call using requests"""
+    import requests
+    
+    # Combine system and user messages for Gemini
+    combined_prompt = ""
+    for msg in messages:
+        if msg["role"] == "system":
+            combined_prompt += f"Instructions: {msg['content']}\n\n"
+        elif msg["role"] == "user":
+            combined_prompt += msg["content"]
+    
+    response = requests.post(
+        f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}",
+        headers={
+            "Content-Type": "application/json"
+        },
+        json={
+            "contents": [{
+                "parts": [{"text": combined_prompt}]
+            }],
+            "generationConfig": {
+                "maxOutputTokens": 300,
+                "temperature": 0.7
+            }
+        },
+        timeout=30
+    )
+    
+    if response.status_code != 200:
+        raise Exception(f"Gemini API call failed: {response.status_code}")
+    
+    return response.json()["candidates"][0]["content"]["parts"][0]["text"]
+
+def generate_dynamic_questions(project_goal: str, vendor_config: Dict, api_key: str, previous_answers: Dict[str, str] = None) -> List[Dict[str, Any]]:
     """Generate personalized follow-up questions using AI"""
-    if not LLM_AVAILABLE:
+    if not LLM_AVAILABLE or not vendor_config or not api_key:
         return []
     
     try:
-        # Load LLM config
-        config_path = Path(__file__).parent / "llm-config.json"
-        if not config_path.exists():
-            return []
-            
-        with open(config_path, 'r') as f:
-            llm_config_data = json.load(f)
-        
-        # Use the first available provider 
-        if not llm_config_data.get("providers"):
-            return []
-            
-        provider_name = list(llm_config_data["providers"].keys())[0]
-        provider_config = llm_config_data["providers"][provider_name]
-        
-        # Map providers to environment variable names
-        api_key_map = {
-            "openai": "OPENAI_API_KEY",
-            "anthropic": "ANTHROPIC_API_KEY", 
-            "google": "GOOGLE_API_KEY"
-        }
-        
-        provider_type = provider_config["provider"]
-        api_key_env = api_key_map.get(provider_type, f"{provider_type.upper()}_API_KEY")
-        api_key = os.getenv(api_key_env)
-        
-        # Create LLM config
-        config = LLMConfig(
-            provider=LLMProvider(provider_config["provider"]),
-            model=provider_config["model"],
-            api_key=api_key,
-            max_tokens=200,
-            temperature=0.7,
-            timeout=30,
-            max_retries=2,
-            cost_limit_usd=0.10
-        )
-        
-        if not config.api_key:
-            return []
-        
-        llm = LLMAPIIntegration(config, debug=False)
+        if LLM_AVAILABLE == True:
+            # Use full LLM integration
+            config = LLMConfig(
+                provider=LLMProvider(vendor_config["provider"]),
+                model=vendor_config["model"],
+                api_key=api_key,
+                max_tokens=300,
+                temperature=0.7,
+                timeout=30,
+                max_retries=2,
+                cost_limit_usd=0.15
+            )
+            llm = LLMAPIIntegration(config, debug=False)
+        else:
+            # Use basic API calls with requests
+            pass  # All providers now supported in basic mode
         
         # Create dynamic prompt
         previous_context = ""
         if previous_answers:
             previous_context = f"Previous answers: {json.dumps(previous_answers, indent=2)}"
         
-        prompt = f"""You are an expert project consultant. Based on this project goal: "{project_goal}"
-        
+        prompt_text = f"""You are an expert project consultant helping someone plan their MVP. 
+
+Their project goal: "{project_goal}"
 {previous_context}
 
-Generate 2-3 highly specific, personalized follow-up questions that would help understand their exact needs. 
+Generate 2-4 specific, insightful follow-up questions that would help you understand their needs better. Focus on:
+- WHO will use this (target users)
+- WHAT specific features they need most  
+- HOW they'll measure success
+- WHERE/HOW they want to deploy it
 
-Make each question:
-1. Conversational and friendly
-2. Include intelligent suggestions based on the project type
-3. Focused on ONE specific aspect
-4. Practical and actionable
+Make questions conversational and include helpful suggestions when possible.
 
-Format as JSON:
+Return ONLY a JSON array, no other text:
 [
-  {{"prompt": "🔨 Based on your weather tracker idea, are you thinking more about:", "options": ["Personal daily forecasts", "Severe weather alerts", "Historical analysis"], "help": "This helps me suggest the right features"}},
-  {{"prompt": "👤 Who would use this most?", "example": "Commuters planning their route, outdoor workers, event planners"}}
-]
+  {{"prompt": "👤 Who is your main target user?", "example": "Small business owners, students, developers, etc."}},
+  {{"prompt": "🎯 What's the #1 thing users should accomplish?", "options": ["Save time on X", "Solve problem Y", "Learn about Z"], "help": "This helps prioritize features"}},
+  {{"prompt": "📱 How will people access this?", "options": ["Web browser", "Mobile app", "Desktop app", "Command line"], "default": "Web browser"}}
+]"""
 
-Return ONLY the JSON array, no other text."""
-
-        request = LLMRequest(
-            prompt=prompt,
-            system_message="You are a helpful project consultant who asks great questions."
-        )
-        
-        response = llm.generate_content(request)
+        # Generate response based on available integration
+        if LLM_AVAILABLE == True:
+            # Use full LLM integration
+            request = LLMRequest(
+                prompt=prompt_text,
+                system_message="You are a helpful project consultant who asks great questions."
+            )
+            response = llm.generate_content(request)
+            content = response.content.strip()
+        else:
+            # Use basic API calls with requests
+            messages = [
+                {"role": "system", "content": "You are a helpful project consultant who asks great questions."},
+                {"role": "user", "content": prompt_text}
+            ]
+            
+            provider = vendor_config["provider"]
+            if provider == "openai":
+                content = _call_openai_api(api_key, messages, vendor_config["model"])
+            elif provider == "anthropic":
+                content = _call_anthropic_api(api_key, messages, vendor_config["model"])
+            elif provider == "google":
+                content = _call_google_api(api_key, messages, vendor_config["model"])
+            else:
+                raise Exception(f"Unsupported provider: {provider}")
         
         # Parse JSON response
         try:
-            questions = json.loads(response.content.strip())
+            questions = json.loads(content)
             return questions if isinstance(questions, list) else []
         except json.JSONDecodeError:
             return []
@@ -181,23 +338,35 @@ def prompt_project_questions(non_interactive: bool = False, enable_ai: bool = Tr
     
     # Try to get AI-powered dynamic questions
     if enable_ai and LLM_AVAILABLE:
-        print("🤖 Let me ask some personalized questions based on your project...")
-        try:
-            ai_questions = generate_dynamic_questions(project_goal, answers)
-            if ai_questions:
-                print("✨ Here are some tailored questions for you:")
-                print()
-                
-                # Ask AI-generated questions
-                for i, question_config in enumerate(ai_questions, 1):
-                    if not _ask_dynamic_question(f"ai_question_{i}", question_config, answers):
-                        return None
+        # Prompt for AI vendor setup
+        vendor_config, api_key = prompt_ai_vendor_setup()
+        
+        # Check if user cancelled during AI setup
+        if vendor_config == "cancelled":
+            # User pressed Ctrl+C during AI setup - respect that and exit completely
+            print("💭 AI setup cancelled - exiting")
+            return None
+        elif vendor_config == "skip":
+            # User chose to skip AI questions - proceed to static questions
+            print("💭 Skipping AI questions, using standard questions...")
+        elif vendor_config and api_key:
+            print(f"\n🤖 {vendor_config['name']} will help create personalized questions...")
+            try:
+                ai_questions = generate_dynamic_questions(project_goal, vendor_config, api_key, answers)
+                if ai_questions:
+                    print("✨ Here are some AI-generated questions tailored for your project:")
+                    print()
                     
-                print("🎉 Great! I have enough information to get started.")
-                return answers
-                
-        except Exception as e:
-            print(f"💭 AI consultant unavailable ({e}), using standard questions...")
+                    # Ask AI-generated questions
+                    for i, question_config in enumerate(ai_questions, 1):
+                        if not _ask_dynamic_question(f"ai_question_{i}", question_config, answers):
+                            return None
+                        
+                    print(f"🎉 Great! {vendor_config['name']} helped gather the perfect project context.")
+                    return answers
+                    
+            except Exception as e:
+                print(f"💭 {vendor_config['name']} consultant unavailable ({e}), using standard questions...")
     
     # Fallback to static questions
     static_questions = {
@@ -594,8 +763,11 @@ def main():
                        metavar="PROJECT_NAME",
                        help="View executive report for existing project")
     
-    parser.add_argument("--enable-ai-questions", action="store_true",
-                       help="Enable AI-powered dynamic questioning (experimental)")
+    parser.add_argument("--disable-ai-questions", action="store_true",
+                       help="Disable AI-powered dynamic questioning (use static questions only)")
+    
+    parser.add_argument("--enable-ai-questions", action="store_true", 
+                       help="[DEPRECATED] AI questions are now enabled by default in guided mode")
     
     args = parser.parse_args()
     
@@ -670,8 +842,11 @@ def main():
             else:
                 base_dir = default_base
         
+        # Determine AI questions setting - default True for guided mode unless disabled
+        enable_ai = not args.disable_ai_questions and args.mode == "guided"
+        
         # Prompt for project questions (interactive only)
-        project_context = prompt_project_questions(args.non_interactive, args.enable_ai_questions)
+        project_context = prompt_project_questions(args.non_interactive, enable_ai)
         
         # If user cancelled during questions, exit completely
         if project_context is None:
