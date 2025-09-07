@@ -266,13 +266,21 @@ class ContentGenerationEngine:
                 prompt_parts.append(f"- Reference AI tech stack reasoning: `{request.context.project_data.get('tech_stack_reasoning', 'technical decisions')}`")
             
             elif request.content_type == "design_decisions":
-                prompt_parts.append(f"\n**DESIGN DECISIONS INSTRUCTIONS**:")
-                prompt_parts.append(f"- CRITICAL: The user has ALREADY SELECTED their tech stack: `{request.context.project_data.get('recommended_tech_stack', 'technologies')}`")
-                prompt_parts.append(f"- DO NOT run questionnaires or suggest alternatives - DOCUMENT the selected stack with rationale")
-                prompt_parts.append(f"- AI reasoning provided: `{request.context.project_data.get('tech_stack_reasoning', 'reasoning')}`")
-                prompt_parts.append(f"- Focus on implementation details and best practices for the SELECTED stack")
-                prompt_parts.append(f"- Include learning resources for the CHOSEN technologies")
-                prompt_parts.append(f"- Target user type: {request.context.project_data.get('primary_user', 'users')} with pain point: {request.context.project_data.get('user_pain_point', 'challenges')}")
+                prompt_parts.append(f"\n**CRITICAL OVERRIDE: DESIGN DECISIONS INSTRUCTIONS**:")
+                prompt_parts.append(f"**IGNORE WORKFLOW QUESTIONNAIRES** - The user has completed an ENHANCED AI-guided tech stack selection process.")
+                prompt_parts.append(f"")
+                prompt_parts.append(f"**SELECTED TECHNOLOGY STACK**: `{request.context.project_data.get('recommended_tech_stack', 'technologies')}`")
+                prompt_parts.append(f"- Backend: {self._extract_backend_from_stack(request.context.project_data.get('recommended_tech_stack', ''))}")
+                prompt_parts.append(f"- Frontend: {self._extract_frontend_from_stack(request.context.project_data.get('recommended_tech_stack', ''))}")
+                prompt_parts.append(f"- Database: {self._extract_database_from_stack(request.context.project_data.get('recommended_tech_stack', ''))}")
+                prompt_parts.append(f"")
+                prompt_parts.append(f"**YOUR TASK**: Document these EXACT selections with rationale, learning resources, and implementation guidance.")
+                prompt_parts.append(f"**DO NOT**: Run questionnaires, suggest alternatives, or make different tech choices.")
+                prompt_parts.append(f"**DO**: Explain why these selections are good for: {request.context.project_data.get('primary_user', 'users')} solving {request.context.project_data.get('user_pain_point', 'challenges')}")
+                prompt_parts.append(f"**AI Selection Reasoning**: {request.context.project_data.get('tech_stack_reasoning', 'User made this selection with AI guidance')}")
+                prompt_parts.append(f"**Alternative Options Considered**: {request.context.project_data.get('alternative_options', 'Other options were discussed')}")
+                prompt_parts.append(f"")
+                prompt_parts.append(f"**STRUCTURE**: Use the decision documentation format but populate with the SELECTED stack, not questionnaire results.")
             
             elif request.content_type in ["prd", "srs", "design_analysis"]:
                 prompt_parts.append(f"\n**DOCUMENTATION INSTRUCTIONS**:")
@@ -337,6 +345,67 @@ class ContentGenerationEngine:
             expected_format="markdown",
             validation_criteria=validation_criteria
         )
+    
+    def _extract_backend_from_stack(self, tech_stack: str) -> str:
+        """Extract backend technology from tech stack string"""
+        if not tech_stack:
+            return "Not specified"
+        
+        # Common patterns
+        if "Node.js" in tech_stack and "Express" in tech_stack:
+            return "Node.js + Express"
+        elif "Python" in tech_stack and "FastAPI" in tech_stack:
+            return "Python + FastAPI"
+        elif "Python" in tech_stack and "Flask" in tech_stack:
+            return "Python + Flask"
+        elif "Node.js" in tech_stack:
+            return "Node.js"
+        elif "Python" in tech_stack:
+            return "Python"
+        else:
+            # Extract first technology mentioned
+            parts = tech_stack.split("+")
+            return parts[0].strip() if parts else "Not specified"
+    
+    def _extract_frontend_from_stack(self, tech_stack: str) -> str:
+        """Extract frontend technology from tech stack string"""
+        if not tech_stack:
+            return "Not specified"
+        
+        # Look for specific frontend technologies
+        if "Vanilla JS" in tech_stack or "vanilla" in tech_stack.lower():
+            return "Vanilla JavaScript"
+        elif "React" in tech_stack:
+            return "React"
+        elif "Vue" in tech_stack:
+            return "Vue.js"
+        elif "Angular" in tech_stack:
+            return "Angular"
+        elif "HTML/CSS/JS" in tech_stack:
+            return "HTML/CSS/JavaScript"
+        else:
+            # Look for general patterns
+            if "JavaScript" in tech_stack or "JS" in tech_stack:
+                return "JavaScript"
+            else:
+                return "Not specified"
+    
+    def _extract_database_from_stack(self, tech_stack: str) -> str:
+        """Extract database technology from tech stack string"""
+        if not tech_stack:
+            return "Not specified"
+        
+        # Look for specific databases
+        if "SQLite" in tech_stack:
+            return "SQLite"
+        elif "PostgreSQL" in tech_stack:
+            return "PostgreSQL"
+        elif "MySQL" in tech_stack:
+            return "MySQL"
+        elif "MongoDB" in tech_stack:
+            return "MongoDB"
+        else:
+            return "Not specified"
     
     def _get_validation_criteria(self, content_type: str) -> List[str]:
         """Get validation criteria for specific content type"""
