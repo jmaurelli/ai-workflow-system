@@ -6,11 +6,35 @@ Resolve bugs efficiently by leveraging existing feature context to provide AI ag
 ---
 
 ## When to Use
+- **Implementation bugs** discovered during your dev server testing
 - **Production bugs** in deployed features that impact users
-- **Implementation bugs** discovered during feature development
 - **Integration issues** between existing components
 - **Performance regressions** that violate established SRS budgets
 - **User experience issues** that affect core workflows
+
+---
+
+## Quick Start (For Solo Developers)
+
+### **Simple Invocation**
+When you encounter a bug during your fast-moving development and testing:
+
+```
+I found a bug during testing. Please use the guided bug resolution workflow 
+in ai-workflow/lean-workflow/bug-resolution-lite.md to help me resolve this.
+
+Start with the Recent Task Analysis to understand what I just implemented, 
+then walk me through the guided questions to capture the bug properly.
+
+[Brief description of what seems wrong]
+```
+
+The AI will:
+1. **Find your recent work** automatically (no infinite scanning)
+2. **Ask guided questions** to help you describe the bug effectively  
+3. **Explain technical concepts** as we go (educational approach)
+4. **Suggest specific testing** based on what you just implemented
+5. **Walk through validation** before and after the fix
 
 ---
 
@@ -24,30 +48,149 @@ Capture bugs with minimal overhead while ensuring AI agents have sufficient cont
 
 ---
 
-## Bug Context Checklist (Prevent Iteration Cycles)
+## Guided Bug Discovery (For Solo Developers)
 
-Before engaging AI agents for bug resolution, ensure you have:
+### **Phase 1: Recent Task Analysis (Auto-Discovery)**
 
-### **✅ Feature Context Reference**
-- [ ] **Feature Directory**: Identify which feature directory contains the bug (`/features/[date]-[slug]/` or legacy structure)
-- [ ] **Original PRD**: Reference specific requirements that are broken (`./prd.md` or `/prd/prd-[slug].md`)
-- [ ] **SRS Violations**: Identify which NFRs are violated (`./srs.md` or `/srs/srs-[slug].md`)
-- [ ] **Implementation Context**: Reference the original tasks that created this code (`./tasks.md` or `/tasks/tasks-[slug].md`)
+**AI Agent Instructions**: Start here to understand what was recently implemented.
 
-### **✅ Bug-Specific Context**
-- [ ] **Error Details**: Complete error messages, stack traces, console outputs
-- [ ] **Reproduction Steps**: Exact steps that trigger the bug consistently
-- [ ] **Environment Context**: Browser, device, OS, data state when bug occurs
-- [ ] **Expected vs Actual**: What should happen vs what actually happens
+```markdown
+## Recent Task Analysis Protocol
 
-### **✅ Code Context**
-- [ ] **Affected Files**: Specific files where the bug manifests
-- [ ] **Related Components**: Other components that interact with the buggy code
-- [ ] **Recent Changes**: What was changed recently that might have introduced the bug
+### Step 1: Find Most Recent Feature Work
+1. **Scan for recently modified tasks.md files**:
+   ```bash
+   find /features -name "tasks.md" -exec ls -lt {} + | head -5
+   # OR if using legacy structure:
+   find /tasks -name "tasks-*.md" -exec ls -lt {} + | head -5
+   ```
+
+2. **Identify the most recently modified tasks file**
+3. **Read the last 5-10 completed tasks** (marked with `[x]`)
+4. **Extract what was just implemented**:
+   - Which components were created/modified?
+   - Which features were added?
+   - Which integrations were completed?
+
+### Step 2: Present Recent Work Summary
+**AI presents to user**: "Based on your recent task completions, I see you just implemented:
+- [Task X]: [Brief description]
+- [Task Y]: [Brief description]  
+- [Task Z]: [Brief description]
+
+Is the bug you're experiencing related to any of these recent implementations?"
+```
+
+### **Phase 2: Guided Bug Capture (Educational Approach)**
+
+**AI Agent Instructions**: Walk the user through bug discovery with educational support.
+
+```markdown
+## Progressive Bug Discovery Questions
+
+### Question Set A: Basic Bug Understanding
+**AI asks**: "Let's start simple. When you were testing your application:
+
+1. **What were you trying to do?** (e.g., 'I was trying to log in', 'I was trying to view the dashboard')
+2. **What did you expect to happen?** (e.g., 'I expected to see the dashboard page')  
+3. **What actually happened instead?** (e.g., 'I got a blank page', 'I saw an error message')
+
+Don't worry about technical details yet - just describe what you experienced as a user."
+
+### Question Set B: Error Details (If Applicable)
+**AI asks**: "Now let's gather some technical details:
+
+1. **Do you see any error messages?** 
+   - In the browser window itself?
+   - In the browser console? (Press F12, click 'Console' tab)
+   - In your development server terminal?
+
+2. **Can you copy and paste any error messages you see?** 
+   (AI explains: 'Error messages contain valuable clues about what's wrong')
+
+If you're not sure where to look for errors, I can guide you through checking each location."
+
+### Question Set C: Environment Context  
+**AI asks**: "Let's understand your testing environment:
+
+1. **Which browser are you using?** (Chrome, Firefox, Safari, etc.)
+2. **Are you testing on the same computer where you're developing?**
+3. **What's the URL you're trying to access?** (e.g., localhost:3000, localhost:8000)
+
+This helps me understand if it's a general bug or specific to your setup."
+
+### Question Set D: Reproduction Steps
+**AI asks**: "Let's figure out how to trigger this bug consistently:
+
+1. **Can you make the bug happen again?** Try the same steps you just did.
+2. **What are the exact steps?** I'll help you break it down:
+   - Step 1: 'I opened the browser and went to...'
+   - Step 2: 'I clicked on...'
+   - Step 3: 'I entered...'
+   - Step 4: 'Then the bug appeared...'
+
+3. **Does it happen every time, or sometimes?**
+
+Being able to reproduce a bug consistently makes it much easier to fix."
+
+### Question Set E: Recent Changes Connection
+**AI asks**: "Based on what you recently implemented, let's connect this to your recent work:
+
+1. **Is this bug in functionality that was working before?** (regression)
+2. **Or is this a new feature that never worked?** (implementation issue)  
+3. **When did you last see this functionality working correctly?**
+
+Looking at your recent tasks, this might be related to [specific recent task]. Does that seem right?"
+```
+
+### **Phase 3: Automatic Testing Suggestions**
+
+**AI Agent Instructions**: Based on completed tasks, suggest specific things to test.
+
+```markdown
+## Smart Testing Suggestions Protocol
+
+### Step 1: Parse Recent Tasks for Testing Hints
+**AI analyzes recent completed tasks** and extracts:
+- **UI components** that were created/modified
+- **API endpoints** that were implemented  
+- **Database operations** that were added
+- **Authentication flows** that were touched
+- **Integrations** that were established
+
+### Step 2: Generate Targeted Testing Steps
+**AI suggests**: "Based on what you recently implemented, let's test these specific areas:
+
+**If recent tasks included UI components:**
+- 'Let's check if [ComponentName] loads correctly'
+- 'Try clicking [button/link name] to see if it works'
+- 'Check if [form name] submits properly'
+
+**If recent tasks included API work:**
+- 'Let's verify the [endpoint name] is responding'
+- 'Check if data is being saved/retrieved correctly'
+- 'Test if authentication is working with the API'
+
+**If recent tasks included database changes:**
+- 'Let's verify data is being stored correctly'
+- 'Check if existing data is still accessible'
+- 'Test if new database fields are working'
+
+Would you like me to walk you through testing any of these areas?"
+
+### Step 3: Progressive Validation
+**AI guides**: "Let's test one thing at a time:
+
+1. **First, let's verify the basics work**: 'Can you load the main page without errors?'
+2. **Then, let's test the core functionality**: 'Can you [main user action] successfully?'  
+3. **Finally, let's test what you just implemented**: 'Can you [recently implemented feature] without issues?'
+
+This helps us narrow down where the problem is occurring."
+```
 
 ---
 
-## Bug Resolution Workflow
+## Enhanced Bug Resolution Workflow (Educational Focus)
 
 ### **1. Bug Capture & Context Assembly**
 
@@ -150,28 +293,80 @@ Apply the same RED→GREEN→REFACTOR cycle that works for features:
 - [ ] **Update comments/documentation** to prevent similar bugs
 ```
 
-### **4. Validation & Integration**
+### **4. Pre-Fix Validation Checkpoint**
 
 ```markdown
-## Bug Fix Validation
+## Pre-Fix Validation (Confirm Bug Reproduction)
 
-### Functional Validation
-- [ ] **Original reproduction steps now work correctly**
-- [ ] **All existing tests still pass**
-- [ ] **No regressions in related functionality**
-- [ ] **Performance budgets still met** (if performance-related)
+**AI guides user through validation**: "Before we implement a fix, let's make sure we can consistently reproduce the bug:
 
-### Context Integration
-- [ ] **Fix aligns with original design decisions**
-- [ ] **Implementation follows established patterns**
-- [ ] **Documentation updated if assumptions changed**
-- [ ] **Learning captured if new pattern discovered**
+### Step 1: Controlled Bug Reproduction
+1. **Follow the exact reproduction steps** we documented together
+2. **Confirm the bug happens consistently** (try 2-3 times)
+3. **Document the exact error state**: 
+   - Screenshot of what's wrong (if visual)
+   - Copy error messages (if any)
+   - Note what's missing or broken
 
-### Deployment Validation
-- [ ] **Bug fix tested in same environment as bug report**
-- [ ] **Edge cases tested** (different browsers/devices if applicable)
-- [ ] **Performance measured** if SRS budgets were involved
-- [ ] **Security validated** if security baseline was affected
+### Step 2: Environment Baseline Check
+1. **Verify development server is running** without startup errors
+2. **Check that other core functionality works** (quick smoke test)
+3. **Confirm this is an isolated issue** and not system-wide problem
+
+### Step 3: Scope Understanding  
+1. **Identify what's working vs. broken**: 'The login form loads, but submission fails'
+2. **Understand impact scope**: 'This affects all users' vs 'This only happens with certain data'
+3. **Connect to recent changes**: 'This started after implementing [specific task]'
+
+**Checkpoint**: AI confirms with user - 'I understand the bug. We can reproduce it consistently. Ready to implement fix?'"
+```
+
+### **5. Bug Fix Implementation (Same TDD-Lite Process)**
+
+[Previous TDD-Lite content remains the same]
+
+### **6. Post-Fix Validation Checkpoint**
+
+```markdown
+## Post-Fix Validation (Comprehensive Verification)
+
+**AI guides user through post-fix validation**: "Now let's thoroughly verify the fix works and didn't break anything:
+
+### Step 1: Primary Fix Validation
+1. **Test the original reproduction steps**: 'Try the exact steps that caused the bug'
+2. **Confirm expected behavior**: 'Verify you now see what you expected to see'
+3. **Test edge cases**: 'Try variations of the same action to ensure robustness'
+
+**AI explains**: 'This ensures our fix actually solves the problem you experienced.'
+
+### Step 2: Regression Testing (No New Bugs)
+1. **Test core application functions**: 
+   - 'Can you still log in?' (if authentication exists)
+   - 'Can you still navigate between main pages?'
+   - 'Do the main features still work?'
+
+2. **Test recently implemented features**:
+   Based on recent task analysis, AI suggests: 'Let's test [recently implemented features] to make sure our fix didn't break them'
+
+3. **Browser console check**: 'Press F12 and check if there are any new error messages'
+
+**AI explains**: 'This ensures our fix didn't accidentally break something else.'
+
+### Step 3: Performance & Quality Check
+1. **Startup speed check**: 'Does the app still start up quickly?'
+2. **Page load check**: 'Do pages still load at normal speed?'  
+3. **User experience check**: 'Does everything still feel responsive?'
+
+**AI explains**: 'This ensures our fix maintains the quality standards from your SRS requirements.'
+
+### Step 4: Documentation Update Check
+1. **Review if assumptions changed**: 'Did fixing this bug reveal any incorrect assumptions in our documentation?'
+2. **Update learning notes**: 'What did we learn about [technology/pattern] from fixing this bug?'
+3. **Consider prevention**: 'How can we avoid similar bugs in the future?'
+
+**AI explains**: 'This captures learning to improve future development.'
+
+**Final Checkpoint**: AI confirms with user - 'Bug is fixed, no regressions detected, quality maintained. Ready to move forward?'"
 ```
 
 ---
