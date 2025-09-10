@@ -247,3 +247,58 @@ Provide this summary data for quarterly rollup generation:
 ```
 
 This completion summary workflow ensures that every feature generates valuable, traceable insights that contribute to organizational learning and project history!
+
+---
+
+## Workflow Transition Protocol
+
+### Document Completion Summary
+**AI Instructions**: After completing the completion summary, provide a summary including:
+- **Executive Summary Generated**: `./completion-summary.md` with traceability links
+- **Achievements Captured**: [Number of key achievements documented]
+- **Technology Decisions**: [Major technology and architecture decisions summarized]
+- **Learning Outcomes**: [Skills developed and capability growth documented]
+- **Business Value**: [Quantified impact and value delivered]
+- **Manifest Updated**: feature-manifest.json marked completion summary as completed
+- **Completion Time**: [AI: Insert current date and time as YYYY-MM-DD HH:MM:SS]
+
+### User Approval Gate
+Present these options to the user:
+- **Yes**: "Continue to 09-gen-project-history.md for learning capture"
+- **No**: "Stop workflow here (you can resume later)"
+- **Revise**: "What specifically would you like changed in the completion summary?"
+
+### Next Step Preview
+**Next**: 09-gen-project-history.md - Project History and Learning Capture
+**Phase 4 Purpose**: Capture organizational learning (quarterly rollups)
+**What Project History needs from this step**: Completion summary, lessons learned, and technology evolution insights
+
+---
+
+## Resume Workflow Detection
+
+**AI Instructions**: If resuming this workflow, check feature-manifest.json status and present:
+
+```
+✅ WORKFLOW RESUME DETECTED
+  ✅ 01-mvp-entrypoint.md - Project initialization (completed)
+  ✅ 02-gen-prd.md - Product requirements (completed)
+  ✅ 03-gen-srs.md - Software requirements (completed)
+  ✅ 04-gen-design-decisions-lite.md - Technology decisions (completed)
+  ✅ 05-gen-design.md - Component analysis (completed)
+  ✅ 06-gen-tasks-and-testing.md - Implementation tasks (completed)
+  ✅ 07-process-tasks.md - Task execution (completed)
+  🎯 08-gen-completion-summary.md - Project summary (CURRENT)
+  ⏳ 09-gen-project-history.md - Learning capture (pending)
+
+📋 Implementation Complete:
+  • Tasks: [All implementation tasks completed]
+  • Tests: [Test results and quality validation]
+  • Performance: [Performance targets achieved]
+  • Quality Gates: [All quality criteria met]
+
+📍 STARTING: PHASE 4 - Completion (DOCUMENT and LEARN)
+Phase 4 Purpose: Generate executive summary (with traceability)
+
+Continue with completion summary? [Yes/No/Review Documents]
+```

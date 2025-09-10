@@ -331,3 +331,58 @@ Provide this block to the next session:
 
 ---
 
+## Workflow Transition Protocol
+
+### Document Completion Summary
+**AI Instructions**: After completing task execution, provide a summary including:
+- **Tasks Completed**: [Number of parent tasks marked complete]
+- **Implementation Status**: [Files created/modified with TDD-Lite approach]
+- **Test Results**: [Test pass rate and key validation outcomes]
+- **Quality Gates**: [Performance and security validation results]
+- **Risk Resolution**: [Any contingency plans activated and results]
+- **Manifest Updated**: feature-manifest.json marked task processing as completed
+- **Completion Time**: [AI: Insert current date and time as YYYY-MM-DD HH:MM:SS]
+
+### User Approval Gate
+Present these options to the user:
+- **Yes**: "Continue to 08-gen-completion-summary.md for project summary"
+- **No**: "Stop workflow here (you can resume later)"
+- **Revise**: "What specifically would you like changed in the implementation?"
+
+### Next Step Preview
+**Next**: 08-gen-completion-summary.md - Feature Completion Summary
+**Phase 4 Purpose**: DOCUMENT and LEARN (generate executive summary)
+**What Completion Summary needs from this step**: Implementation results, test outcomes, and performance validation
+
+---
+
+## Resume Workflow Detection
+
+**AI Instructions**: If resuming this workflow, check feature-manifest.json status and present:
+
+```
+✅ WORKFLOW RESUME DETECTED
+  ✅ 01-mvp-entrypoint.md - Project initialization (completed)
+  ✅ 02-gen-prd.md - Product requirements (completed)
+  ✅ 03-gen-srs.md - Software requirements (completed)
+  ✅ 04-gen-design-decisions-lite.md - Technology decisions (completed)
+  ✅ 05-gen-design.md - Component analysis (completed)
+  ✅ 06-gen-tasks-and-testing.md - Implementation tasks (completed)
+  🎯 07-process-tasks.md - Task execution (CURRENT)
+  ⏳ 08-gen-completion-summary.md - Project summary (pending)
+  ⏳ 09-gen-project-history.md - Learning capture (pending)
+
+📋 Implementation Progress:
+  • Tasks Generated: [Number of implementation tasks]
+  • Test Structure: [TDD-Lite approach with test stubs]
+  • Context Integration: [Technology and design decisions embedded]
+  • Quality Gates: [Performance and security targets defined]
+
+📍 CONTINUING: PHASE 3 - Implementation (Actually BUILD it)
+Phase 3 Purpose: Execute tasks with TDD-Lite (context-aware)
+
+Continue with task execution? [Yes/No/Review Documents]
+```
+
+---
+

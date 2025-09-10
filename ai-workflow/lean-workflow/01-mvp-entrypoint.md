@@ -372,9 +372,9 @@ After each substantive action or file update, briefly validate that the intended
 **CRITICAL: The enhanced feature-manifest.json must capture ALL discovery context to seed subsequent workflow documents.**
 
 ```bash
-# Auto-generate feature directory with OS timestamp
+# Auto-generate feature directory with current OS timestamp
 FEATURE_DATE=$(date +"%Y-%m-%d")
-FEATURE_SLUG="[convert-project-name-to-kebab-case]"  
+FEATURE_SLUG="[AI: convert project name to kebab-case]"  
 FEATURE_DIR="/features/${FEATURE_DATE}-${FEATURE_SLUG}"
 
 # Create feature directory structure
@@ -391,7 +391,7 @@ cat > "${FEATURE_DIR}/feature-manifest.json" << 'EOF'
     "feature_name": "[Collected Project Name]",
     "feature_slug": "[kebab-case-slug]",
     "feature_directory": "[YYYY-MM-DD]-[kebab-case-slug]",
-    "creation_date": "[ISO-8601-timestamp]",
+    "creation_date": "[AI: Insert current ISO-8601 timestamp]",
     "creator": "enhanced-mvp-entrypoint-workflow",
     "discovery_version": "progressive-guided-v1"
   },
@@ -500,3 +500,52 @@ cd "${FEATURE_DIR}"
 - External services and containers are opt-in only
 - TDD-Lite methodology is mandatory for MVP development
 - Conventional commits should reference generated PRD and task documents
+
+---
+
+## Workflow Transition Protocol
+
+### Document Completion Summary
+**AI Instructions**: After completing the MVP project initialization, provide a summary including:
+- **Project Name**: [Project name collected]
+- **Access Method**: [User access method selected]
+- **Primary Users**: [Target user group identified]
+- **Technology Direction**: [Preliminary tech stack recommendation based on discovery]
+- **Feature Directory Created**: `features/[AI: Insert current date as YYYY-MM-DD]-[kebab-case-project-name]/`
+- **Generated Files**: `feature-manifest.json` with discovery context
+- **Completion Time**: [AI: Insert current date and time as YYYY-MM-DD HH:MM:SS]
+
+### User Approval Gate
+Present these options to the user:
+- **Yes**: "Continue to 02-gen-prd.md to create the Product Requirements Document"
+- **No**: "Stop workflow here (you can resume later)"
+- **Revise**: "What specifically would you like changed in the project initialization?"
+
+### Next Step Preview
+**Next**: 02-gen-prd.md - Product Requirements Document Creation
+**Phase 1 Purpose**: Define WHAT we're building (features, scope, goals)
+**What PRD needs from this step**: Project identity, user context, technical direction, and discovery data from feature-manifest.json
+
+---
+
+## Resume Workflow Detection
+
+**AI Instructions**: If resuming this workflow, check for existing `feature-manifest.json` and present:
+
+```
+✅ WORKFLOW RESUME DETECTED
+  🎯 01-mvp-entrypoint.md - Project initialization (CURRENT)
+  ⏳ 02-gen-prd.md - Product requirements (pending)
+  ⏳ 03-gen-srs.md - Software requirements (pending)
+  ⏳ 04-gen-design-decisions-lite.md - Technology decisions (pending)
+  ⏳ 05-gen-design.md - Component analysis (pending)
+  ⏳ 06-gen-tasks-and-testing.md - Implementation tasks (pending)
+  ⏳ 07-process-tasks.md - Task execution (pending)
+  ⏳ 08-gen-completion-summary.md - Project summary (pending)
+  ⏳ 09-gen-project-history.md - Learning capture (pending)
+
+📍 STARTING: PHASE 1 - Foundation (Define WHAT and WHY)
+Phase 1 Purpose: Collect project requirements and establish foundation
+
+Continue with project initialization? [Yes/No/Review Documents]
+```

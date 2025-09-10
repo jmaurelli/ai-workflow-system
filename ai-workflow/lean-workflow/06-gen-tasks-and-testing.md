@@ -287,5 +287,62 @@ Pause only for destructive/irreversible actions or scope changes; otherwise proc
 
 ---
 
+---
+
+## Workflow Transition Protocol
+
+### Document Completion Summary
+**AI Instructions**: After completing the tasks and testing document, provide a summary including:
+- **Tasks Generated**: `./tasks.md` with [Number of parent tasks] created
+- **Implementation Structure**: [TDD-Lite approach with test stubs created]
+- **Context Integration**: [Technology stack and design decisions embedded]
+- **Acceptance Criteria**: [Quality gates and performance targets defined]
+- **Risk Mitigation**: [High-risk tasks identified with contingency plans]
+- **Manifest Updated**: feature-manifest.json marked tasks as completed
+- **Completion Time**: [AI: Insert current date and time as YYYY-MM-DD HH:MM:SS]
+
+### User Approval Gate
+Present these options to the user:
+- **Yes**: "Continue to 07-process-tasks.md for task execution"
+- **No**: "Stop workflow here (you can resume later)"
+- **Revise**: "What specifically would you like changed in the task planning?"
+
+### Next Step Preview
+**Next**: 07-process-tasks.md - Task Execution with TDD-Lite
+**Phase 3 Purpose**: Execute tasks with TDD-Lite (context-aware implementation)
+**What Process Tasks needs from this step**: Generated tasks, test stubs, acceptance criteria, and context references
+
+---
+
+## Resume Workflow Detection
+
+**AI Instructions**: If resuming this workflow, check feature-manifest.json status and present:
+
+```
+✅ WORKFLOW RESUME DETECTED
+  ✅ 01-mvp-entrypoint.md - Project initialization (completed)
+  ✅ 02-gen-prd.md - Product requirements (completed)
+  ✅ 03-gen-srs.md - Software requirements (completed)
+  ✅ 04-gen-design-decisions-lite.md - Technology decisions (completed)
+  ✅ 05-gen-design.md - Component analysis (completed)
+  🎯 06-gen-tasks-and-testing.md - Implementation tasks (CURRENT)
+  ⏳ 07-process-tasks.md - Task execution (pending)
+  ⏳ 08-gen-completion-summary.md - Project summary (pending)
+  ⏳ 09-gen-project-history.md - Learning capture (pending)
+
+📋 Implementation Foundation:
+  • Technology Stack: [Chosen technologies and rationale]
+  • Component Strategy: [Reuse vs new development approach]
+  • Design Patterns: [UI/UX patterns established]
+  • Architecture: [Integration approach defined]
+
+📍 STARTING: PHASE 3 - Implementation (Actually BUILD it)
+Phase 3 Purpose: Generate implementation tasks (context-embedded)
+
+Continue with task generation? [Yes/No/Review Documents]
+```
+
+---
+
 ## Start Here
 For day-one and daily loops, follow `dev-utils/dev_workflow/mvp-core-protocol.md` (single source). See `project-entrypoint.md` for step order.

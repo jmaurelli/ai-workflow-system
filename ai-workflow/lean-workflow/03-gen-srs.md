@@ -117,4 +117,59 @@ Pause only for destructive/irreversible actions or scope changes; otherwise proc
 
 ---
 
+## Workflow Transition Protocol
+
+### Document Completion Summary
+**AI Instructions**: After completing the SRS creation, provide a summary including:
+- **SRS Generated**: `./srs.md` in feature directory
+- **NFRs Defined**: [Number of non-functional requirements captured]
+- **Performance Budgets**: [Key performance metrics established]
+- **Security Requirements**: [Security baseline requirements defined]
+- **Quality Gates**: [Testing and validation criteria established]
+- **Manifest Updated**: feature-manifest.json marked SRS as completed
+- **Completion Time**: [AI: Insert current date and time as YYYY-MM-DD HH:MM:SS]
+
+### User Approval Gate
+Present these options to the user:
+- **Yes**: "Continue to 04-gen-design-decisions-lite.md to make technology decisions"
+- **No**: "Stop workflow here (you can resume later)"
+- **Revise**: "What specifically would you like changed in the SRS?"
+
+### Next Step Preview
+**Next**: 04-gen-design-decisions-lite.md - Technology Stack Selection
+**Phase 2 Purpose**: Decide HOW to build (technology choices, UX approach)
+**What Design Decisions needs from this step**: Performance budgets, security constraints, and quality requirements from the SRS
+
+---
+
+## Resume Workflow Detection
+
+**AI Instructions**: If resuming this workflow, check feature-manifest.json status and present:
+
+```
+✅ WORKFLOW RESUME DETECTED
+  ✅ 01-mvp-entrypoint.md - Project initialization (completed)
+  ✅ 02-gen-prd.md - Product requirements (completed)
+  🎯 03-gen-srs.md - Software requirements (CURRENT)
+  ⏳ 04-gen-design-decisions-lite.md - Technology decisions (pending)
+  ⏳ 05-gen-design.md - Component analysis (pending)
+  ⏳ 06-gen-tasks-and-testing.md - Implementation tasks (pending)
+  ⏳ 07-process-tasks.md - Task execution (pending)
+  ⏳ 08-gen-completion-summary.md - Project summary (pending)
+  ⏳ 09-gen-project-history.md - Learning capture (pending)
+
+📋 Foundation Established:
+  • Project: [Project name from discovery]
+  • Requirements: [Number of functional requirements from PRD]
+  • User Stories: [User story count from PRD]
+  • Success Criteria: [Key outcomes from PRD]
+
+📍 COMPLETING: PHASE 1 - Foundation (Define WHAT and WHY)
+Phase 1 Purpose: Define quality requirements (NFRs, performance, security)
+
+Continue with SRS creation? [Yes/No/Review Documents]
+```
+
+---
+
 

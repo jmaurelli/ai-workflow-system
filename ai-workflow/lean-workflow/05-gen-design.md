@@ -134,3 +134,57 @@ Provide this block to the next stage:
 
 ## Human-in-the-Loop Rule
 Pause only for destructive/irreversible actions or scope changes; otherwise proceed autonomously.
+
+---
+
+## Workflow Transition Protocol
+
+### Document Completion Summary
+**AI Instructions**: After completing the design analysis, provide a summary including:
+- **Component Analysis**: [Number of existing components analyzed]
+- **Reuse Strategy**: [Components identified for reuse vs new development]
+- **Integration Approach**: [How new feature integrates with existing code]
+- **Design Patterns**: [UI/UX patterns established or reused]
+- **Architecture Impact**: [Changes to existing architecture]
+- **Manifest Updated**: feature-manifest.json marked design analysis as completed
+- **Completion Time**: [AI: Insert current date and time as YYYY-MM-DD HH:MM:SS]
+
+### User Approval Gate
+Present these options to the user:
+- **Yes**: "Continue to 06-gen-tasks-and-testing.md for implementation planning"
+- **No**: "Stop workflow here (you can resume later)"
+- **Revise**: "What specifically would you like changed in the design analysis?"
+
+### Next Step Preview
+**Next**: 06-gen-tasks-and-testing.md - Implementation Tasks and Testing
+**Phase 3 Purpose**: Actually BUILD it (generate implementation tasks)
+**What Tasks needs from this step**: Component integration strategy, design patterns, and architecture decisions
+
+---
+
+## Resume Workflow Detection
+
+**AI Instructions**: If resuming this workflow, check feature-manifest.json status and present:
+
+```
+✅ WORKFLOW RESUME DETECTED
+  ✅ 01-mvp-entrypoint.md - Project initialization (completed)
+  ✅ 02-gen-prd.md - Product requirements (completed)
+  ✅ 03-gen-srs.md - Software requirements (completed)
+  ✅ 04-gen-design-decisions-lite.md - Technology decisions (completed)
+  🎯 05-gen-design.md - Component analysis (CURRENT)
+  ⏳ 06-gen-tasks-and-testing.md - Implementation tasks (pending)
+  ⏳ 07-process-tasks.md - Task execution (pending)
+  ⏳ 08-gen-completion-summary.md - Project summary (pending)
+  ⏳ 09-gen-project-history.md - Learning capture (pending)
+
+📋 Design Foundation:
+  • Technology Stack: [Backend, frontend, database choices]
+  • UI Approach: [Design patterns and rationale]
+  • Learning Context: [Knowledge levels identified]
+
+📍 COMPLETING: PHASE 2 - Design (Decide HOW to build)
+Phase 2 Purpose: Analyze existing code for component reuse (tech-aware)
+
+Continue with design analysis? [Yes/No/Review Documents]
+```

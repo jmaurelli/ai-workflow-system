@@ -184,5 +184,62 @@ Pause only for destructive/irreversible actions or scope changes; otherwise proc
 
 ---
 
+---
+
+## Workflow Transition Protocol
+
+### Document Completion Summary
+**AI Instructions**: After completing the PRD creation, provide a summary including:
+- **PRD Generated**: `./prd.md` in feature directory
+- **Requirements Count**: [Number of functional requirements created]
+- **User Stories**: [Number of user stories defined]
+- **Success Criteria**: [Key measurable outcomes identified]
+- **Feature Scope**: [Brief description of MVP scope defined]
+- **Manifest Updated**: feature-manifest.json marked PRD as completed
+- **Completion Time**: [AI: Insert current date and time as YYYY-MM-DD HH:MM:SS]
+
+### User Approval Gate
+Present these options to the user:
+- **Yes**: "Continue to 03-gen-srs.md to define Software Requirements Specification"
+- **No**: "Stop workflow here (you can resume later)"
+- **Revise**: "What specifically would you like changed in the PRD?"
+
+### Next Step Preview
+**Next**: 03-gen-srs.md - Software Requirements Specification Creation
+**Phase 1 Purpose**: Define quality requirements (NFRs, performance, security)
+**What SRS needs from this step**: Functional requirements, user stories, and performance expectations from the PRD
+
+---
+
+## Resume Workflow Detection
+
+**AI Instructions**: If resuming this workflow, check feature-manifest.json status and present:
+
+```
+✅ WORKFLOW RESUME DETECTED
+  ✅ 01-mvp-entrypoint.md - Project initialization (completed)
+  🎯 02-gen-prd.md - Product requirements (CURRENT)  
+  ⏳ 03-gen-srs.md - Software requirements (pending)
+  ⏳ 04-gen-design-decisions-lite.md - Technology decisions (pending)
+  ⏳ 05-gen-design.md - Component analysis (pending)
+  ⏳ 06-gen-tasks-and-testing.md - Implementation tasks (pending)
+  ⏳ 07-process-tasks.md - Task execution (pending)
+  ⏳ 08-gen-completion-summary.md - Project summary (pending)
+  ⏳ 09-gen-project-history.md - Learning capture (pending)
+
+📋 Foundation Established:
+  • Project: [Project name from discovery]
+  • Users: [Primary user group]
+  • Access: [User access method]
+  • Tech Direction: [Preliminary recommendations]
+
+📍 CONTINUING: PHASE 1 - Foundation (Define WHAT and WHY)
+Phase 1 Purpose: Define WHAT we're building (features, scope, goals)
+
+Continue with PRD creation? [Yes/No/Review Documents]
+```
+
+---
+
 ## Start Here
 For day-one and daily loops, follow `dev-utils/dev_workflow/mvp-core-protocol.md` (single source). See `project-entrypoint.md` for step order.

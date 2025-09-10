@@ -331,3 +331,58 @@ This workflow enhances the lean development process by:
 - Documenting rationale for future reference and learning
 - Adapting guidance complexity to growing expertise
 - Connecting design decisions to user needs and business goals
+
+---
+
+## Workflow Transition Protocol
+
+### Document Completion Summary
+**AI Instructions**: After completing the design decisions, provide a summary including:
+- **Technology Stack Selected**: [Backend, Frontend, Database choices made]
+- **UI/UX Approach**: [Design approach and rationale]
+- **Learning Context**: [Knowledge levels and growth areas identified]
+- **Decision Rationale**: [Key factors that influenced technology choices]
+- **Learning Journal**: Updated with decisions and reasoning
+- **Manifest Updated**: feature-manifest.json marked design decisions as completed
+- **Completion Time**: [AI: Insert current date and time as YYYY-MM-DD HH:MM:SS]
+
+### User Approval Gate
+Present these options to the user:
+- **Yes**: "Continue to 05-gen-design.md for component analysis"
+- **No**: "Stop workflow here (you can resume later)"
+- **Revise**: "What specifically would you like changed in the technology decisions?"
+
+### Next Step Preview
+**Next**: 05-gen-design.md - Component Analysis and Design
+**Phase 2 Purpose**: Analyze existing code for component reuse (tech-aware)
+**What Design Analysis needs from this step**: Technology stack choices, UI approach, and architecture decisions
+
+---
+
+## Resume Workflow Detection
+
+**AI Instructions**: If resuming this workflow, check feature-manifest.json status and present:
+
+```
+✅ WORKFLOW RESUME DETECTED
+  ✅ 01-mvp-entrypoint.md - Project initialization (completed)
+  ✅ 02-gen-prd.md - Product requirements (completed)
+  ✅ 03-gen-srs.md - Software requirements (completed)
+  🎯 04-gen-design-decisions-lite.md - Technology decisions (CURRENT)
+  ⏳ 05-gen-design.md - Component analysis (pending)
+  ⏳ 06-gen-tasks-and-testing.md - Implementation tasks (pending)
+  ⏳ 07-process-tasks.md - Task execution (pending)
+  ⏳ 08-gen-completion-summary.md - Project summary (pending)
+  ⏳ 09-gen-project-history.md - Learning capture (pending)
+
+📋 Foundation Established:
+  • Project: [Project name from discovery]
+  • Requirements: [Functional and non-functional requirements defined]
+  • Performance Budgets: [Key metrics from SRS]
+  • Quality Gates: [Testing criteria from SRS]
+
+📍 STARTING: PHASE 2 - Design (Decide HOW to build)
+Phase 2 Purpose: Choose technology stack, UX approach (learning-guided)
+
+Continue with design decisions? [Yes/No/Review Documents]
+```

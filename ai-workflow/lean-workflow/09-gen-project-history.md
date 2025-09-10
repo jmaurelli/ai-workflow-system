@@ -345,3 +345,56 @@ Set reasoning_effort = high; strategic summaries require comprehensive analysis 
 - **Capability tracking**: Use learning progression data to guide skill development priorities
 
 This project history system transforms completed feature work into strategic organizational knowledge and actionable insights for future development!
+
+---
+
+## Workflow Transition Protocol
+
+### Document Completion Summary
+**AI Instructions**: After completing the project history, provide a summary including:
+- **Project History Generated**: Quarterly summary with strategic insights
+- **Features Archived**: [Number of completed features processed into history]
+- **Learning Synthesis**: [Key patterns and lessons learned captured]
+- **Strategic Insights**: [Technology and architecture recommendations developed]
+- **Capability Evolution**: [Skills and confidence growth documented]
+- **Archive Organization**: [Features moved to project-history/ with preserved links]
+- **Completion Time**: [AI: Insert current date and time as YYYY-MM-DD HH:MM:SS]
+
+### User Approval Gate
+Present these options to the user:
+- **Yes**: "Workflow complete! All 9 steps finished successfully"
+- **No**: "Stop workflow here (you can review or restart later)"
+- **Revise**: "What specifically would you like changed in the project history?"
+
+### Workflow Complete
+**🎉 LEAN WORKFLOW COMPLETE**: All 9 documents have been successfully executed. Your feature has been fully developed, implemented, and captured for organizational learning.
+
+---
+
+## Resume Workflow Detection
+
+**AI Instructions**: If resuming this workflow, check feature-manifest.json status and present:
+
+```
+✅ WORKFLOW COMPLETE DETECTED
+  ✅ 01-mvp-entrypoint.md - Project initialization (completed)
+  ✅ 02-gen-prd.md - Product requirements (completed)
+  ✅ 03-gen-srs.md - Software requirements (completed)
+  ✅ 04-gen-design-decisions-lite.md - Technology decisions (completed)
+  ✅ 05-gen-design.md - Component analysis (completed)
+  ✅ 06-gen-tasks-and-testing.md - Implementation tasks (completed)
+  ✅ 07-process-tasks.md - Task execution (completed)
+  ✅ 08-gen-completion-summary.md - Project summary (completed)
+  🎯 09-gen-project-history.md - Learning capture (CURRENT)
+
+📋 Full Workflow Achievement:
+  • Project: [Successfully delivered from concept to completion]
+  • Implementation: [All features built and tested]
+  • Learning: [Organizational capability developed]
+  • Documentation: [Complete project history preserved]
+
+📍 COMPLETING: PHASE 4 - Completion (DOCUMENT and LEARN)
+Phase 4 Purpose: Capture organizational learning (quarterly rollups)
+
+Continue with project history generation? [Yes/No/Review Documents]
+```
