@@ -1,0 +1,237 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AI Workflow Feature Manifest Schema",
+  "description": "Schema for validating feature-manifest.json files in the AI workflow system",
+  "type": "object",
+  "required": [
+    "feature_metadata",
+    "discovery_context", 
+    "workflow_tracking",
+    "document_status"
+  ],
+  "properties": {
+    "feature_metadata": {
+      "type": "object",
+      "required": ["feature_name", "creation_date"],
+      "properties": {
+        "feature_name": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 100,
+          "description": "Human-readable name of the feature"
+        },
+        "feature_slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9-]+$",
+          "description": "Kebab-case slug for directory naming"
+        },
+        "feature_directory": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}-[a-z0-9-]+$",
+          "description": "Date-prefixed directory name"
+        },
+        "creation_date": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO-8601 timestamp of feature creation"
+        },
+        "creator": {
+          "type": "string",
+          "description": "Tool or person that created the feature"
+        },
+        "discovery_version": {
+          "type": "string",
+          "description": "Version of discovery framework used"
+        }
+      }
+    },
+    "discovery_context": {
+      "type": "object",
+      "required": ["project_identity", "user_business_context"],
+      "properties": {
+        "project_identity": {
+          "type": "object",
+          "required": ["project_name", "user_access_method"],
+          "properties": {
+            "project_name": {"type": "string", "minLength": 1},
+            "user_access_method": {
+              "type": "string",
+              "enum": ["web", "mobile", "desktop", "api", "cli"]
+            },
+            "web_primary_device": {"type": "string"},
+            "mobile_app_type": {"type": "string"},
+            "project_goal": {"type": "string"}
+          }
+        },
+        "user_business_context": {
+          "type": "object",
+          "required": ["primary_users"],
+          "properties": {
+            "primary_users": {"type": "string", "minLength": 1},
+            "user_pain_point": {"type": "string"},
+            "user_success_journey": {"type": "string"},
+            "business_model": {"type": "string"},
+            "three_month_success_criteria": {"type": "string"}
+          }
+        },
+        "technical_context": {
+          "type": "object",
+          "properties": {
+            "complexity_assessment": {
+              "type": "string",
+              "enum": ["simple", "medium", "complex"]
+            },
+            "team_skills": {"type": "string"},
+            "constraints": {"type": "string"},
+            "preliminary_tech_stack": {"type": "string"}
+          }
+        },
+        "ai_recommendations": {
+          "type": "object",
+          "properties": {
+            "recommended_stack": {"type": "string"},
+            "reasoning": {"type": "string"},
+            "alternatives_considered": {"type": "array", "items": {"type": "string"}},
+            "risk_assessment": {"type": "string"}
+          }
+        }
+      }
+    },
+    "workflow_tracking": {
+      "type": "object",
+      "required": ["current_phase", "phases_completed"],
+      "properties": {
+        "current_phase": {
+          "type": "string",
+          "enum": [
+            "discovery",
+            "prd", 
+            "srs",
+            "design_decisions",
+            "design_analysis", 
+            "implementation",
+            "completed",
+            "archived"
+          ]
+        },
+        "phases_completed": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "discovery",
+              "prd",
+              "srs", 
+              "design_decisions",
+              "design_analysis",
+              "implementation",
+              "completion_summary",
+              "project_history"
+            ]
+          }
+        },
+        "phases_remaining": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "estimated_completion": {
+          "oneOf": [
+            {"type": "string", "format": "date-time"},
+            {"type": "null"}
+          ]
+        },
+        "last_updated": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "document_status": {
+      "type": "object",
+      "patternProperties": {
+        "^[a-z_]+$": {
+          "type": "object",
+          "required": ["status", "path"],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["pending", "in_progress", "completed", "archived"]
+            },
+            "path": {
+              "type": "string",
+              "pattern": "^\\./.*\\.(md|json)$"
+            },
+            "seeded_from": {"type": "string"},
+            "ai_priority": {
+              "type": "string",
+              "enum": ["high", "medium", "low"]
+            },
+            "last_updated": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        }
+      }
+    },
+    "ai_navigation": {
+      "type": "object",
+      "required": ["entry_document", "primary_requirements"],
+      "properties": {
+        "entry_document": {
+          "type": "string",
+          "pattern": "^\\./.*\\.json$"
+        },
+        "primary_requirements": {
+          "type": "string", 
+          "pattern": "^\\./.*\\.md$"
+        },
+        "technical_specs": {
+          "type": "string",
+          "pattern": "^\\./.*\\.md$"
+        },
+        "implementation_guide": {
+          "type": "string",
+          "pattern": "^\\./.*\\.md$"
+        },
+        "architecture_decisions": {
+          "type": "string",
+          "pattern": "^\\./.*\\.md$"
+        },
+        "completion_status": {
+          "type": "string",
+          "pattern": "^\\./.*\\.md$"
+        },
+        "related_artifacts": {
+          "type": "string",
+          "pattern": "^\\./.*/$"
+        },
+        "project_root": {
+          "type": "string",
+          "pattern": "^(\\.\\./)*$"
+        }
+      }
+    },
+    "context_usage_tracking": {
+      "type": "object",
+      "properties": {
+        "discovery_data_utilized_in_prd": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "discovery_data_utilized_in_srs": {
+          "type": "array", 
+          "items": {"type": "string"}
+        },
+        "discovery_data_utilized_in_design": {
+          "type": "array",
+          "items": {"type": "string"}
+        },
+        "discovery_data_utilized_in_tasks": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    }
+  }
+}

@@ -1,5 +1,11 @@
 Developer: # Workflow: Product Requirements Document (PRD) Creation (MVP-First)
 
+> **🔗 Workflow Navigation:**
+> - **Previous Step**: [01-mvp-entrypoint.md](./01-mvp-entrypoint.md) - Project initialization & discovery
+> - **Next Step**: [03-gen-srs.md](./03-gen-srs.md) - Software Requirements Specification  
+> - **Context Source**: [feature-manifest.json](./feature-manifest.json) - Discovery data & project metadata
+> - **Output Dependencies**: This PRD feeds → [SRS](./03-gen-srs.md), [Design Decisions](./04-gen-design-decisions-lite.md), [Tasks](./06-gen-tasks-and-testing.md)
+
 ## Objective
 Efficiently capture an idea and transform it into a **Lean PRD** focused on MVP development. The PRD should be lightweight, actionable, and quick to produce, with the flexibility to be expanded into a Full PRD if needed.
 

@@ -3,7 +3,11 @@
 ## Purpose
 This document serves as the unified initialization point for MVP projects, automatically generating foundational documentation by collecting essential project data through guided questions. It consolidates the MVP core protocol and project entrypoint requirements into a streamlined workflow.
 
-See `workflow-sequence-guide.md` for complete automation details.
+> **🔗 Workflow Navigation:**
+> - **Complete Sequence**: [workflow-sequence-guide.md](../workflow-sequence-guide.md) - Full automation details
+> - **Next Step**: [02-gen-prd.md](./02-gen-prd.md) - Product Requirements Document
+> - **Architecture Reference**: [feature-centric-architecture.md](./feature-centric-architecture.md) - Directory structure guide
+> - **Bug Resolution**: [bug-resolution-lite.md](./bug-resolution-lite.md) - Debug workflow when needed
 
 ## AI Agent Instructions
 
@@ -507,6 +511,18 @@ EOF
 
 # Set working directory for all subsequent workflow steps
 cd "${FEATURE_DIR}"
+
+# Validate feature manifest against schema (if ajv is available)
+if command -v ajv >/dev/null 2>&1; then
+  ajv validate -s "../../feature-manifest.schema.json" -d "./feature-manifest.json"
+  if [ $? -eq 0 ]; then
+    echo "✅ Feature manifest schema validation passed"
+  else
+    echo "⚠️  Feature manifest validation failed - please review structure"
+  fi
+else
+  echo "💡 Install ajv-cli for automatic JSON schema validation: npm install -g ajv-cli"
+fi
 ```
 
 ### AI Agent Instructions for Discovery Context Usage
@@ -566,9 +582,15 @@ Present these options to the user:
 - **Revise**: "What specifically would you like changed in the project initialization?"
 
 ### Next Step Preview
-**Next**: 02-gen-prd.md - Product Requirements Document Creation
+**Next**: [02-gen-prd.md](./02-gen-prd.md) - Product Requirements Document Creation
 **Phase 1 Purpose**: Define WHAT we're building (features, scope, goals)
-**What PRD needs from this step**: Project identity, user context, technical direction, and discovery data from feature-manifest.json
+**What PRD needs from this step**: Project identity, user context, technical direction, and discovery data from [feature-manifest.json](./feature-manifest.json)
+
+> **🔗 Context Flow:**
+> - **Discovery Context** → [PRD Functional Requirements](./02-gen-prd.md#functional-requirements)
+> - **User Research** → [PRD User Stories](./02-gen-prd.md#user-stories) 
+> - **Technical Direction** → [SRS Technical Constraints](./03-gen-srs.md#technical-constraints)
+> - **Business Model** → [PRD Success Metrics](./02-gen-prd.md#success-metrics)
 
 ---
 
