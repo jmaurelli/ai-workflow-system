@@ -384,6 +384,40 @@ mkdir -p "${FEATURE_DIR}/artifacts/test-results"
 mkdir -p "${FEATURE_DIR}/artifacts/performance-reports"
 mkdir -p "${FEATURE_DIR}/artifacts/discovery-context"
 
+# Create industry-standard project structure if it doesn't exist
+mkdir -p docs/
+mkdir -p src/
+mkdir -p tests/
+mkdir -p .github/workflows/
+mkdir -p config/
+
+# Create AI-friendly project index files
+cat > project-index.json << 'PROJECT_INDEX'
+{
+  "project_metadata": {
+    "name": "[Project Name]",
+    "created": "[AI: Insert current ISO-8601 timestamp]",
+    "type": "mvp-lean-workflow",
+    "version": "1.0.0"
+  },
+  "directory_structure": {
+    "features/": "Feature-centric development directories",
+    "src/": "Source code implementation",
+    "tests/": "Test suites and validation",
+    "docs/": "Project documentation",
+    "config/": "Configuration files",
+    "project-history/": "Archived features and learning"
+  },
+  "active_features": [],
+  "workflow_status": "initialized",
+  "ai_integration": {
+    "entry_point": "features/[current-feature]/feature-manifest.json",
+    "documentation_index": "docs/README.md",
+    "test_index": "tests/README.md"
+  }
+}
+PROJECT_INDEX
+
 # Initialize enhanced feature manifest with discovery context
 cat > "${FEATURE_DIR}/feature-manifest.json" << 'EOF'
 {
@@ -444,13 +478,23 @@ cat > "${FEATURE_DIR}/feature-manifest.json" << 'EOF'
     "discovery_completion_time": "[ISO-8601-timestamp]"
   },
   "document_status": {
-    "prd": {"status": "pending", "path": "./prd.md", "seeded_from": "discovery_context"},
-    "srs": {"status": "pending", "path": "./srs.md", "seeded_from": "discovery_context"},
-    "design_decisions": {"status": "pending", "path": "./design-decisions.md", "seeded_from": "ai_recommendations"},
-    "design_analysis": {"status": "pending", "path": "./design-analysis.md", "seeded_from": "technical_context"},
-    "tasks": {"status": "pending", "path": "./tasks.md", "seeded_from": "workflow_seeding"},
-    "learning_notes": {"status": "pending", "path": "./learning-notes.md", "seeded_from": "discovery_context"},
-    "completion_summary": {"status": "pending", "path": "./completion-summary.md"}
+    "prd": {"status": "pending", "path": "./prd.md", "seeded_from": "discovery_context", "ai_priority": "high"},
+    "srs": {"status": "pending", "path": "./srs.md", "seeded_from": "discovery_context", "ai_priority": "high"},
+    "design_decisions": {"status": "pending", "path": "./design-decisions.md", "seeded_from": "ai_recommendations", "ai_priority": "high"},
+    "design_analysis": {"status": "pending", "path": "./design-analysis.md", "seeded_from": "technical_context", "ai_priority": "medium"},
+    "tasks": {"status": "pending", "path": "./tasks.md", "seeded_from": "workflow_seeding", "ai_priority": "high"},
+    "learning_notes": {"status": "pending", "path": "./learning-notes.md", "seeded_from": "discovery_context", "ai_priority": "low"},
+    "completion_summary": {"status": "pending", "path": "./completion-summary.md", "ai_priority": "medium"}
+  },
+  "ai_navigation": {
+    "entry_document": "./feature-manifest.json",
+    "primary_requirements": "./prd.md",
+    "technical_specs": "./srs.md", 
+    "implementation_guide": "./tasks.md",
+    "architecture_decisions": "./design-decisions.md",
+    "completion_status": "./completion-summary.md",
+    "related_artifacts": "./artifacts/",
+    "project_root": "../../"
   },
   "context_usage_tracking": {
     "discovery_data_utilized_in_prd": [],
