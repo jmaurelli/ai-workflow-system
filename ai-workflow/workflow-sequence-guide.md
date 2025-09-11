@@ -41,7 +41,7 @@
 
 ### **Support Workflows**
 ```
-bug-resolution-lite.md            ← Debug workflow with guided discovery
+ai-native-bug-resolution.md       ← Systematic AI debugging with project intelligence
 feature-centric-architecture.md  ← Directory structure reference
 ```
 
