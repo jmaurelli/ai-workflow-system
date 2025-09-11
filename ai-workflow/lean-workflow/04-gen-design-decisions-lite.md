@@ -1,5 +1,9 @@
 # Workflow: Design Decisions (MVP/Lite) - Learning-Guided
 
+**🚨 CRITICAL LOCATION REQUIREMENT:**
+**You MUST be in the feature directory: `/features/YYYY-MM-DD-project-name/`**
+**Save the design decisions as `./design-decisions.md` in the feature directory - NOT in project root!**
+
 ## Objective
 Guide technical and UX design decisions through interactive questionnaires and template-driven frameworks. Build design decision-making skills while ensuring solid choices for MVP development.
 
@@ -14,10 +18,13 @@ Guide technical and UX design decisions through interactive questionnaires and t
 ---
 
 ## Prerequisites
-- Completed PRD at `/prd/prd-[feature-name].md`
-- **Completed SRS at `/srs/srs-[feature-name].md`** with performance budgets and quality constraints
-- Basic understanding of project goals and user needs
-- Willingness to learn and document decision rationale
+**CRITICAL: Always work within the feature directory created by 01-mvp-entrypoint.md**
+
+- **Working Directory**: You should already be in `/features/YYYY-MM-DD-project-name/` from the previous step
+- **Completed PRD**: Available at `./prd.md` (current feature directory)
+- **Completed SRS**: Available at `./srs.md` (current feature directory) with performance budgets and quality constraints
+- **Basic understanding** of project goals and user needs
+- **Willingness to learn** and document decision rationale
 
 ---
 

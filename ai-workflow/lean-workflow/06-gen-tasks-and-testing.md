@@ -1,27 +1,34 @@
 Developer: # Workflow: Tasks + Testing (MVP-First)
 
+**🚨 CRITICAL LOCATION REQUIREMENT:**
+**You MUST be in the feature directory: `/features/YYYY-MM-DD-project-name/`**
+**Save the tasks as `./tasks.md` in the feature directory - NOT in project root!**
+
 ## Objective
 Transform a Lean PRD into actionable tasks with integrated testing guidance. This process combines task generation and lightweight TDD into a streamlined approach suitable for solo MVP development.
 
+---
 
 ## Workflow Steps
 
+**PREREQUISITE**: You must be working in the feature directory from 01-mvp-entrypoint.md
+
 Begin with a concise checklist (3-7 bullets) of intended sub-tasks before proceeding; keep checklist items conceptual.
 
-### 1. Input
-- Begin with a Lean PRD saved at `/prd/prd-[feature-name].md`.
-- **Design Decisions (Required)**: Read design decisions from `/decisions/design-decisions-[feature-name].md` to understand:
+### 1. Input Context (Feature Directory)
+- **Working Directory**: Confirm you're in `/features/YYYY-MM-DD-project-name/` with existing workflow documents
+- **Lean PRD**: Read from `./prd.md` (current feature directory)
+- **Design Decisions (Required)**: Read design decisions from `./design-decisions.md` to understand:
   - **Tech Stack Choices**: Backend/frontend technologies, database, API style
   - **UX Approach**: Component library strategy, design patterns, user flow decisions
   - **Learning Context**: Knowledge confidence levels and learning goals
   - **Decision Rationale**: Why specific technologies and approaches were chosen
-- If present, read Lean SRS at `/srs/srs-[feature-name].md` and incorporate NFR budgets into acceptance criteria (reference `NFR-*`).
-- **Design Analysis**: If design analysis exists at `/design/design-[feature-name].md`, incorporate component reuse and integration guidance.
-- **Integration Planning**: Use design analysis integration approach to plan task dependencies.
-- **Component Reuse**: Reference design analysis for existing components to reuse vs. creating new ones.
-- Ensure the PRD contains: overview, goals, user stories, and requirements.
-- If any elements are missing, clearly state what is absent at the top of the output, and skip steps that cannot be performed as a result.
-- Read `/docs/architecture.md` if present; otherwise, capture minimal architecture decisions inline and note any deltas or open items.
+- **Lean SRS**: Read from `./srs.md` and incorporate NFR budgets into acceptance criteria (reference `NFR-*`)
+- **Design Analysis**: If design analysis exists at `./design-analysis.md`, incorporate component reuse and integration guidance
+- **Integration Planning**: Use design analysis integration approach to plan task dependencies
+- **Component Reuse**: Reference design analysis for existing components to reuse vs. creating new ones
+- **Validation**: Ensure the PRD contains overview, goals, user stories, and requirements
+- **Missing Elements**: If any elements are missing, clearly state what is absent at the top of the output
 
 ### 2. Generate Parent Tasks
 - Identify 3–5 parent tasks derived from the PRD.

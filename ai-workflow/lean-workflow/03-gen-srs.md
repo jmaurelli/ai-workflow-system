@@ -1,30 +1,38 @@
 Developer: # Workflow: Lean Software Requirements Specification (SRS) (MVP-First)
 
+**🚨 CRITICAL LOCATION REQUIREMENT:**
+**You MUST be in the feature directory: `/features/YYYY-MM-DD-project-name/`**
+**Save the SRS as `./srs.md` in the feature directory - NOT in project root!**
+
 ## Objective
 Capture only the minimum non-functional requirements (NFRs), constraints, and budgets needed to guide MVP implementation. Keep it one page, fast to produce, and tightly coupled to the PRD.
 
 ---
 
 ## Quickstart (Lean SRS - Feature-Centric)
-- **Auto-detect structure**: Check if working in feature directory or legacy structure
-- **Feature-centric**: Read PRD at `./prd.md` and save as `./srs.md`
-- **Legacy**: Read PRD at `/prd/prd-[feature_slug].md` and save as `/srs/srs-[feature_slug].md`
+
+**CRITICAL: Always work within the feature directory created by 01-mvp-entrypoint.md**
+
+- **Working Directory**: You should already be in `/features/YYYY-MM-DD-project-name/` from the previous step
+- **Read PRD**: Load context from `./prd.md` (current feature directory)
+- **Save Location**: `./srs.md` (current feature directory)
+- **Required**: Update `./feature-manifest.json` with SRS completion status
 - Capture 8–10 critical NFRs with measurable budgets
 - Focus on performance, reliability, security, and constraints
-- Update `./feature-manifest.json` with SRS completion status (if feature-centric)
 
 ---
 
 ## Workflow (Lean-First - Feature-Centric)
-1. **Auto-detect structure & Read PRD**: 
-   - **Feature-centric**: Review `./prd.md` to understand functional requirements
-   - **Legacy**: Review `/prd/prd-[feature_slug].md` to understand functional requirements
-2. **Identify NFRs**: List critical constraints and NFRs that affect design/implementation and testing
-3. **Define Budgets**: Set measurable budgets (e.g., p50/p95 latency, error rates, uptime)
-4. **Prioritize**: Keep to ≤ 1 page; prioritize only what must be enforced during MVP
-5. **Save & Validate**: 
-   - **Feature-centric**: Save to `./srs.md` and update `./feature-manifest.json`
-   - **Legacy**: Save to `/srs/srs-[feature_slug].md` and validate section order
+
+**PREREQUISITE**: You must be working in the feature directory from 01-mvp-entrypoint.md
+
+1. **Verify working directory**: Confirm you're in `/features/YYYY-MM-DD-project-name/` with existing `feature-manifest.json` and `prd.md`
+2. **Read PRD context**: Review `./prd.md` to understand functional requirements and scope
+3. **Identify NFRs**: List critical constraints and NFRs that affect design/implementation and testing
+4. **Define Budgets**: Set measurable budgets (e.g., p50/p95 latency, error rates, uptime)
+5. **Prioritize**: Keep to ≤ 1 page; prioritize only what must be enforced during MVP
+6. **Save as `./srs.md`**: Save in current feature directory (NOT project root)
+7. **Update feature manifest**: Mark SRS as completed in `./feature-manifest.json`
 
 ---
 
