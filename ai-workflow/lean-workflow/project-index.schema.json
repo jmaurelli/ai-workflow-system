@@ -1,0 +1,190 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AI-Native Project Intelligence Index Schema",
+  "description": "Schema for validating project-index.json for optimal AI agent discovery and integration",
+  "type": "object",
+  "required": [
+    "project_metadata",
+    "project_intelligence",
+    "directory_structure",
+    "ai_navigation"
+  ],
+  "properties": {
+    "project_metadata": {
+      "type": "object",
+      "required": ["name", "created", "type", "version"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Human-readable project name"
+        },
+        "created": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO-8601 timestamp of project creation"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["ai-native-lean-workflow"],
+          "description": "Project workflow type"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Semantic version of project structure"
+        },
+        "last_updated": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO-8601 timestamp of last update"
+        }
+      }
+    },
+    "project_intelligence": {
+      "type": "object",
+      "required": [
+        "active_features",
+        "completed_features",
+        "reusable_components",
+        "integration_patterns",
+        "dependency_graph"
+      ],
+      "properties": {
+        "active_features": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}-[a-z0-9-]+$"
+          },
+          "description": "Date-prefixed feature directory names currently in development"
+        },
+        "completed_features": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}-[a-z0-9-]+$"
+          },
+          "description": "Date-prefixed feature directory names that are completed"
+        },
+        "reusable_components": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-z0-9-]+$": {
+              "type": "object",
+              "required": ["location", "ai_description"],
+              "properties": {
+                "location": {
+                  "type": "string",
+                  "pattern": "^features/\\d{4}-\\d{2}-\\d{2}-[a-z0-9-]+/$"
+                },
+                "apis": {
+                  "type": "array",
+                  "items": {"type": "string"}
+                },
+                "integration_points": {
+                  "type": "array",
+                  "items": {"type": "string"}
+                },
+                "ai_description": {
+                  "type": "string",
+                  "minLength": 10,
+                  "description": "AI-friendly description of component functionality"
+                },
+                "reuse_examples": {
+                  "type": "array",
+                  "items": {"type": "string"}
+                }
+              }
+            }
+          }
+        },
+        "integration_patterns": {
+          "type": "object",
+          "properties": {
+            "database_integration": {"type": "string"},
+            "api_integration": {"type": "string"},
+            "frontend_integration": {"type": "string"},
+            "authentication_pattern": {"type": "string"},
+            "error_handling_pattern": {"type": "string"}
+          }
+        },
+        "dependency_graph": {
+          "type": "object",
+          "patternProperties": {
+            "^[a-z0-9-]+$": {
+              "type": "array",
+              "items": {"type": "string"}
+            }
+          },
+          "description": "Feature dependencies: feature_name -> [dependency_list]"
+        },
+        "ai_discovery_tags": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "Project-wide technology and pattern tags for AI discovery"
+        },
+        "architecture_decisions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["decision", "rationale", "feature_source"],
+            "properties": {
+              "decision": {"type": "string"},
+              "rationale": {"type": "string"},
+              "feature_source": {"type": "string"},
+              "impact_scope": {"type": "string"},
+              "date": {"type": "string", "format": "date-time"}
+            }
+          }
+        }
+      }
+    },
+    "directory_structure": {
+      "type": "object",
+      "required": ["features/", "src/", "tests/", "project-knowledge/"],
+      "patternProperties": {
+        "^[a-z-/]+$": {
+          "type": "string",
+          "description": "Directory purpose description"
+        }
+      }
+    },
+    "ai_navigation": {
+      "type": "object",
+      "required": [
+        "primary_entry",
+        "feature_discovery", 
+        "knowledge_base",
+        "component_registry",
+        "integration_guide"
+      ],
+      "properties": {
+        "primary_entry": {
+          "type": "string",
+          "enum": ["project-index.json"]
+        },
+        "feature_discovery": {
+          "type": "string",
+          "pattern": "^features/\\*/feature-manifest\\.json$"
+        },
+        "knowledge_base": {
+          "type": "string",
+          "pattern": "^project-knowledge/$"
+        },
+        "component_registry": {
+          "type": "string",
+          "pattern": "^project-index\\.json#/.+"
+        },
+        "integration_guide": {
+          "type": "string",
+          "pattern": "^project-index\\.json#/.+"
+        }
+      }
+    },
+    "workflow_status": {
+      "type": "string",
+      "enum": ["initialized", "active_development", "feature_complete", "archived"]
+    }
+  }
+}

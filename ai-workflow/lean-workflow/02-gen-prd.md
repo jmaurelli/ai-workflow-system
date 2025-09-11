@@ -28,17 +28,49 @@ Efficiently capture an idea and transform it into a **Lean PRD** focused on MVP 
 
 ---
 
-## Workflow (Lean-First - Feature-Centric)
+## Workflow (AI-Native Project-Aware)
 
-**PREREQUISITE**: You must be working in the feature directory from 01-mvp-entrypoint.md
+**AI PROJECT INTELLIGENCE**: This document works in two modes - Initial Project and Feature Addition
 
-Begin with a concise checklist (3-7 bullets) of what you will do; keep items conceptual, not implementation-level.
-1. **Verify working directory**: Confirm you're in `/features/YYYY-MM-DD-project-name/` with existing `feature-manifest.json`
-2. **Load discovery context**: Read project data from `./feature-manifest.json` → `discovery_context` section
-3. **Ask clarifying questions**: Only the most critical gaps not covered in discovery context
-4. **Complete Lean PRD**: Use discovery data + clarifications to generate comprehensive PRD
-5. **Save as `./prd.md`**: Save in current feature directory (NOT project root)
-6. **Update feature manifest**: Mark PRD as completed in `./feature-manifest.json`
+### **Step 1: Project Context Detection**
+```bash
+# AI Agent Instructions: Auto-detect project mode
+if [ -f "../../project-index.json" ]; then
+  PROJECT_MODE="feature_addition"
+  echo "🔍 FEATURE ADDITION MODE: Existing project detected"
+else
+  PROJECT_MODE="initial_project" 
+  echo "🚀 INITIAL PROJECT MODE: New project initialization"
+fi
+```
+
+### **Step 2: AI Discovery & Context Loading**
+**CRITICAL**: Execute this discovery sequence for optimal AI intelligence:
+
+1. **Load Project Intelligence**: Read `../../project-index.json` for:
+   - `reusable_components` → Available for integration
+   - `integration_patterns` → Proven architectural approaches  
+   - `dependency_graph` → Existing feature relationships
+   - `ai_discovery_tags` → Project-wide patterns and technologies
+
+2. **Load Feature Context**: Read `./feature-manifest.json` for:
+   - `discovery_context` → Current feature requirements
+   - `ai_integration.project_context` → Project relationship metadata
+   - `ai_integration.external_dependencies` → Required integrations
+
+3. **Scan Existing Features** (if feature_addition mode):
+   - Check `features/*/feature-manifest.json` for `reusable_exports`
+   - Identify integration opportunities and component reuse
+   - Map dependency requirements and API compatibility
+
+### **Step 3: AI-Guided PRD Generation**
+1. **Integration Discovery**: Auto-identify reusable components and integration points
+2. **Dependency Mapping**: Determine required connections to existing features  
+3. **Reuse Optimization**: Leverage existing APIs, components, and patterns
+4. **Gap Analysis**: Identify net-new requirements vs. integration requirements
+5. **Generate PRD**: Create comprehensive PRD with integration intelligence
+6. **Save as `./prd.md`**: Save in current feature directory with rich metadata
+7. **Update Intelligence**: Enhance both feature manifest and project index with new insights
 After each step, verify that all required information has been captured; if not, request only the minimal essential clarification or complete the missing parts before proceeding.
 
 ---

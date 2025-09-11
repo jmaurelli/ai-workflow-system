@@ -401,31 +401,52 @@ mkdir -p src/
 mkdir -p tests/
 mkdir -p .github/workflows/
 mkdir -p config/
+mkdir -p project-knowledge/architecture/
+mkdir -p project-knowledge/business-context/
+mkdir -p project-knowledge/developer-knowledge/
+mkdir -p project-knowledge/project-evolution/
+mkdir -p project-history/
 
-# Create AI-friendly project index files
+# Create AI-native project intelligence system
 cat > project-index.json << 'PROJECT_INDEX'
 {
   "project_metadata": {
-    "name": "[Project Name]",
-    "created": "[AI: Insert current ISO-8601 timestamp]",
-    "type": "mvp-lean-workflow",
-    "version": "1.0.0"
+    "name": "[Collected Project Name]",
+    "created": "[AI: Insert current timestamp in ISO-8601 format: $(date -u +%Y-%m-%dT%H:%M:%SZ)]",
+    "type": "ai-native-lean-workflow",
+    "version": "2.0.0",
+    "last_updated": "[AI: Insert current timestamp in ISO-8601 format: $(date -u +%Y-%m-%dT%H:%M:%SZ)]"
+  },
+  "project_intelligence": {
+    "active_features": ["${FEATURE_DATE}-${FEATURE_SLUG}"],
+    "completed_features": [],
+    "reusable_components": {},
+    "integration_patterns": {
+      "database_integration": "TBD - will be populated during implementation",
+      "api_integration": "TBD - will be populated during implementation",
+      "frontend_integration": "TBD - will be populated during implementation"
+    },
+    "dependency_graph": {},
+    "ai_discovery_tags": [],
+    "architecture_decisions": []
   },
   "directory_structure": {
-    "features/": "Feature-centric development directories",
+    "features/": "Feature-centric development directories with date prefixes",
     "src/": "Source code implementation",
-    "tests/": "Test suites and validation",
+    "tests/": "Test suites and validation", 
     "docs/": "Project documentation",
     "config/": "Configuration files",
-    "project-history/": "Archived features and learning"
+    "project-knowledge/": "Strategic documents and accumulated learning",
+    "project-history/": "Archived features and quarterly rollups"
   },
-  "active_features": [],
-  "workflow_status": "initialized",
-  "ai_integration": {
-    "entry_point": "features/[current-feature]/feature-manifest.json",
-    "documentation_index": "docs/README.md",
-    "test_index": "tests/README.md"
-  }
+  "ai_navigation": {
+    "primary_entry": "project-index.json",
+    "feature_discovery": "features/*/feature-manifest.json",
+    "knowledge_base": "project-knowledge/",
+    "component_registry": "project-index.json#/project_intelligence/reusable_components",
+    "integration_guide": "project-index.json#/project_intelligence/integration_patterns"
+  },
+  "workflow_status": "initialized"
 }
 PROJECT_INDEX
 
@@ -512,6 +533,28 @@ cat > "${FEATURE_DIR}/feature-manifest.json" << 'EOF'
     "discovery_data_utilized_in_srs": [],
     "discovery_data_utilized_in_design": [],
     "discovery_data_utilized_in_tasks": []
+  },
+  "ai_integration": {
+    "project_context": {
+      "is_initial_project": true,
+      "project_index_location": "../../project-index.json",
+      "knowledge_base_location": "../../project-knowledge/"
+    },
+    "reusable_exports": [],
+    "external_dependencies": [],
+    "integration_requirements": [],
+    "ai_discovery_tags": [],
+    "component_registry": {},
+    "api_endpoints": {},
+    "integration_patterns": {},
+    "architecture_contributions": []
+  },
+  "lifecycle_management": {
+    "creation_phase": "mvp_initialization",
+    "current_stage": "active_development",
+    "promotion_candidates": [],
+    "archive_readiness": false,
+    "knowledge_extraction_status": "pending"
   }
 }
 EOF
