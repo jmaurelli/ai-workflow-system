@@ -593,6 +593,10 @@ Present these options to the user:
 **Phase 1 Purpose**: Define WHAT we're building (features, scope, goals)
 **What PRD needs from this step**: Project identity, user context, technical direction, and discovery data from [feature-manifest.json](./feature-manifest.json)
 
+**🚨 CRITICAL FOR AI AGENTS:**
+**You are now working in `/features/YYYY-MM-DD-project-name/` directory**
+**ALL subsequent documents (PRD, SRS, tasks, etc.) must be saved in this feature directory using `./filename.md`**
+
 > **🔗 Context Flow:**
 > - **Discovery Context** → [PRD Functional Requirements](./02-gen-prd.md#functional-requirements)
 > - **User Research** → [PRD User Stories](./02-gen-prd.md#user-stories) 

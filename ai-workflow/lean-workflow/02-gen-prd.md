@@ -1,5 +1,9 @@
 Developer: # Workflow: Product Requirements Document (PRD) Creation (MVP-First)
 
+**🚨 CRITICAL LOCATION REQUIREMENT:**
+**You MUST be in the feature directory: `/features/YYYY-MM-DD-project-name/`**
+**Save the PRD as `./prd.md` in the feature directory - NOT in project root!**
+
 > **🔗 Workflow Navigation:**
 > - **Previous Step**: [01-mvp-entrypoint.md](./01-mvp-entrypoint.md) - Project initialization & discovery
 > - **Next Step**: [03-gen-srs.md](./03-gen-srs.md) - Software Requirements Specification  
@@ -12,26 +16,29 @@ Efficiently capture an idea and transform it into a **Lean PRD** focused on MVP 
 ---
 
 ## Quickstart (Lean PRD - Feature-Centric)
-- **Auto-detect structure**: Check if working in feature directory (`/features/[date]-[slug]/`) or legacy structure
-- **Feature-centric**: Save as `./prd.md` within current feature directory  
-- **Legacy compatibility**: Fall back to `/prd/prd-[feature-name].md` if not in feature directory
-- Define a slug for `[feature-name]` using lowercase kebab-case (e.g., "User Signup" → `user-signup`)
-- Capture the feature in 1–2 sentences
+
+**CRITICAL: Always work within the feature directory created by 01-mvp-entrypoint.md**
+
+- **Working Directory**: You should already be in `/features/YYYY-MM-DD-project-name/` from the previous step
+- **Save Location**: `./prd.md` (current feature directory)
+- **Required**: Update `./feature-manifest.json` with PRD completion status
+- Capture the feature in 1–2 sentences  
 - Ask only critical clarifying questions (problem, user, success)
 - Complete the Lean PRD template below (≤ 400 words total)
-- Update `./feature-manifest.json` with PRD completion status
 
 ---
 
 ## Workflow (Lean-First - Feature-Centric)
+
+**PREREQUISITE**: You must be working in the feature directory from 01-mvp-entrypoint.md
+
 Begin with a concise checklist (3-7 bullets) of what you will do; keep items conceptual, not implementation-level.
-1. **Auto-detect document structure**: Check if in feature directory or legacy structure
-2. Define the `[feature-name]` slug (lowercase, kebab-case) if not already established
-3. Capture the feature or idea succinctly in 1–2 sentences
-4. Ask only the most **critical clarifying questions** (e.g., What problem does this solve? Who is the user? What defines success?)
-5. Complete the **Lean PRD template** provided below (≤ 400 words)
-6. **Feature-centric**: Save as `./prd.md` OR **Legacy**: Save as `/prd/prd-[feature-name].md`
-7. **Update feature manifest**: Mark PRD as completed in `./feature-manifest.json` (if feature-centric)
+1. **Verify working directory**: Confirm you're in `/features/YYYY-MM-DD-project-name/` with existing `feature-manifest.json`
+2. **Load discovery context**: Read project data from `./feature-manifest.json` → `discovery_context` section
+3. **Ask clarifying questions**: Only the most critical gaps not covered in discovery context
+4. **Complete Lean PRD**: Use discovery data + clarifications to generate comprehensive PRD
+5. **Save as `./prd.md`**: Save in current feature directory (NOT project root)
+6. **Update feature manifest**: Mark PRD as completed in `./feature-manifest.json`
 After each step, verify that all required information has been captured; if not, request only the minimal essential clarification or complete the missing parts before proceeding.
 
 ---
