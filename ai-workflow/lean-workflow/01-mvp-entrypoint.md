@@ -7,7 +7,7 @@ This document serves as the unified initialization point for MVP projects, autom
 > - **Complete Sequence**: [workflow-sequence-guide.md](../workflow-sequence-guide.md) - Full automation details
 > - **Next Step**: [02-gen-prd.md](./02-gen-prd.md) - Product Requirements Document
 > - **Architecture Reference**: [feature-centric-architecture.md](./feature-centric-architecture.md) - Directory structure guide
-> - **Bug Resolution**: [bug-resolution-lite.md](./bug-resolution-lite.md) - Debug workflow when needed
+> - **AI-Native Bug Resolution**: [ai-native-bug-resolution.md](./ai-native-bug-resolution.md) - Systematic AI debugging with project intelligence
 
 ## AI Agent Instructions
 

@@ -24,7 +24,7 @@ This directory contains the complete lean workflow system - a 9-step process tha
 
 | Document | Purpose | When to Use |
 |----------|---------|-------------|
-| [bug-resolution-lite.md](./bug-resolution-lite.md) | Debug workflow for solo developers | When bugs arise during development |
+| [ai-native-bug-resolution.md](./ai-native-bug-resolution.md) | Systematic AI debugging with project intelligence | When bugs arise during development |
 | [feature-centric-architecture.md](./feature-centric-architecture.md) | Directory structure guide | Reference for project organization |
 | [context-distillation-examples.md](./context-distillation-examples.md) | Context management examples | Learning context optimization |
 | [task-completion-feedback.md](./task-completion-feedback.md) | Feedback loop system | Improving workflow efficiency |
