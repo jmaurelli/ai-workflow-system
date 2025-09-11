@@ -147,7 +147,7 @@ Pause only for destructive/irreversible actions or scope changes; otherwise proc
 - **Design Patterns**: [UI/UX patterns established or reused]
 - **Architecture Impact**: [Changes to existing architecture]
 - **Manifest Updated**: feature-manifest.json marked design analysis as completed
-- **Completion Time**: [AI: Insert current date and time as YYYY-MM-DD HH:MM:SS]
+- **Completion Time**: [AI: Insert current date and time in format: $(date '+%Y-%m-%d %H:%M:%S')]
 
 ### User Approval Gate
 Present these options to the user:

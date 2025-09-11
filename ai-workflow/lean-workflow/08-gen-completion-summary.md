@@ -260,7 +260,7 @@ This completion summary workflow ensures that every feature generates valuable, 
 - **Learning Outcomes**: [Skills developed and capability growth documented]
 - **Business Value**: [Quantified impact and value delivered]
 - **Manifest Updated**: feature-manifest.json marked completion summary as completed
-- **Completion Time**: [AI: Insert current date and time as YYYY-MM-DD HH:MM:SS]
+- **Completion Time**: [AI: Insert current date and time in format: $(date '+%Y-%m-%d %H:%M:%S')]
 
 ### User Approval Gate
 Present these options to the user:

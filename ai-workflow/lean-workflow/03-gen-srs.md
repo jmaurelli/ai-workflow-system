@@ -127,7 +127,7 @@ Pause only for destructive/irreversible actions or scope changes; otherwise proc
 - **Security Requirements**: [Security baseline requirements defined]
 - **Quality Gates**: [Testing and validation criteria established]
 - **Manifest Updated**: feature-manifest.json marked SRS as completed
-- **Completion Time**: [AI: Insert current date and time as YYYY-MM-DD HH:MM:SS]
+- **Completion Time**: [AI: Insert current date and time in format: $(date '+%Y-%m-%d %H:%M:%S')]
 
 ### User Approval Gate
 Present these options to the user:

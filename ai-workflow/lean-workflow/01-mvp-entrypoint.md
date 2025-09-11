@@ -25,7 +25,8 @@ This document serves as the unified initialization point for MVP projects, autom
 
 **Interactive Format:**
 - Present questions in a friendly, conversational manner
-- Show examples when helpful
+- Use **numbered references** for easy tracking (human answers: 1., 2., 2a., 2b., etc.)
+- Show examples when helpful  
 - Confirm user's answers before proceeding
 - Allow user to revise previous answers if needed
 
@@ -38,7 +39,7 @@ This document serves as the unified initialization point for MVP projects, autom
 **CRITICAL: The AI must use this progressive discovery approach:**
 
 1. **Explain reasoning during questioning** - After each question, provide brief context about why this information helps
-2. **Numbered questions** - Use clear numbering (1, 2a, 2b, etc.) for easy reference
+2. **Numbered questions** - Use clear numbering for AI questions, numbered responses for human answers (Q: "What's your goal?" → Human: "1. Build a web server")
 3. **Progressive flow** - Early answers influence later questions and recommendations
 4. **Confirmation gates** - Pause after each major section for confirmation and insights
 5. **Opt-in follow-ups** - Ask permission before digging deeper with additional questions (max 2 per topic)
@@ -47,39 +48,44 @@ This document serves as the unified initialization point for MVP projects, autom
 ### 🏁 **SECTION A: Project Identity & Access (Questions 1-3)**
 
 #### **Question 1**: Project Foundation
-- **question**: "1. What will be the name of your project?"
+- **question**: "What will be the name of your project?"
   - **field**: `project_name`
   - **type**: `string`
-  - **example**: "CustomerHub MVP"
+  - **example**: "1. CustomerHub MVP"
   - **required**: true
   - **ai_reasoning**: "This helps me create consistent naming throughout all documents and understand your project's identity."
+  - **response_format**: "Human answers with: 1. [project name]"
 
 #### **Question 2**: User Access Method
-- **question**: "2. How will users first discover and access your solution?"
+- **question**: "How will users first discover and access your solution?"
   - **field**: `user_access_method`
   - **type**: `enum`
   - **options**: ["web_browser", "mobile_app", "desktop_app", "api_integration", "command_line", "other"]
-  - **example**: "web_browser"
+  - **example**: "2. web_browser"
   - **required**: true
   - **ai_reasoning**: "Your access method determines the entire technical architecture and development approach I'll recommend."
+  - **response_format**: "Human answers with: 2. [access method]"
 
 - **smart_follow_up**: "Want me to dig deeper into [platform] specific considerations? This will help me give better tech stack recommendations. (y/n)"
   - **if_yes_web**: 
-    - **question**: "2a. Will users primarily access this on desktop browsers, mobile browsers, or both equally?"
+    - **question**: "Will users primarily access this on desktop browsers, mobile browsers, or both equally?"
     - **field**: `web_primary_device`
     - **options**: ["desktop_primary", "mobile_primary", "both_equal"]
+    - **response_format**: "Human answers with: 2a. [device preference]"
   - **if_yes_mobile**: 
-    - **question**: "2a. Are you thinking native mobile app (iOS/Android) or web app that works on mobile?"
+    - **question**: "Are you thinking native mobile app (iOS/Android) or web app that works on mobile?"
     - **field**: `mobile_app_type`
     - **options**: ["native_ios", "native_android", "cross_platform_native", "mobile_web_app"]
+    - **response_format**: "Human answers with: 2a. [mobile app type]"
 
 #### **Question 3**: Project Goal
-- **question**: "3. In one sentence, what's the main goal this project will achieve?"
+- **question**: "In one sentence, what's the main goal this project will achieve?"
   - **field**: `project_goal`
   - **type**: `string`
-  - **example**: "Enable small businesses to track and organize customer information efficiently"
+  - **example**: "3. Enable small businesses to track and organize customer information efficiently"
   - **required**: true
   - **ai_reasoning**: "This goal will guide every recommendation I make about features, architecture, and priorities."
+  - **response_format**: "Human answers with: 3. [main goal sentence]"
 
 ### **🔄 GATE A: Early Architecture Insights**
 **AI Provides**: 
@@ -93,12 +99,13 @@ This document serves as the unified initialization point for MVP projects, autom
 ### 👥 **SECTION B: User & Business Context (Questions 4-8)**
 
 #### **Question 4**: Primary Users
-- **question**: "4. Who are your primary users? Be specific about their role/situation."
+- **question**: "Who are your primary users? Be specific about their role/situation."
   - **field**: `primary_users`
   - **type**: `string`
-  - **example**: "Small business owners who currently track customers in spreadsheets"
+  - **example**: "4. Small business owners who currently track customers in spreadsheets"
   - **required**: true
   - **ai_reasoning**: "Understanding your users helps me recommend the right level of complexity and user experience approach."
+  - **response_format**: "Human answers with: 4. [user description]"
 
 #### **Question 5**: Core User Problem
 - **question**: "5. What's the biggest pain point you're solving for these users?"
@@ -429,7 +436,7 @@ cat > "${FEATURE_DIR}/feature-manifest.json" << 'EOF'
     "feature_name": "[Collected Project Name]",
     "feature_slug": "[kebab-case-slug]",
     "feature_directory": "[YYYY-MM-DD]-[kebab-case-slug]",
-    "creation_date": "[AI: Insert current ISO-8601 timestamp]",
+    "creation_date": "[AI: Insert current timestamp in ISO-8601 format: $(date -u +%Y-%m-%dT%H:%M:%SZ)]",
     "creator": "enhanced-mvp-entrypoint-workflow",
     "discovery_version": "progressive-guided-v1"
   },
@@ -573,7 +580,7 @@ fi
 - **Technology Direction**: [Preliminary tech stack recommendation based on discovery]
 - **Feature Directory Created**: `features/[AI: Insert current date as YYYY-MM-DD]-[kebab-case-project-name]/`
 - **Generated Files**: `feature-manifest.json` with discovery context
-- **Completion Time**: [AI: Insert current date and time as YYYY-MM-DD HH:MM:SS]
+- **Completion Time**: [AI: Insert current date and time in format: $(date '+%Y-%m-%d %H:%M:%S')]
 
 ### User Approval Gate
 Present these options to the user:

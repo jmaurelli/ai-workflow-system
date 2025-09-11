@@ -358,7 +358,7 @@ This project history system transforms completed feature work into strategic org
 - **Strategic Insights**: [Technology and architecture recommendations developed]
 - **Capability Evolution**: [Skills and confidence growth documented]
 - **Archive Organization**: [Features moved to project-history/ with preserved links]
-- **Completion Time**: [AI: Insert current date and time as YYYY-MM-DD HH:MM:SS]
+- **Completion Time**: [AI: Insert current date and time in format: $(date '+%Y-%m-%d %H:%M:%S')]
 
 ### User Approval Gate
 Present these options to the user:

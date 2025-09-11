@@ -344,7 +344,7 @@ This workflow enhances the lean development process by:
 - **Decision Rationale**: [Key factors that influenced technology choices]
 - **Learning Journal**: Updated with decisions and reasoning
 - **Manifest Updated**: feature-manifest.json marked design decisions as completed
-- **Completion Time**: [AI: Insert current date and time as YYYY-MM-DD HH:MM:SS]
+- **Completion Time**: [AI: Insert current date and time in format: $(date '+%Y-%m-%d %H:%M:%S')]
 
 ### User Approval Gate
 Present these options to the user:

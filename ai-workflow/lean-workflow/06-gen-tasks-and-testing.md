@@ -299,7 +299,7 @@ Pause only for destructive/irreversible actions or scope changes; otherwise proc
 - **Acceptance Criteria**: [Quality gates and performance targets defined]
 - **Risk Mitigation**: [High-risk tasks identified with contingency plans]
 - **Manifest Updated**: feature-manifest.json marked tasks as completed
-- **Completion Time**: [AI: Insert current date and time as YYYY-MM-DD HH:MM:SS]
+- **Completion Time**: [AI: Insert current date and time in format: $(date '+%Y-%m-%d %H:%M:%S')]
 
 ### User Approval Gate
 Present these options to the user:

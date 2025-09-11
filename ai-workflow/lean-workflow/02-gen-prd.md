@@ -202,7 +202,7 @@ Pause only for destructive/irreversible actions or scope changes; otherwise proc
 - **Success Criteria**: [Key measurable outcomes identified]
 - **Feature Scope**: [Brief description of MVP scope defined]
 - **Manifest Updated**: feature-manifest.json marked PRD as completed
-- **Completion Time**: [AI: Insert current date and time as YYYY-MM-DD HH:MM:SS]
+- **Completion Time**: [AI: Insert current date and time in format: $(date '+%Y-%m-%d %H:%M:%S')]
 
 ### User Approval Gate
 Present these options to the user:
