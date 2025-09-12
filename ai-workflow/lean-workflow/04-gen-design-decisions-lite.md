@@ -7,6 +7,14 @@
 ## Objective
 Guide technical and UX design decisions through interactive questionnaires and template-driven frameworks. Build design decision-making skills while ensuring solid choices for MVP development.
 
+### **🎨 ARTISTIC MODE → PROGRESSIVE SPECIFICITY**
+**AI Instructions**: This document balances creative flexibility with increasing technical precision:
+
+- **Strategic concepts** → Allow architectural creativity and learning exploration
+- **Technical specifications** → Require specific technologies, versions, patterns
+- **Implementation guidance** → Provide concrete examples and measurable criteria
+- **Avoid generic language** → Replace "scalable," "maintainable," "robust" with specific technical decisions
+
 ---
 
 ## When to Use

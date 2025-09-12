@@ -3,6 +3,15 @@
 ## Objective
 Analyze existing codebase for design patterns, components, and integration opportunities before implementing new features. Ensures consistent UI/UX while enabling design improvements.
 
+### **🏗️ ARCHITECTURAL SPECIFICITY REQUIREMENTS**
+**AI Instructions**: This document requires increasing precision as we approach implementation:
+
+- **Component analysis** → Identify specific reusable components with exact file paths and APIs
+- **Integration patterns** → Specify exact data flow, API contracts, and architectural patterns
+- **Implementation guidance** → Provide file-level specificity and concrete code examples
+- **Technology decisions** → Reference specific libraries, frameworks, versions from design decisions
+- **Performance criteria** → Include measurable targets and optimization strategies
+
 ## When to Use
 - **New Features**: When adding functionality to existing applications
 - **Feature Enhancements**: When improving existing features

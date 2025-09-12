@@ -7,6 +7,15 @@ Developer: # Workflow: Lean Software Requirements Specification (SRS) (MVP-First
 ## Objective
 Capture only the minimum non-functional requirements (NFRs), constraints, and budgets needed to guide MVP implementation. Keep it one page, fast to produce, and tightly coupled to the PRD.
 
+### **⚡ TECHNICAL SPECIFICITY REQUIREMENTS**
+**AI Instructions**: While maintaining strategic flexibility, eliminate unnecessary generic language:
+
+- **Performance requirements** → Include measurable thresholds (not "fast" but "< 200ms p95 latency")
+- **Reliability targets** → Specify uptime percentages and error rates (not "reliable" but "99.5% uptime")
+- **Security requirements** → Reference specific standards/frameworks when applicable
+- **Quality criteria** → Make requirements testable and verifiable
+- **PRESERVE artistic flexibility** for user experience goals and strategic business requirements
+
 ---
 
 ## Quickstart (Lean SRS - Feature-Centric)

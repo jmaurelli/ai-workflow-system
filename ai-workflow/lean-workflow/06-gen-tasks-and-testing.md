@@ -9,9 +9,27 @@ Transform a Lean PRD into actionable tasks with integrated testing guidance. Thi
 
 ---
 
-## Workflow Steps
+## 🚀 ZERO-AMBIGUITY WORKFLOW (Implementation-Ready Tasks)
+
+**🎯 CRITICAL: This document produces 100% implementation-ready tasks with ZERO ambiguity**
 
 **PREREQUISITE**: You must be working in the feature directory from 01-mvp-entrypoint.md
+
+### **🔥 ZERO-AMBIGUITY REQUIREMENTS:**
+
+**AI AGENT INSTRUCTIONS - MANDATORY SPECIFICITY:**
+1. **File-Level Precision**: Every task must specify exact file paths, file names, and directory structure
+2. **Function-Level Detail**: Include exact function signatures, parameter types, return types
+3. **Implementation Patterns**: Reference specific coding patterns, not abstract concepts
+4. **Measurable Acceptance**: Every task has testable, verifiable success criteria
+5. **Technology Specificity**: Use exact library versions, API endpoints, configuration settings
+6. **No Abstract Language**: Eliminate "robust," "scalable," "user-friendly," "clean," "elegant"
+
+**FORBIDDEN VAGUE TERMS:**
+❌ "Implement authentication" → ✅ "Create `src/auth/AuthService.ts` with JWT token validation using jsonwebtoken@9.0.0"
+❌ "Add error handling" → ✅ "Implement try-catch blocks in `UserController.handleLogin()` with specific error codes 400, 401, 500"
+❌ "Make it responsive" → ✅ "Add CSS Grid breakpoints at 768px, 1024px, 1440px in `src/styles/responsive.css`"
+❌ "Optimize performance" → ✅ "Implement React.memo() for UserList component to prevent re-renders when user.id hasn't changed"
 
 Begin with a concise checklist (3-7 bullets) of intended sub-tasks before proceeding; keep checklist items conceptual.
 
@@ -35,12 +53,30 @@ Begin with a concise checklist (3-7 bullets) of intended sub-tasks before procee
 - If fewer than 3 or more than 5 parent tasks are available, proceed with what is supported, and clearly document this under **Notes** in the output.
 - Parent tasks should be clear and high-level, for example: “Implement login API.”
 
-### 3. Expand into Sub-Tasks (Design-Decision Aware)
-- For each parent task, break it down into smaller sub-tasks (ideally actions that take less than one day) using Markdown checklists (`- [ ]`).
-- **Apply Design Decisions**: Tailor sub-tasks to chosen tech stack (e.g., React components vs Vue components, Python FastAPI vs Node.js Express).
-- **Incorporate Learning Goals**: Include sub-tasks that support skill development identified in design decisions.
-- **Honor UX Decisions**: Structure frontend tasks according to chosen component library strategy and design patterns.
-- Ensure that each parent task includes at least one sub-task related to testing.
+### 3. Expand into Implementation-Ready Sub-Tasks (ZERO-AMBIGUITY)
+**🎯 CRITICAL: Every sub-task must be implementable without interpretation**
+
+**MANDATORY SUB-TASK FORMAT:**
+```markdown
+- [ ] **Specific Action**: Create exact file `path/filename.ext` 
+  - **Function**: `functionName(param1: Type, param2: Type): ReturnType`
+  - **Implementation**: Use specific pattern/library (include version)
+  - **Test**: Verify specific behavior with exact assertion
+  - **Success Criteria**: Measurable outcome (response time, error code, UI element)
+```
+
+**REQUIRED SPECIFICITY:**
+- **File Paths**: Exact directory structure and file names
+- **Dependencies**: Specific library versions and import statements  
+- **Function Signatures**: Complete type information and parameters
+- **Test Criteria**: Exact assertions, expected outputs, error codes
+- **Implementation Patterns**: Reference specific architectural patterns from design decisions
+
+**EXAMPLES OF ZERO-AMBIGUITY SUB-TASKS:**
+✅ `Create src/components/auth/LoginForm.tsx with useState hooks for email:string, password:string, and handleSubmit function`
+✅ `Install bcrypt@5.1.0 and implement User.hashPassword(plainText: string): Promise<string> in src/models/User.ts`
+✅ `Add POST /api/auth/login endpoint in src/routes/auth.ts returning {token: string, user: UserType} or 401 error`
+✅ `Write test in tests/auth.test.ts verifying 200 response with valid JWT token containing user.id`
 - The first sub-task under each parent MUST be: "Write failing smoke test (targeting acceptance criteria)".
 - Add explicit acceptance criteria for each parent task, tied to PRD requirements.
 
