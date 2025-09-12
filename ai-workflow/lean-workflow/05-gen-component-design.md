@@ -1,4 +1,4 @@
-# Workflow: Design Analysis & Integration (MVP-First)
+# Workflow: Component Design & Integration (MVP-First)
 
 ## Objective
 Analyze existing codebase for design patterns, components, and integration opportunities before implementing new features. Ensures consistent UI/UX while enabling design improvements.

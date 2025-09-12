@@ -1,4 +1,4 @@
-# Workflow: Design Decisions (MVP/Lite) - Learning-Guided
+# Workflow: Design Decisions (MVP-First) - Learning-Guided
 
 **🚨 CRITICAL LOCATION REQUIREMENT:**
 **You MUST be in the feature directory: `/features/YYYY-MM-DD-project-name/`**
