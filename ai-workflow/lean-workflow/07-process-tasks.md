@@ -112,10 +112,23 @@ This document integrates **Task List Management**, **Test-Driven Development (TD
    - **Support learning goals**: Include comments and documentation for learning areas
    - Implement defensive and error-handling code first.
    - Write the minimal code to satisfy each test, addressing tests iteratively.
-4. **REFACTOR Phase: Code Quality Improvement**
+4. **🎨 HUMAN EXPERIENCE VALIDATION GATE (UI Components Only)**
+   - **🚨 MANDATORY FOR ALL FRONTEND COMPONENTS**: Stop implementation for human UX validation
+   - **Test in Real Environment**: Start dev server, open browser, test actual component
+   - **Human Validation Checklist**:
+     - ✅ Visual layout matches approved mockup
+     - ✅ User interactions work as designed
+     - ✅ Error states display correctly
+     - ✅ Responsive behavior works on mobile/desktop
+     - ✅ Accessibility features function (keyboard navigation, screen readers)
+     - ✅ Performance feels smooth (no lag, proper loading states)
+   - **Human Decision**: ✅ Approve / 🔄 Revise with feedback / ❌ Reject approach
+   - **Backend Components**: Skip this gate → proceed directly to REFACTOR phase
+5. **REFACTOR Phase: Code Quality Improvement (Post-Human-Approval)**
+   - **Apply human feedback**: Implement any UX revisions from validation gate
    - Remove duplication, simplify logic, and improve naming.
    - Validate module depth, enforce information hiding, and check for robust error prevention.
-5. **Integration & Validation**
+6. **Integration & Validation**
    - Execute full workflows across environments to verify performance, accessibility, and stability.
 
 ### Context-Aware Implementation Strategy

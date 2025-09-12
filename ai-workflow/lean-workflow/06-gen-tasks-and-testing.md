@@ -24,12 +24,169 @@ Transform a Lean PRD into actionable tasks with integrated testing guidance. Thi
 4. **Measurable Acceptance**: Every task has testable, verifiable success criteria
 5. **Technology Specificity**: Use exact library versions, API endpoints, configuration settings
 6. **No Abstract Language**: Eliminate "robust," "scalable," "user-friendly," "clean," "elegant"
+7. **🎨 MANDATORY UX VALIDATION**: All UI/Frontend tasks MUST include visual mockup gates before implementation
 
 **FORBIDDEN VAGUE TERMS:**
 ❌ "Implement authentication" → ✅ "Create `src/auth/AuthService.ts` with JWT token validation using jsonwebtoken@9.0.0"
 ❌ "Add error handling" → ✅ "Implement try-catch blocks in `UserController.handleLogin()` with specific error codes 400, 401, 500"
 ❌ "Make it responsive" → ✅ "Add CSS Grid breakpoints at 768px, 1024px, 1440px in `src/styles/responsive.css`"
 ❌ "Optimize performance" → ✅ "Implement React.memo() for UserList component to prevent re-renders when user.id hasn't changed"
+
+---
+
+## 🎨 MANDATORY UX VALIDATION GATES FRAMEWORK
+
+**🚨 CRITICAL FOR PRODUCT SUCCESS: All UI/Frontend tasks require human approval before implementation**
+
+### **📋 UX Gate Requirements (Mandatory for ALL UI Components):**
+
+**For Every Frontend Task, AI MUST Generate:**
+
+1. **📱 Visual Mockup/Wireframe** 
+   - Create detailed component layout using ASCII art, Figma link, or detailed description
+   - Show exact positioning, spacing, colors, typography
+   - Include mobile and desktop layouts
+   - **Human Gate**: ✅ Approve / 🔄 Revise / ❌ Reject
+
+2. **🔄 User Interaction Flow**
+   - Document every click, hover, input, navigation step
+   - Show error states, loading states, success states
+   - Include form validation and user feedback
+   - **Human Gate**: ✅ Approve / 🔄 Revise / ❌ Reject
+
+3. **📏 Technical Implementation Preview**
+   - Component structure and props interface
+   - CSS classes and styling approach
+   - State management and data flow
+   - **Human Gate**: ✅ Approve / 🔄 Revise / ❌ Reject
+
+### **🎯 MANDATORY SUB-TASK FORMAT (UI Components):**
+
+```markdown
+**Task**: [Component Name] Implementation
+
+**🎨 UX VALIDATION GATE 1: Visual Mockup**
+- **Layout**: [Detailed ASCII art or description]
+- **Styling**: [Colors, fonts, spacing, responsive behavior]
+- **States**: [Default, hover, active, disabled, loading, error]
+- **🚨 HUMAN APPROVAL REQUIRED**: ✅ / 🔄 / ❌
+
+**🎨 UX VALIDATION GATE 2: Interaction Flow**
+- **User Journey**: [Step-by-step interaction flow]
+- **Edge Cases**: [Error handling, validation, empty states]
+- **Accessibility**: [ARIA labels, keyboard navigation, screen reader support]
+- **🚨 HUMAN APPROVAL REQUIRED**: ✅ / 🔄 / ❌
+
+**🎨 UX VALIDATION GATE 3: Technical Preview**
+- **File**: `src/components/[ComponentName].tsx`
+- **Props Interface**: `interface [ComponentName]Props { ... }`
+- **State Management**: [Redux/Context/useState approach]
+- **CSS Approach**: [styled-components/CSS modules/Tailwind classes]
+- **🚨 HUMAN APPROVAL REQUIRED**: ✅ / 🔄 / ❌
+
+**✅ ONLY AFTER ALL 3 GATES APPROVED: Proceed to Implementation**
+```
+
+### **⚡ BACKEND TASKS (No UX Gates Required):**
+- API endpoints, database queries, business logic
+- Authentication services, data processing
+- Integration services, background jobs
+- **Skip UX gates** → **Proceed directly to TDD implementation**
+
+---
+
+## 📱 VISUAL MOCKUP GENERATION FRAMEWORK
+
+**🎯 MANDATORY for ALL UI Components - Generate detailed mockups before any coding**
+
+### **ASCII Art Mockup Template:**
+
+```
+**🎨 EXAMPLE: User Login Form Component**
+
+DESKTOP LAYOUT (1200px+):
+┌─────────────────────────────────────────────────────────┐
+│                     AppName Logo                        │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│           ┌─────────────────────────────────┐           │
+│           │          Login Form             │           │
+│           │                                 │           │
+│           │  Email: [________________]      │           │
+│           │                                 │           │
+│           │  Password: [****************]   │           │
+│           │            [👁] Show/Hide       │           │
+│           │                                 │           │
+│           │  [ ] Remember me                │           │
+│           │                                 │           │
+│           │  [     Login Button     ]       │           │
+│           │                                 │           │
+│           │  Forgot password? | Sign up     │           │
+│           └─────────────────────────────────┘           │
+│                                                         │
+└─────────────────────────────────────────────────────────┘
+
+MOBILE LAYOUT (320px-768px):
+┌─────────────────────────┐
+│      AppName Logo       │
+├─────────────────────────┤
+│                         │
+│  ┌─────────────────────┐ │
+│  │   Login Form        │ │
+│  │                     │ │
+│  │ Email:              │ │
+│  │ [_________________] │ │
+│  │                     │ │
+│  │ Password:           │ │
+│  │ [***************] 👁│ │
+│  │                     │ │
+│  │ [ ] Remember me     │ │
+│  │                     │ │
+│  │ [   Login Button  ] │ │
+│  │                     │ │
+│  │ Forgot password?    │ │
+│  │ Sign up            │ │
+│  └─────────────────────┘ │
+└─────────────────────────┘
+
+STATES TO SHOW:
+- Default state (above)
+- Error state: Red borders, error messages below fields
+- Loading state: Disabled fields, spinner on button
+- Success state: Green checkmark, "Logging in..." message
+```
+
+### **Detailed Component Specification Template:**
+
+```markdown
+**🎨 Component: [ComponentName]**
+
+**VISUAL SPECIFICATIONS:**
+- **Colors**: Primary #007bff, Error #dc3545, Success #28a745, Text #333333
+- **Typography**: Headings 24px/bold, Body 16px/regular, Small 14px/light
+- **Spacing**: Margin 16px, Padding 12px, Form gaps 8px
+- **Border Radius**: 4px for inputs, 6px for buttons
+- **Shadows**: Box-shadow: 0 2px 4px rgba(0,0,0,0.1) on hover
+
+**RESPONSIVE BREAKPOINTS:**
+- Mobile: 320px-767px (single column)
+- Tablet: 768px-1023px (adjusted spacing)
+- Desktop: 1024px+ (optimal layout)
+
+**ACCESSIBILITY REQUIREMENTS:**
+- ARIA labels: "Email input field", "Password input field", "Login submit button"
+- Keyboard navigation: Tab order: Email → Password → Remember → Login → Links
+- Screen reader: Announce form errors clearly
+- Color contrast: Minimum 4.5:1 ratio for all text
+
+**INTERACTION BEHAVIORS:**
+- Hover: Button background darkens by 10%
+- Focus: Blue outline ring 2px
+- Validation: Real-time on blur, show errors inline
+- Loading: Disable form, show spinner, preserve button text with "..."
+```
+
+---
 
 Begin with a concise checklist (3-7 bullets) of intended sub-tasks before proceeding; keep checklist items conceptual.
 
